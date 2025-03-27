@@ -57,7 +57,7 @@ public class UsuarioController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(string email, string password)
     {
-        var user = new LicitArUser { UserName = email, Email = email };
+        var user = new LicitArUser { UserName = email, Email = email, Apellido = "", Nombre = "" };
         var result = await _userManager.CreateAsync(user, password);
         if (result.Succeeded)
         {
