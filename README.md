@@ -35,7 +35,7 @@ El sistema cubre los siguientes procesos relacionados con las licitaciones:
    Asegúrate de tener instalada la versión adecuada de **.NET Core SDK** y ejecuta el siguiente comando:
 
    ```bash
-   dotnet restore}
+   dotnet restore
    ```
 3. **Configurar la base de datos**
 
