@@ -82,7 +82,7 @@ Este proyecto está bajo la licencia MIT. Puedes consultar más detalles en el a
 Si tienes alguna duda o sugerencia, no dudes en contactarnos:
 
 - Correo electrónico: [unlz.licitar@gmail.com]
-- GitHub: [https://github.com/tuusuario](https://github.com/licitarunlz)
+- GitHub: [https://github.com/licitarunlz](https://github.com/licitarunlz)
 
 ---
 
