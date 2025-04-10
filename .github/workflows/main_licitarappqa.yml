@@ -1,7 +1,12 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
+#  ███╗   ███╗ █████╗ ██╗███╗   ██║
+#  ████╗ ████║██╔══██╗██║████╗  ██║
+#  ██╔████╔██║███████║██║██╔██╗ ██║
+#  ██║╚██╔╝██║██╔══██║██║██║╚██╗██║
+#  ██║ ╚═╝ ██║██║  ██║██║██║ ╚████║
+#  ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
+                                
 
-name: Build and deploy ASP.Net Core app to Azure Web App - licitarappqa
+name: MAIN CI/CD - licitarappqa
 
 on:
   push:
@@ -51,13 +56,6 @@ jobs:
         with:
           name: .net-app
       
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_07927C51B08B4C398BF1751151D7035B }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_384D47848A0840D1AEE8E6976A7BFCEF }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6550E329274446E1A2EFA90ECF65CCB5 }}
-
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
@@ -65,4 +63,6 @@ jobs:
           app-name: 'licitarappqa'
           slot-name: 'Production'
           package: .
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_QA }}
+
           
