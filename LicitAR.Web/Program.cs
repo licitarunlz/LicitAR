@@ -4,11 +4,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using LicitAR.Core.Data.Models;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 // Agregar el DbContext con la conexión
 builder.Services.AddDbContext<LicitARIdentityDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//Agregar el DbContext con la conexión de los Parámetros
+builder.Services.AddDbContext<ParametrosDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<ActoresDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<LicitacionesDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 // Agregar autenticación con Google
 builder.Services.AddAuthentication(options =>
@@ -21,13 +33,13 @@ builder.Services.AddAuthentication(options =>
 .AddCookie(IdentityConstants.ApplicationScheme)
     .AddGoogle(googleOptions =>
     {
-        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"]??"";
+        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "";
     })
     .AddMicrosoftAccount(microsoftOptions =>
     {
-        microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"];
-        microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"];
+        microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? "";
+        microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? "";
     });
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -53,6 +65,7 @@ builder.Services.AddIdentityCore<LicitArUser>(options =>
 .AddEntityFrameworkStores<LicitARIdentityDbContext>()
      .AddSignInManager()
     .AddDefaultTokenProviders();
+
 
 
 // Add services to the container.
