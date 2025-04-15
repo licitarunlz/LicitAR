@@ -4,16 +4,19 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LicitAR.Core.Migrations
+namespace LicitAR.Core.Migrations.Identidad
 {
     [DbContext(typeof(LicitARIdentityDbContext))]
-    partial class LicitARIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250415032855_AutoMigration_LicitARIdentity_20250415002849")]
+    partial class AutoMigration_LicitARIdentity_20250415002849
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,12 +56,6 @@ namespace LicitAR.Core.Migrations
 
                     b.Property<DateTime>("FechaNacimiento")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("IdUsuario")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUsuario"));
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");

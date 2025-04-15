@@ -19,7 +19,14 @@ namespace LicitAR.Core.Data
 
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<LicitArUser>().OwnsOne(p => p.Audit); 
 
-     
+            base.OnModelCreating(builder);
+        }
+
+
+
     }
 }

@@ -12,6 +12,7 @@ namespace LicitAR.Core.Utils
         public const string MAXLENGTH = "Los caracteres ingresados superan el máximo permitido";
         public const string MINLENGTH = "Los caracteres ingresados no alcanzan el mínimo solicitado";
         public const string REQUIRED =  "El campo es requerido.";
+        public const string VALIDEMAIL = "Email inválido.";
 
 
     }

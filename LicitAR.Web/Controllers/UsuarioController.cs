@@ -4,23 +4,23 @@ using LicitAR.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using LicitAR.Core.Data.Models;
+using LicitAR.Web.Business.Identidad.Usuario;
+using LicitAR.Core.Business.Identidad;
 
 namespace LicitAR.Web.Controllers;
 
 public class UsuarioController : Controller
 {
     private readonly ILogger<UsuarioController> _logger;
-
+    private readonly IRegistroManager _registroManager;
     private readonly SignInManager<LicitArUser> _signInManager;
-    private readonly UserManager<LicitArUser> _userManager;
 
-    public UsuarioController(SignInManager<LicitArUser> signInManager, UserManager<LicitArUser> userManager,
+    public UsuarioController(SignInManager<LicitArUser> signInManager, IRegistroManager registroManager,
     ILogger<UsuarioController> logger)
     {
         _logger = logger;
-
+        _registroManager = registroManager;
         _signInManager = signInManager;
-        _userManager = userManager;
     }
 
 
@@ -55,16 +55,17 @@ public class UsuarioController : Controller
     }
     [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> Register(string email, string password)
+    public async Task<IActionResult> Register(UsuarioModel usuario)
     {
-        var user = new LicitArUser { UserName = email, Email = email, Apellido = "", Nombre = "", Cuit = "" };
-        var result = await _userManager.CreateAsync(user, password);
-        if (result.Succeeded)
+        if (ModelState.IsValid) 
         {
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return RedirectToAction("Index", "Home");
+            LicitArUser user = await _registroManager.RegistrarAsync(usuario, 1);
+            if (user != null)
+            {
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return RedirectToAction("Index", "Home");
+            }
         }
-
         ModelState.AddModelError("", "Error en el registro");
         return View();
     }
