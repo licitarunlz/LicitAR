@@ -13,7 +13,7 @@ namespace LicitAR.Core.Business.Identidad
 {
     public interface IRegistroManager
     {
-        Task<LicitArUser> RegistrarAsync(UsuarioModel usuario, int idUsuario);
+        Task<LicitArUser> RegistrarAsync(RegistroModel usuario, int idUsuario);
     }
 
     public class RegistroManager : IRegistroManager
@@ -26,7 +26,7 @@ namespace LicitAR.Core.Business.Identidad
             _userManager = userManager;
         }
 
-        public async Task<LicitArUser> RegistrarAsync(UsuarioModel usuario, int IdUsuario)
+        public async Task<LicitArUser> RegistrarAsync(RegistroModel usuario, int IdUsuario)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
 

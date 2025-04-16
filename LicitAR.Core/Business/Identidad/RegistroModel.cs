@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LicitAR.Web.Business.Identidad.Usuario
 {
-    public class UsuarioModel
+    public class RegistroModel
     {
         [Key]
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
