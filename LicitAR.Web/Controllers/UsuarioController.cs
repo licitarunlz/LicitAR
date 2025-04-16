@@ -55,7 +55,7 @@ public class UsuarioController : Controller
     }
     [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> Register(UsuarioModel usuario)
+    public async Task<IActionResult> Register(RegistroModel usuario)
     {
         if (ModelState.IsValid) 
         {
