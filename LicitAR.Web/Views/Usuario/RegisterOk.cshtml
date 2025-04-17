@@ -1,0 +1,29 @@
+﻿@{
+    var successMessage = TempData["SuccessMessage"] as string;
+    TempData["SuccessMessage"] = null;
+}
+<div class="row">
+
+    <div class="col-xl-8 offset-xl-2">
+        <div class="card">
+            <div class="card-body">
+
+                <div class="text-end mb-3">
+                    <button type="button" id="btnEditar" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil-square"></i> Editar
+                    </button>
+                </div> 
+                    @if (!string.IsNullOrEmpty(successMessage))
+                    {
+                        <div class="alert alert-success alert-dismissible fade show py-6" role="alert">
+                            @successMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+            </div>
+
+        </div>
+
+    </div>
+
+</div> 

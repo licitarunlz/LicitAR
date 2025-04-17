@@ -56,9 +56,11 @@ public class UsuarioController : Controller
     [AllowAnonymous]
     public IActionResult Register()
     {
+        TempData["MensajeCarga"] = "Procesando... Por favor espere.";
         return View();
     }
     [AllowAnonymous]
+   // [ValidateAntiForgeryToken]
     [HttpPost]
     public async Task<IActionResult> Register(RegistroModel usuario)
     {
@@ -72,7 +74,7 @@ public class UsuarioController : Controller
             }
         }
         ModelState.AddModelError("", "Error en el registro");
-        return View();
+        return View(usuario);
     }
 
 

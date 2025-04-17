@@ -38,6 +38,11 @@
 </head>
 
 <body>
+
+    <div id="overlay" style="display:none;">
+        <div class="spinner"></div>
+        <div class="mensaje-carga">@(TempData["MensajeCarga"] ?? "Procesando...")</div>
+    </div>
   <!-- Layout Content -->
   @RenderBody()
   <!--/ Layout Content --> 
@@ -73,7 +78,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
 
-     
+ 
     @RenderSection("BusinessScripts", required: false)
 
 

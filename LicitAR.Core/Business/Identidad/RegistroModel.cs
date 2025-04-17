@@ -28,6 +28,7 @@ namespace LicitAR.Web.Business.Identidad.Usuario
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)] 
         [Display(Name = "Fecha de Nacimiento")]
+      
         public DateTime FechaNacimiento { get; set; }
 
 
