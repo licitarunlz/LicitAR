@@ -29,6 +29,14 @@
 
 @section PageScripts{ @RenderSection("PageScripts", required: false) }
 
+
+@{
+    if (IsSectionDefined("BusinessScripts"))
+    {
+        @RenderSection("BusinessScripts", required: false)
+    }
+}
+
 @{
   bool isMenu = ViewData["isMenu"] != null && Convert.ToBoolean(ViewData["isMenu"]);
 }
@@ -81,3 +89,5 @@
   <!-- Drag Target Area To SlideIn Menu On Small Screens -->
   <div class="drag-target"></div>
 </div>
+
+ 

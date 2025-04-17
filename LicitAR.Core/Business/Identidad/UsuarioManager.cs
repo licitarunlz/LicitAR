@@ -9,15 +9,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using LicitAR.Core.Utils;
 
 namespace LicitAR.Core.Business.Identidad
 {
     public interface IUsuarioManager
     {
         Task<IEnumerable<UsuarioModel>> GetAllUsersAsync();
-        LicitArUser GetUser(int UserId);
-        Task<LicitArUser> GetUserAsync(int userId);
-        Task<bool> UpdateUserAsync(UsuarioModel model);
+        Task<UsuarioModel> GetUserAsync(int userId);
+        Task<bool> UpdateUserAsync(UsuarioModel model, int userId);
         Task<bool> ToggleUserEnabledAsync(int userId, bool enabled);
     }
 
@@ -31,16 +31,23 @@ namespace LicitAR.Core.Business.Identidad
             _context = context;
             _userManager = userManager;
         }
-        public LicitArUser GetUser(int UserId)
-        {
-            var user = _context.Users.First(x => x.IdUsuario == UserId);
 
-            return user;
-        }
-        public async Task<LicitArUser> GetUserAsync(int userId)
+        public async Task<UsuarioModel> GetUserAsync(int userId)
         {
-            return await _userManager.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
+
+            return new UsuarioModel
+            {
+                IdUsuario = user.IdUsuario,
+                Nombre = user.Nombre,
+                Apellido = user.Apellido,
+                Email = user.Email,
+                FechaNacimiento = user.FechaNacimiento,
+                Cuit = user.Cuit
+            };
+
         }
+
         public async Task<IEnumerable<UsuarioModel>> GetAllUsersAsync()
         {
             var users = _userManager.Users.ToList();
@@ -54,7 +61,7 @@ namespace LicitAR.Core.Business.Identidad
                 Cuit = user.Cuit
             });
         }
-        public async Task<bool> UpdateUserAsync(UsuarioModel model)
+        public async Task<bool> UpdateUserAsync(UsuarioModel model, int userId)
         {
             // Buscar el usuario por su ID
             var user = await _context.Users.FirstOrDefaultAsync(u => u.IdUsuario == model.IdUsuario);
@@ -70,12 +77,14 @@ namespace LicitAR.Core.Business.Identidad
             user.FechaNacimiento = model.FechaNacimiento;
             user.Cuit = model.Cuit;
 
+            user.Audit = AuditHelper.SetModificationData(user.Audit, userId);
+
             // Marcar solo los campos modificados
             _context.Entry(user).Property(u => u.Nombre).IsModified = true;
             _context.Entry(user).Property(u => u.Apellido).IsModified = true;
             _context.Entry(user).Property(u => u.Email).IsModified = true;
             _context.Entry(user).Property(u => u.FechaNacimiento).IsModified = true;
-            _context.Entry(user).Property(u => u.Cuit).IsModified = true;
+            _context.Entry(user).Property(u => u.Cuit).IsModified = true; 
 
             // Guardar los cambios
             await _context.SaveChangesAsync();

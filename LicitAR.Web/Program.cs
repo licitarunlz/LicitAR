@@ -5,73 +5,20 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using LicitAR.Core.Data.Models;
 using Microsoft.Extensions.Configuration;
 using LicitAR.Core.DI;
+using LicitAR.Core.Utils;
 using LicitAR.Core.Business.Identidad;
+using LicitAR.FileStorage.DI;
 
 var builder = WebApplication.CreateBuilder(args);
-// Agregar el DbContext con la conexión
-builder.Services.AddDbContext<LicitARIdentityDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//Agregar el DbContext con la conexión de los Parámetros
-builder.Services.AddDbContext<ParametrosDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddContextRegistrations(builder.Configuration);
 
-builder.Services.AddDbContext<ActoresDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddDbContext<LicitacionesDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddIdentityRegistrations(builder.Configuration);
 
 builder.Services.AddAppBusinessRegistrations(builder.Configuration);
 
-builder.Services.AddScoped<IUsuarioManager, UsuarioManager>();
-builder.Services.AddScoped<IRegistroManager, RegistroManager>();
 
-// Agregar autenticación con Google
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultSignInScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme; 
-
-})
-.AddCookie(IdentityConstants.ApplicationScheme)
-    .AddGoogle(googleOptions =>
-    {
-        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"]??"";
-        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "";
-    })
-    .AddMicrosoftAccount(microsoftOptions =>
-    {
-        microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? "";
-        microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? "";
-    });
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Usuario/Login";  // Página de inicio de sesión
-    options.AccessDeniedPath = "/Usuario/Register"; // (Opcional) Página de acceso denegado
-});
-/*
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<LicitARIdentityDbContext>()
-    .AddDefaultTokenProviders();
-*/
-/*<IdentityUser>*/
-// Configurar Identity
-builder.Services.AddIdentityCore<LicitArUser>(options =>
-{
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 6;
-})
-.AddEntityFrameworkStores<LicitARIdentityDbContext>()
-     .AddSignInManager()
-    .AddDefaultTokenProviders();
-
-
+builder.Services.AddFileStorageRegistrations(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews(options =>
