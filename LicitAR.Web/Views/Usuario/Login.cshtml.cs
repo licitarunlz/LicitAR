@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace LicitAR.Web.Views.Account
+namespace LicitAR.Web.Views.Usuario
 {
-    public class Register : PageModel
+    public class Login : PageModel
     {
-        private readonly ILogger<Register> _logger;
+        private readonly ILogger<Login> _logger;
 
-        public Register(ILogger<Register> logger)
+        public Login(ILogger<Login> logger)
         {
             _logger = logger;
         }
