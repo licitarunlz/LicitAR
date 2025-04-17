@@ -14,20 +14,22 @@ public class UsuarioController : Controller
     private readonly ILogger<UsuarioController> _logger;
     private readonly IRegistroManager _registroManager;
     private readonly SignInManager<LicitArUser> _signInManager;
+    private readonly IUsuarioManager _usuarioManager;
 
     public UsuarioController(SignInManager<LicitArUser> signInManager, IRegistroManager registroManager,
-    ILogger<UsuarioController> logger)
+    ILogger<UsuarioController> logger, IUsuarioManager usuarioManager)
     {
         _logger = logger;
         _registroManager = registroManager;
         _signInManager = signInManager;
+        _usuarioManager = usuarioManager;
     }
 
-
-
-    public IActionResult Index()
+    [Authorize]
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var users = await _usuarioManager.GetAllUsersAsync(); // Asegúrate de que este método devuelva datos válidos
+        return View(users);
     }
 
     [AllowAnonymous]

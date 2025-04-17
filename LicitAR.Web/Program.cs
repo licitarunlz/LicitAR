@@ -1,4 +1,3 @@
-
 using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using LicitAR.Core.Data.Models;
 using Microsoft.Extensions.Configuration;
 using LicitAR.Core.DI;
+using LicitAR.Core.Business.Identidad;
 
 var builder = WebApplication.CreateBuilder(args);
 // Agregar el DbContext con la conexión
@@ -24,6 +24,8 @@ builder.Services.AddDbContext<LicitacionesDbContext>(options =>
 
 builder.Services.AddAppBusinessRegistrations(builder.Configuration);
 
+builder.Services.AddScoped<IUsuarioManager, UsuarioManager>();
+builder.Services.AddScoped<IRegistroManager, RegistroManager>();
 
 // Agregar autenticación con Google
 builder.Services.AddAuthentication(options =>
