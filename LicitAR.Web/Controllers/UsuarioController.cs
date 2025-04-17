@@ -14,20 +14,22 @@ public class UsuarioController : Controller
     private readonly ILogger<UsuarioController> _logger;
     private readonly IRegistroManager _registroManager;
     private readonly SignInManager<LicitArUser> _signInManager;
+    private readonly IUsuarioManager _usuarioManager;
 
     public UsuarioController(SignInManager<LicitArUser> signInManager, IRegistroManager registroManager,
-    ILogger<UsuarioController> logger)
+    ILogger<UsuarioController> logger, IUsuarioManager usuarioManager)
     {
         _logger = logger;
         _registroManager = registroManager;
         _signInManager = signInManager;
+        _usuarioManager = usuarioManager;
     }
 
-
-
-    public IActionResult Index()
+    [Authorize]
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var users = await _usuarioManager.GetAllUsersAsync(); // Asegúrate de que este método devuelva datos válidos
+        return View(users);
     }
 
     [AllowAnonymous]
@@ -98,4 +100,45 @@ public class UsuarioController : Controller
         return RedirectToAction("Index", "Home");
     }
 
+    [Authorize]
+    public async Task<IActionResult> Editar(int id)
+    {
+        var user = await _usuarioManager.GetUserAsync(id); // Método para obtener el usuario por ID
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        // Mapear el usuario a UsuarioModel para pasarlo a la vista
+        var usuarioModel = new UsuarioModel
+        {
+            IdUsuario = user.IdUsuario,
+            Nombre = user.Nombre,
+            Apellido = user.Apellido,
+            Email = user.Email,
+            FechaNacimiento = user.FechaNacimiento,
+            Cuit = user.Cuit
+        };
+
+        return View(usuarioModel);
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> Editar(UsuarioModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var result = await _usuarioManager.UpdateUserAsync(model); // Método para actualizar el usuario
+        if (!result)
+        {
+            ModelState.AddModelError("", "Error al actualizar el usuario.");
+            return View(model);
+        }
+
+        return RedirectToAction("Index");
+    }
 }
