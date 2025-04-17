@@ -139,7 +139,7 @@ public class UsuarioController : Controller
     }
 
     [Authorize]
-    public async Task<IActionResult> Editar(int id)
+    public async Task<IActionResult> Edit(int id)
     {
         var user = await _usuarioManager.GetUserAsync(id); // Método para obtener el usuario por ID
         if (user == null)
@@ -153,7 +153,7 @@ public class UsuarioController : Controller
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> Editar(UsuarioModel model)
+    public async Task<IActionResult> Edit(UsuarioModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -165,6 +165,19 @@ public class UsuarioController : Controller
         {
             ModelState.AddModelError("", "Error al actualizar el usuario.");
             return View(model);
+        }
+
+        return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> ToggleEnabled(int id, bool enabled)
+    {
+        var result = await _usuarioManager.ToggleUserEnabledAsync(id, enabled);
+        if (!result)
+        {
+            return NotFound();
         }
 
         return RedirectToAction("Index");

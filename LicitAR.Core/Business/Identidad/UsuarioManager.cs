@@ -18,6 +18,7 @@ namespace LicitAR.Core.Business.Identidad
         Task<IEnumerable<UsuarioModel>> GetAllUsersAsync();
         Task<UsuarioModel> GetUserAsync(int userId);
         Task<bool> UpdateUserAsync(UsuarioModel model, int userId);
+        Task<bool> ToggleUserEnabledAsync(int userId, bool enabled);
     }
 
     public class UsuarioManager : IUsuarioManager
@@ -86,6 +87,21 @@ namespace LicitAR.Core.Business.Identidad
             _context.Entry(user).Property(u => u.Cuit).IsModified = true; 
 
             // Guardar los cambios
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ToggleUserEnabledAsync(int userId, bool enabled)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            user.Enabled = enabled;
+
+            _context.Entry(user).Property(u => u.Enabled).IsModified = true;
             await _context.SaveChangesAsync();
             return true;
         }

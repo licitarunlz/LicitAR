@@ -8,11 +8,11 @@ namespace LicitAR.Core.Data.Models
         public int IdUsuario { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string Nombre { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string Apellido { get; set; }
 
         [Required]
@@ -26,6 +26,8 @@ namespace LicitAR.Core.Data.Models
         [StringLength(11, MinimumLength = 11)]
         public string Cuit { get; set; }
 
+        public bool Enabled { get; set; } // Nuevo campo para habilitado/deshabilitado para eliminacion lógica
+
         public string CuitFormateado
         {
             get
@@ -34,7 +36,7 @@ namespace LicitAR.Core.Data.Models
                 {
                     return $"{Cuit.Substring(0, 2)}-{Cuit.Substring(2, 8)}-{Cuit.Substring(10, 1)}";
                 }
-                return Cuit; // Devuelve el CUIT sin formato si no tiene 11 caracteres
+                return Cuit;
             }
         }
     }
