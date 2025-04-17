@@ -8,7 +8,7 @@
 
   <!-- Brand -->
   <div class='app-brand demo @((@ViewData["navbarFull"] != null && Convert.ToBoolean(@ViewData["navbarFull"])) ? "d-xl-none" : "")'>
-    <a asp-controller="Dashboards" asp-action="Index" class="app-brand-link">
+    <a asp-controller="Home" asp-action="Index" class="app-brand-link">
       <span class="app-brand-logo demo">
         @await Html.PartialAsync("../_Partials/_Macros")
       </span>
@@ -26,7 +26,7 @@
     
     <!-- Inicio / Dashboards -->
     <li class='menu-item@( currentPage.EndsWith("/") || currentPage.StartsWith("/Dashboard/") ? " active open" : "")'>
-      <a href="javascript:void(0);" class="menu-link menu-toggle">
+      <a asp-action="Index" asp-controller="Home" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-home-smile"></i>
         <div class="text-truncate" data-i18n="Dashboards">Inicio</div>
       </a>
