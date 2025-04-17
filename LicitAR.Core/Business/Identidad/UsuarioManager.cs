@@ -58,7 +58,8 @@ namespace LicitAR.Core.Business.Identidad
                 Apellido = user.Apellido,
                 Email = user.Email,
                 FechaNacimiento = user.FechaNacimiento,
-                Cuit = user.Cuit
+                Cuit = user.Cuit,
+                Enabled = user.Enabled
             });
         }
         public async Task<bool> UpdateUserAsync(UsuarioModel model, int userId)
