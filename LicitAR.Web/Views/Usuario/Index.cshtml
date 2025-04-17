@@ -16,6 +16,7 @@
                     <th>Email</th>
                     <th>Fecha de Nacimiento</th> 
                     <th>CUIT</th>
+                    <th>Habilitado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -30,16 +31,26 @@
                         <td>@user.FechaNacimiento.ToShortDateString()</td>
                         <td>@user.CuitFormateado</td>
                         <td>
+                            @if (user.Enabled)
+                            {
+                                <span class="badge bg-success">Sí</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">No</span>
+                            }
+                        </td>
+                        <td>
                             <div class="dropdown">
                                 <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
                                     <i class="bx bx-dots-vertical-rounded"></i>
                                 </button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" asp-action="Editar" asp-route-id="@user.IdUsuario">
+                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@user.IdUsuario">
                                         <i class="bx bx-edit-alt me-1"></i> Editar
                                     </a>
-                                    <a class="dropdown-item" href="javascript:void(0);">
-                                        <i class="bx bx-trash me-1"></i> Eliminar
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="confirmToggleEnabled('@user.IdUsuario', @(!user.Enabled))">
+                                        <i class="bx bx-trash me-1"></i> @(user.Enabled ? "Deshabilitar" : "Habilitar")
                                     </a>
                                 </div>
                             </div>
@@ -50,3 +61,18 @@
         </table>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function confirmToggleEnabled(userId, enabled) {
+            const action = enabled ? "habilitar" : "deshabilitar";
+            if (confirm(`¿Desea ${action} este usuario?`)) {
+                const form = document.createElement("form");
+                form.method = "post";
+                form.action = `/Usuario/ToggleEnabled?id=${userId}&enabled=${enabled}`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+}

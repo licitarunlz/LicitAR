@@ -26,14 +26,13 @@ namespace LicitAR.Core.Data.Models
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         [MaxLength(20, ErrorMessage = ErrorMessages.MAXLENGTH)]
         public required string Cuit { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int IdUsuario { get; set; } // autonumérico
+        public int IdUsuario { get; set; } // autonumÃ©rico
 
         public AuditTable Audit { get; set; }
+
+        // Nuevo campo Enabled (eliminacion logica)
+        public bool Enabled { get; set; } = true; // Por defecto, habilitado
     }
-
-
-
-    
-    
 }
