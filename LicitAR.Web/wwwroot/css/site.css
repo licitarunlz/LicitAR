@@ -2,3 +2,17 @@
 .pull-right {
     right:0;
 }
+
+
+.avatar-iniciales {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #5A8DEE; /* color de fondo */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+}

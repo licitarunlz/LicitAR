@@ -74,6 +74,12 @@ public class UsuarioController : Controller
 
 
 
+    public IActionResult MisDatos()
+    {
+        
+        return View();
+    }
+
     public IActionResult GoogleLogin()
     {
         var redirectUrl = Url.Action("ExternalLoginCallback", "Account");
