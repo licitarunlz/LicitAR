@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LicitAR.Core\Licitar.Core.csproj" />
+    <ProjectReference Include="..\LicitAR.FileStorage\LicitAR.FileStorage.csproj" />
   </ItemGroup>
 
   <ItemGroup>

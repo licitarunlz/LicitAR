@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using LicitAR.Core.Data.Models;
 using LicitAR.Web.Business.Identidad.Usuario;
 using LicitAR.Core.Business.Identidad;
+using System.Security.Claims;
+using LicitAR.Web.Helpers;
+using LicitAR.Core.Utils;
 
 namespace LicitAR.Web.Controllers;
 
@@ -74,10 +77,43 @@ public class UsuarioController : Controller
 
 
 
-    public IActionResult MisDatos()
+    public async Task<IActionResult> MiPerfil()
     {
-        
-        return View();
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            int idUsuario = IdentityHelper.GetUserLicitARId(User);
+            
+
+            var user = await _usuarioManager.GetUserAsync(idUsuario); // Método para obtener el usuario por ID
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> EditarMiPerfil(UsuarioModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+        int IdUsuario = IdentityHelper.GetUserLicitARId(User);
+        var result = await _usuarioManager.UpdateUserAsync(model, IdUsuario); // Método para actualizar el usuario
+        if (!result)
+        {
+            ModelState.AddModelError("", "Error al actualizar el usuario.");
+            return View(model);
+        }
+        TempData["SuccessMessage"] = "Perfil actualizado correctamente.";
+        return RedirectToAction("MiPerfil");
     }
 
     public IActionResult GoogleLogin()
@@ -109,18 +145,8 @@ public class UsuarioController : Controller
             return NotFound();
         }
 
-        // Mapear el usuario a UsuarioModel para pasarlo a la vista
-        var usuarioModel = new UsuarioModel
-        {
-            IdUsuario = user.IdUsuario,
-            Nombre = user.Nombre,
-            Apellido = user.Apellido,
-            Email = user.Email,
-            FechaNacimiento = user.FechaNacimiento,
-            Cuit = user.Cuit
-        };
 
-        return View(usuarioModel);
+        return View(user);
     }
 
     [HttpPost]
@@ -131,8 +157,8 @@ public class UsuarioController : Controller
         {
             return View(model);
         }
-
-        var result = await _usuarioManager.UpdateUserAsync(model); // Método para actualizar el usuario
+        int IdUsuario = IdentityHelper.GetUserLicitARId(User);
+        var result = await _usuarioManager.UpdateUserAsync(model, IdUsuario); // Método para actualizar el usuario
         if (!result)
         {
             ModelState.AddModelError("", "Error al actualizar el usuario.");
