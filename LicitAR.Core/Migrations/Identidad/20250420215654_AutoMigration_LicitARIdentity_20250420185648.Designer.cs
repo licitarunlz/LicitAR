@@ -4,16 +4,19 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LicitAR.Core.Migrations
+namespace LicitAR.Core.Migrations.Identidad
 {
     [DbContext(typeof(LicitARIdentityDbContext))]
-    partial class LicitARIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250420215654_AutoMigration_LicitARIdentity_20250420185648")]
+    partial class AutoMigration_LicitARIdentity_20250420185648
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace LicitAR.Core.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LicitAR.Core.Data.Models.Identidad.EmailConfirmationToken", b =>
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Identidad.AspNetUserEmailConfirmationToken", b =>
                 {
                     b.Property<int>("IdToken")
                         .ValueGeneratedOnAdd()
@@ -33,10 +36,8 @@ namespace LicitAR.Core.Migrations
                     b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<Guid>("Token")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -273,11 +274,11 @@ namespace LicitAR.Core.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("LicitAR.Core.Data.Models.Identidad.EmailConfirmationToken", b =>
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Identidad.AspNetUserEmailConfirmationToken", b =>
                 {
                     b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
                         {
-                            b1.Property<int>("EmailConfirmationTokenIdToken")
+                            b1.Property<int>("AspNetUserEmailConfirmationTokenIdToken")
                                 .HasColumnType("int");
 
                             b1.Property<DateTime>("FechaAlta")
@@ -298,12 +299,12 @@ namespace LicitAR.Core.Migrations
                             b1.Property<int?>("IdUsuarioModificacion")
                                 .HasColumnType("int");
 
-                            b1.HasKey("EmailConfirmationTokenIdToken");
+                            b1.HasKey("AspNetUserEmailConfirmationTokenIdToken");
 
                             b1.ToTable("AspNetUserEmailConfirmationTokens");
 
                             b1.WithOwner()
-                                .HasForeignKey("EmailConfirmationTokenIdToken");
+                                .HasForeignKey("AspNetUserEmailConfirmationTokenIdToken");
                         });
 
                     b.Navigation("Audit")

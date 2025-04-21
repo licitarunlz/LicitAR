@@ -17,6 +17,7 @@ builder.Services.AddIdentityRegistrations(builder.Configuration);
 
 builder.Services.AddAppBusinessRegistrations(builder.Configuration);
 
+builder.Services.AddServicesRegistrations(builder.Configuration);
 
 builder.Services.AddFileStorageRegistrations(builder.Configuration);
 

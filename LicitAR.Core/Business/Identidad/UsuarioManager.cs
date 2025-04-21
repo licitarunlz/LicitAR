@@ -10,6 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using LicitAR.Core.Utils;
+using Microsoft.Identity.Client;
+using System.Runtime.CompilerServices;
+using LicitAR.Core.Data.Models.Identidad;
 
 namespace LicitAR.Core.Business.Identidad
 {
@@ -17,8 +20,11 @@ namespace LicitAR.Core.Business.Identidad
     {
         Task<IEnumerable<UsuarioModel>> GetAllUsersAsync();
         Task<UsuarioModel> GetUserAsync(int userId);
+        Task<UsuarioModel?> GetUserByEmailAsync(string email);
         Task<bool> UpdateUserAsync(UsuarioModel model, int userId);
         Task<bool> ToggleUserEnabledAsync(int userId, bool enabled);
+        Task<bool> IsEmailConfirmedAsync(UsuarioModel user);
+        Task<string> GeneratePasswordResetTokenAsync(UsuarioModel user);
     }
 
     public class UsuarioManager : IUsuarioManager
@@ -62,6 +68,27 @@ namespace LicitAR.Core.Business.Identidad
                 Enabled = user.Enabled
             });
         }
+
+        public async Task<UsuarioModel?> GetUserByEmailAsync(string email)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                return null;
+
+
+            return new UsuarioModel
+            {
+                IdUsuario = user.IdUsuario,
+                Nombre = user.Nombre,
+                Apellido = user.Apellido,
+                Email = user.Email,
+                FechaNacimiento = user.FechaNacimiento,
+                Cuit = user.Cuit,
+                Enabled = user.Enabled,
+                EmailConfirmed = user.EmailConfirmed
+            };
+        }
+
         public async Task<bool> UpdateUserAsync(UsuarioModel model, int userId)
         {
             // Buscar el usuario por su ID
@@ -105,6 +132,30 @@ namespace LicitAR.Core.Business.Identidad
             _context.Entry(user).Property(u => u.Enabled).IsModified = true;
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<bool> IsEmailConfirmedAsync(UsuarioModel user)
+        {
+            return user.EmailConfirmed;
+
+
+        }
+        public async Task<bool> ConfirmEmailAsync(string Token,  string Email)
+        {
+            return true;
+        }
+        public async Task<string> GeneratePasswordResetTokenAsync(UsuarioModel user)
+        {
+            try
+            {
+
+            }
+            catch (Exception ex) 
+            {
+                
+            }
+
+            return "";
         }
     }
 }

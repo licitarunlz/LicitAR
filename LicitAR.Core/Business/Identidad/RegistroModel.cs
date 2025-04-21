@@ -43,11 +43,15 @@ namespace LicitAR.Web.Business.Identidad.Usuario
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         [MaxLength(50, ErrorMessage = ErrorMessages.MAXLENGTH)]
+
+        [DataType(DataType.Password)] 
         public required string Password { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         [MaxLength(50, ErrorMessage = ErrorMessages.MAXLENGTH)]
         [Display(Name = "Confirmar Password")]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "Las contraseñas no coinciden.")]
         public required string ConfirmaPassword { get; set; }
 
     }

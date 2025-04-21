@@ -4,16 +4,19 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LicitAR.Core.Migrations
+namespace LicitAR.Core.Migrations.Identidad
 {
     [DbContext(typeof(LicitARIdentityDbContext))]
-    partial class LicitARIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250420220331_AutoMigration_LicitARIdentity_20250420190325")]
+    partial class AutoMigration_LicitARIdentity_20250420190325
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,10 +36,8 @@ namespace LicitAR.Core.Migrations
                     b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<Guid>("Token")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
                         .IsRequired()

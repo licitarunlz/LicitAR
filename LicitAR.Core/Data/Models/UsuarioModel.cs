@@ -28,6 +28,8 @@ namespace LicitAR.Core.Data.Models
 
         public bool Enabled { get; set; } // Nuevo campo para habilitado/deshabilitado para eliminacion lógica
 
+        public bool EmailConfirmed { get; set; }
+
         public string CuitFormateado
         {
             get

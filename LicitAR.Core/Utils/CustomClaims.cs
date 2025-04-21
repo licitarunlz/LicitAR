@@ -1,5 +1,5 @@
 ﻿using LicitAR.Core.Data;
-using LicitAR.Core.Data.Models;
+using LicitAR.Core.Data.Models.Identidad;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System;
@@ -29,6 +29,10 @@ namespace LicitAR.Core.Utils
             var identity = await base.GenerateClaimsAsync(user);
             var userFromDdbb = _context.Users.FirstOrDefault(x => x.Id == user.Id);
             identity.AddClaim(new Claim("LicitARId", userFromDdbb.IdUsuario.ToString())); // acá va tu lógica
+
+
+
+
             return identity;
         }
     }

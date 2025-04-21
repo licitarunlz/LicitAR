@@ -1,18 +1,28 @@
 ﻿@{
+
+    Layout = "_BlankLayout";
+    ViewData["Title"] = "Registro de Usuario - OK";
+}
+
+@{
     var successMessage = TempData["SuccessMessage"] as string;
     TempData["SuccessMessage"] = null;
 }
-<div class="row">
 
-    <div class="col-xl-8 offset-xl-2">
-        <div class="card">
-            <div class="card-body">
+<div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+            <div class="card px-sm-6 px-0">
+                <div class="card-body">
+                    <div class="app-brand justify-content-center">
+                        <a href="/" class="app-brand-link gap-2">
+                            <img src="/images/Logo_LicitAR_rectangle_small.png" alt="Logo LicitAR" class="app-brand-logo" style="height: 50px; width: 85px;" />
+                            <span class="app-brand-text demo text-heading fw-bold"></span>
+                        </a>
+                    </div>
 
-                <div class="text-end mb-3">
-                    <button type="button" id="btnEditar" class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-pencil-square"></i> Editar
-                    </button>
-                </div> 
+                    <h4 class="mb-1 fw-bold">Registro de nuevo usuario - Ok</h4> 
+
                     @if (!string.IsNullOrEmpty(successMessage))
                     {
                         <div class="alert alert-success alert-dismissible fade show py-6" role="alert">
@@ -20,10 +30,11 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     }
+                </div>
+
             </div>
 
         </div>
 
     </div>
-
-</div> 
+</div>

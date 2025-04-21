@@ -1,0 +1,61 @@
+﻿@{
+
+    Layout = "_BlankLayout";
+    ViewData["Title"] = "Confirmar Usuario";
+}
+
+@{
+    var successMessage = TempData["SuccessMessage"] as string;
+    TempData["SuccessMessage"] = null;
+
+
+    var token = TempData["Token"] as string;
+    TempData["Token"] = null;
+
+
+    var userEmail = TempData["Email"] as string;
+    TempData["Email"] = null;
+}
+
+<div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+            <div class="card px-sm-6 px-0">
+                <div class="card-body">
+                    <div class="app-brand justify-content-center">
+                        <a href="/" class="app-brand-link gap-2">
+                            <img src="/images/Logo_LicitAR_rectangle_small.png" alt="Logo LicitAR" class="app-brand-logo" style="height: 50px; width: 85px;" />
+                            <span class="app-brand-text demo text-heading fw-bold"></span>
+                        </a>
+                    </div>
+                    <h4 class="mb-1">Confirmar Usuario </h4>
+
+
+                    <form id="formAuthentication" class="mb-6" asp-action="ConfirmarUsuario" method&="post">
+                        <input type="hidden" id="token" name="token" value="@token" />
+
+                        <div class="mb-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="text" class="form-control" id="email" name="email" required placeholder="Email" value="@userEmail" autofocus>
+                        </div>
+                        <div class="mb-6 form-password-toggle">
+                            <label class="form-label" for="password">Password</label>
+                            <div class="input-group input-group-merge">
+                                <input type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" required />
+                                <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                            </div>
+                        </div>
+                       
+                        <div class="mb-6">
+                            <button class="btn btn-primary d-grid w-100" type="submit">Iniciar Sesión</button>
+                        </div>
+                    </form>
+                     
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>

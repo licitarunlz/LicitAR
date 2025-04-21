@@ -1,5 +1,4 @@
 ﻿using LicitAR.Core.Business.Identidad;
-using LicitAR.Core.Data.Models;
 using LicitAR.Core.Data;
 using LicitAR.Core.Utils;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LicitAR.Core.Data.Models.Identidad;
 
 namespace LicitAR.Core.DI
 {
