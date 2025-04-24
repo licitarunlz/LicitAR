@@ -3,11 +3,6 @@ using LicitAR.Core.Data.Models;
 using LicitAR.Core.Utils;
 using LicitAR.Web.Business.Identidad.Usuario;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LicitAR.Core.Business.Identidad
 {
@@ -48,15 +43,12 @@ namespace LicitAR.Core.Business.Identidad
                 return user;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await transaction.RollbackAsync();
                 throw;
 
             }
-            return null;
-
-
         }
     }
 }

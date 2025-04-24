@@ -1,0 +1,25 @@
+﻿
+using Microsoft.AspNetCore.Identity;
+
+namespace LicitAR.Core.Business.Identidad
+{
+    public interface IRolManager
+    {
+        Task<IEnumerable<IdentityRole>> GetAllRolesAsync();
+    }
+
+    public class RolManager : IRolManager
+    {
+        private readonly RoleManager<IdentityRole> _roleManager;
+
+        public RolManager(RoleManager<IdentityRole> roleManager)
+        {
+            _roleManager = roleManager;
+        }
+
+        public async Task<IEnumerable<IdentityRole>> GetAllRolesAsync()
+        {
+            return await Task.FromResult(_roleManager.Roles);
+        }
+    }
+}

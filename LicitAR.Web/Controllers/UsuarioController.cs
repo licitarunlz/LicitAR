@@ -16,14 +16,16 @@ public class UsuarioController : Controller
     private readonly IRegistroManager _registroManager;
     private readonly SignInManager<LicitArUser> _signInManager;
     private readonly IUsuarioManager _usuarioManager;
+    private readonly IRolManager _rolManager;
 
     public UsuarioController(SignInManager<LicitArUser> signInManager, IRegistroManager registroManager,
-    ILogger<UsuarioController> logger, IUsuarioManager usuarioManager)
+    ILogger<UsuarioController> logger, IUsuarioManager usuarioManager, IRolManager rolManager)
     {
         _logger = logger;
         _registroManager = registroManager;
         _signInManager = signInManager;
         _usuarioManager = usuarioManager;
+        _rolManager = rolManager;
     }
 
     [Authorize]
@@ -32,6 +34,14 @@ public class UsuarioController : Controller
     {
         var users = await _usuarioManager.GetAllUsersAsync(); // Asegúrate de que este método devuelva datos válidos
         return View(users);
+    }
+
+    [Authorize]
+    [AuthorizeClaim("Roles.Ver")]
+    public async Task<IActionResult> Roles()
+    {
+        var roles = await _rolManager.GetAllRolesAsync();
+        return View(roles);
     }
 
     [AllowAnonymous]
