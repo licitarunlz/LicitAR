@@ -2,10 +2,40 @@
 
 @{
     ViewData["Title"] = "Usuarios";
+    var query = Context.Request.Query;
+    var habilitadoOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Todos", Value = "" },
+        new SelectListItem { Text = "Habilitados", Value = "true", Selected = query["habilitado"] == "true" },
+        new SelectListItem { Text = "Deshabilitados", Value = "false", Selected = query["habilitado"] == "false" }
+    };
 }
 
 <div class="card">
-    <!-- <h5 class="card-header">Usuarios</h5>-->
+    <div class="card-body">
+        <form method="get" asp-action="Index">
+            <div class="row mb-3">
+                <div class="col-md-2">
+                    <input type="text" name="nombre" class="form-control" placeholder="Nombre" value="@query["nombre"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="apellido" class="form-control" placeholder="Apellido" value="@query["apellido"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="email" class="form-control" placeholder="Email" value="@query["email"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="cuit" class="form-control" placeholder="CUIT" value="@query["cuit"]" />
+                </div>
+                <div class="col-md-2">
+                    <select name="habilitado" class="form-select" asp-items="habilitadoOptions"></select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
     <div class="table-responsive text-nowrap">
         <table class="table">
             <thead>
@@ -14,7 +44,7 @@
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Email</th>
-                    <th>Fecha de Nacimiento</th> 
+                    <th>Fecha de Nacimiento</th>
                     <th>CUIT</th>
                     <th>Habilitado</th>
                     <th>Acciones</th>
@@ -33,11 +63,11 @@
                         <td>
                             @if (user.Enabled)
                             {
-                                <span class="badge bg-success">Sí</span>
+                                <span class="badge bg-label-success">Sí</span>
                             }
                             else
                             {
-                                <span class="badge bg-danger">No</span>
+                                <span class="badge bg-label-danger">No</span>
                             }
                         </td>
                         <td>

@@ -30,9 +30,31 @@ public class UsuarioController : Controller
 
     [Authorize]
     [AuthorizeClaim("Usuarios.Ver")] 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? nombre, string? apellido, string? email, string? cuit, bool? habilitado)
     {
-        var users = await _usuarioManager.GetAllUsersAsync(); // Asegúrate de que este método devuelva datos válidos
+        var users = await _usuarioManager.GetAllUsersAsync();
+
+        if (!string.IsNullOrEmpty(nombre))
+        {
+            users = users.Where(u => u.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        if (!string.IsNullOrEmpty(apellido))
+        {
+            users = users.Where(u => u.Apellido.Contains(apellido, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        if (!string.IsNullOrEmpty(email))
+        {
+            users = users.Where(u => u.Email.Contains(email, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        if (!string.IsNullOrEmpty(cuit))
+        {
+            users = users.Where(u => u.CuitFormateado.Contains(cuit, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        if (habilitado.HasValue)
+        {
+            users = users.Where(u => u.Enabled == habilitado.Value).ToList();
+        }
+
         return View(users);
     }
 
