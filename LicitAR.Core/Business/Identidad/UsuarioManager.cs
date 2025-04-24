@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using LicitAR.Core.Utils;
+using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 
 namespace LicitAR.Core.Business.Identidad
 {
@@ -17,6 +19,10 @@ namespace LicitAR.Core.Business.Identidad
     {
         Task<IEnumerable<UsuarioModel>> GetAllUsersAsync();
         Task<UsuarioModel> GetUserAsync(int userId);
+        Task<LicitArUser> GetUserByEmailAsync(string email);
+        Task<IList<string>> GetRolesAsync(LicitArUser user);
+        Task<IList<Claim>> GetRoleClaimsAsync(string role);
+
         Task<bool> UpdateUserAsync(UsuarioModel model, int userId);
         Task<bool> ToggleUserEnabledAsync(int userId, bool enabled);
     }
@@ -25,11 +31,13 @@ namespace LicitAR.Core.Business.Identidad
     {
         private readonly LicitARIdentityDbContext _context;
         private readonly UserManager<LicitArUser> _userManager;
+        private readonly ILogger<UsuarioManager> _logger;
 
-        public UsuarioManager(UserManager<LicitArUser> userManager, LicitARIdentityDbContext context)
+        public UsuarioManager(UserManager<LicitArUser> userManager, LicitARIdentityDbContext context, ILogger<UsuarioManager> logger)
         {
             _context = context;
             _userManager = userManager;
+            _logger = logger;
         }
 
         public async Task<UsuarioModel> GetUserAsync(int userId)
@@ -106,6 +114,40 @@ namespace LicitAR.Core.Business.Identidad
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<LicitArUser> GetUserByEmailAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<IList<string>> GetRolesAsync(LicitArUser user)
+        {
+            return await _userManager.GetRolesAsync(user);
+        }
+
+        public async Task<IList<Claim>> GetRoleClaimsAsync(string role)
+        {
+            var roleEntity = await _context.Roles.FirstOrDefaultAsync(r => r.Name == role);
+            if (roleEntity == null)
+            {
+                _logger.LogWarning($"Role not found: {role}");
+                return new List<Claim>();
+            }
+
+            var roleClaims = await _context.RoleClaims
+                .Where(rc => rc.RoleId == roleEntity.Id)
+                .Select(rc => new Claim(rc.ClaimType, rc.ClaimValue))
+                .ToListAsync();
+
+            /* Log role claims for debugging
+            foreach (var claim in roleClaims)
+            {
+                _logger.LogInformation($"Role claim for role {role}: {claim.Type} = {claim.Value}");
+            }*/
+
+            return roleClaims;
+        }
+
     }
 }
 

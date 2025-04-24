@@ -1,0 +1,23 @@
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "No Autorizado";
+}
+
+<div class="container-xxl">
+  <div class="authentication-wrapper authentication-basic container-p-y">
+    <div class="authentication-inner">
+      <div class="card px-sm-6 px-0">
+        <div class="card-body text-center">
+          <div class="mb-4">
+            <i class="bx bx-block text-danger" style="font-size: 4rem;"></i>
+          </div>
+          <h4 class="mb-2">Acceso Denegado</h4>
+          <p class="mb-4">No tienes permiso para acceder a esta página.</p>
+          <p>Por favor, contacta al administrador si crees que esto es un error.</p>
+          <a href="/" class="btn btn-primary mt-3">Volver al Inicio</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

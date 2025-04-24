@@ -1,6 +1,7 @@
 @{
-    var nombreUsuario = User.Identity.Name;
-    var iniciales = string.Join("", nombreUsuario.Split(' ').Take(2).Select(n => n[0])).ToUpper();
+    var userName = User?.Identity?.Name ?? "Guest";
+    var userEmail = User?.FindFirst("email")?.Value ?? "No Email";
+    var iniciales = string.Join("", userName.Split(' ').Take(2).Select(n => n[0])).ToUpper();
 }
 
 
@@ -57,7 +58,7 @@
                 </div>
               </div>
               <div class="flex-grow-1">
-                                <h6 class="mb-0">@nombreUsuario</h6>
+                                <h6 class="mb-0">@userName</h6>
                 <small class="text-muted">Admin</small>
               </div>
             </div>

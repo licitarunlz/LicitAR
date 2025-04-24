@@ -6,15 +6,15 @@ namespace LicitAR.Core.Utils.DataAnnotations
 
     public class MaxTodayAttribute : ValidationAttribute
     {
-        public override bool IsValid(object value)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             if (value == null)
-                return true;
+                return ValidationResult.Success;
 
-            if (value is DateTime dateValue)
-                return dateValue.Date <= DateTime.Today;
+            if (value is DateTime dateValue && dateValue.Date <= DateTime.Today)
+                return ValidationResult.Success;
 
-            return false;
+            return new ValidationResult(FormatErrorMessage(validationContext.DisplayName));
         }
 
         public override string FormatErrorMessage(string name)

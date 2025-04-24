@@ -12,13 +12,10 @@ using LicitAR.FileStorage.DI;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddContextRegistrations(builder.Configuration);
-
 builder.Services.AddIdentityRegistrations(builder.Configuration);
-
 builder.Services.AddAppBusinessRegistrations(builder.Configuration);
-
-
 builder.Services.AddFileStorageRegistrations(builder.Configuration);
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<LicitArUser>, CustomClaimsPrincipalFactory>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews(options =>
@@ -27,7 +24,6 @@ builder.Services.AddControllersWithViews(options =>
 });
  
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -42,8 +38,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
- 
- 
+  
 app.MapStaticAssets();
 
 app.MapControllerRoute(
@@ -51,5 +46,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
  
-
 app.Run();

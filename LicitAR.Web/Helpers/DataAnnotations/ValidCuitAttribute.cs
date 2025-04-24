@@ -11,14 +11,14 @@ namespace LicitAR.Core.Utils.DataAnnotations
 
     public class ValidCuitAttribute : ValidationAttribute, IClientModelValidator
     {
-        public override bool IsValid(object value)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            if (value == null) return true;
+            if (value == null) return ValidationResult.Success;
 
-            string cuit = value.ToString().Replace("-", "").Trim();
+            string cuit = value.ToString()?.Replace("-", "").Trim() ?? string.Empty;
 
             if (cuit.Length != 11 || !long.TryParse(cuit, out _))
-                return false;
+                return new ValidationResult(ErrorMessage ?? "El CUIT no es válido.");
 
             int[] mult = { 5, 4, 3, 2, 7, 6, 5, 4, 3, 2 };
             int total = 0;
@@ -31,7 +31,9 @@ namespace LicitAR.Core.Utils.DataAnnotations
             int mod = total % 11;
             int digitoVerificador = mod == 0 ? 0 : mod == 1 ? 9 : 11 - mod;
 
-            return digitoVerificador == int.Parse(cuit[10].ToString());
+            return digitoVerificador == int.Parse(cuit[10].ToString()) 
+                ? ValidationResult.Success 
+                : new ValidationResult(ErrorMessage ?? "El CUIT no es válido.");
         }
 
         public void AddValidation(ClientModelValidationContext context)
