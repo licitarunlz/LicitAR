@@ -30,7 +30,7 @@ public class UsuarioController : Controller
 
     [Authorize]
     [AuthorizeClaim("Usuarios.Ver")] 
-    public async Task<IActionResult> Index(string? nombre, string? apellido, string? email, string? cuit, bool? habilitado)
+    public async Task<IActionResult> Index(string? nombre, string? apellido, string? email, string? cuit, bool? habilitado, int page = 1, int pageSize = 10)
     {
         var users = await _usuarioManager.GetAllUsersAsync();
 
@@ -55,7 +55,16 @@ public class UsuarioController : Controller
             users = users.Where(u => u.Enabled == habilitado.Value).ToList();
         }
 
-        return View(users);
+        // Order users by Apellido
+        users = users.OrderBy(u => u.Apellido).ToList();
+
+        var totalUsers = users.ToList().Count;
+        var paginatedUsers = users.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
+
+        return View(paginatedUsers);
     }
 
     [Authorize]

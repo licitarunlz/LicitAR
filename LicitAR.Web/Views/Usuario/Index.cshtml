@@ -90,6 +90,30 @@
             </tbody>
         </table>
     </div>
+
+<div class="card-footer d-flex justify-content-center">
+    <nav>
+        <ul class="pagination pagination-rounded mb-0">
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-pageSize="10">&laquo;</a>
+                </li>
+            }
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="10">@i</a>
+                </li>
+            }
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-pageSize="10">&raquo;</a>
+                </li>
+            }
+        </ul>
+    </nav>
 </div>
 
 @section PageScripts {
