@@ -18,7 +18,7 @@ namespace LicitAR.Core.DI
 
             services.AddScoped<IRegistroManager, RegistroManager>();
             services.AddScoped<IUsuarioManager, UsuarioManager>();
-            services.AddScoped<IEmailConfirmationManager, EmailConfirmationManager>();
+           // services.AddScoped<IEmailConfirmationManager, EmailConfirmationManager>();
             
 
 

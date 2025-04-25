@@ -27,6 +27,13 @@ namespace LicitAR.Core.Data
             builder.Entity<LicitArUser>().OwnsOne(p => p.Audit); 
             builder.Entity<EmailConfirmationToken>().OwnsOne(p=> p.Audit);
 
+            // Ignorar escritura de IdUsuario después del insert
+            builder.Entity<LicitArUser>()
+                .Property(u => u.IdUsuario)
+                .ValueGeneratedOnAdd()
+                .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore);
+
+
             base.OnModelCreating(builder);
         }
 

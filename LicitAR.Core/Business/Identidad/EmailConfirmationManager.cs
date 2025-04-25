@@ -12,14 +12,14 @@ using LicitAR.Core.Utils;
 
 namespace LicitAR.Core.Business.Identidad
 {
-    public interface IEmailConfirmationManager
+    public interface IEmailConfirmationManager2
     {
         Task<EmailConfirmationToken> CreateTokenAsync(LicitArUser licitArUser);
         Task<EmailConfirmationToken> GetTokenByTokenAsync(string token);
         Task<bool> ConfirmarTokenAsync(string Token, string usuario);
     }
 
-    public class EmailConfirmationManager : IEmailConfirmationManager
+    public class EmailConfirmationManager : IEmailConfirmationManager2
     {
         private LicitARIdentityDbContext _context;
 

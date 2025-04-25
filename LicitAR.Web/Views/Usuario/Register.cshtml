@@ -19,7 +19,15 @@
 
                     <h4 class="mb-1 fw-bold">Registro de nuevo usuario</h4>
                     <h5 class=" py-3 "><i class="fas fa-user-plus "></i> Información Personal</h5>
-
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+                        </div>
+                    }
                     @using (Html.BeginForm("Register", "Usuario", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate", @id = "form-licitar" }))
                     {
                         @Html.AntiForgeryToken()
@@ -92,40 +100,6 @@
 
     <script>
 
-     /*   $(function () {
-            const $form = $("#form-licitar");
-
-            $form.on("click", function () {
-                if (!$form.valid()) {
-                    return false; // Previene envío si no es válido
-                }
-
-                // Mostrar overlay y deshabilitar controles
-                $form.find("input, button, select, textarea").prop("disabled", true);
-                $("#overlay").show();
-
-                // Permite que el submit nativo continúe (no hay preventDefault)
-                return true;
-            });
-        });*/
-
-          /*      $(function () {
-            const $form = $("#form-licitar");
-
-            $form.on("submit", function (e) {
-                if (!$form.valid()) {
-                    // Si el formulario no es válido, el navegador se encarga
-                    return false;
-                }
-
-                // Si es válido, mostramos spinner y dejamos que siga el submit natural
-                $form.find("input, button, select, textarea").prop("disabled", true);
-                $("#overlay").show();
-
-                // Dejamos que se envíe normalmente (sin e.preventDefault())
-                return true;
-            });
-        });*/
 
     </script>
 

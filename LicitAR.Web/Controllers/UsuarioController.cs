@@ -12,6 +12,8 @@ using LicitAR.Core.Utils;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using LicitAR.Web.Models.Usuario;
 using LicitAR.Core.Data.Models.Identidad;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace LicitAR.Web.Controllers;
 
@@ -21,16 +23,14 @@ public class UsuarioController : Controller
     private readonly IRegistroManager _registroManager;
     private readonly SignInManager<LicitArUser> _signInManager;
     private readonly IUsuarioManager _usuarioManager;
-    private readonly IEmailConfirmationManager _emailConfirmationManager;
 
-    public UsuarioController(SignInManager<LicitArUser> signInManager, IRegistroManager registroManager, IEmailConfirmationManager emailConfirmationManager,
+    public UsuarioController(SignInManager<LicitArUser> signInManager, IRegistroManager registroManager,
     ILogger<UsuarioController> logger, IUsuarioManager usuarioManager)
     {
         _logger = logger;
         _registroManager = registroManager;
         _signInManager = signInManager;
         _usuarioManager = usuarioManager;
-        _emailConfirmationManager = emailConfirmationManager;
     }
 
     [Authorize]
@@ -71,18 +71,23 @@ public class UsuarioController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegistroModel usuario)
     {
-        if (ModelState.IsValid)
+        try
         {
-            LicitArUser user = await _registroManager.RegistrarAsync(usuario, 1);
-            if (user != null)
+            if (ModelState.IsValid)
             {
-                return RedirectToAction("RegisterOk", "Usuario");
+                LicitArUser user = await _registroManager.RegistrarAsync(usuario, 1);
+                if (user != null)
+                {
+                    return RedirectToAction("RegisterOk", "Usuario");
 
-                /*await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Home");*/
+                }
             }
+
+            ModelState.AddModelError("", "Error en el registro");
+        }catch(Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
         }
-        ModelState.AddModelError("", "Error en el registro");
         return View(usuario);
     }
 
@@ -93,6 +98,40 @@ public class UsuarioController : Controller
         TempData["MensajeCarga"] = "Procesando... Por favor espere.";
         return View();
     }
+
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ConfirmarUsuario(string token, string userEmail)
+    {
+        TempData["Token"] = token;
+        TempData["Email"] = userEmail;
+        return View();
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<IActionResult> ConfirmarUsuario(string token, string email, string password)
+    {
+        var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
+        if (result.Succeeded)
+        {
+            string decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+
+            var confirmarUsuario = await _usuarioManager.ConfirmEmailAsync(decodedToken, email);
+
+
+
+            if (confirmarUsuario)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        ModelState.AddModelError("", "Login incorrecto");
+        return View();
+    }
+
 
 
     [HttpGet]
@@ -110,20 +149,21 @@ public class UsuarioController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-         var user = await _usuarioManager.GetUserByEmailAsync(model.Email);
-         if (user == null || !(await _usuarioManager.IsEmailConfirmedAsync(user)))
-         {
-             // Por seguridad, no revelamos si el usuario existe o si está confirmado
-             return RedirectToAction("ForgotPasswordConfirmation");
-         }
+        var user = await _usuarioManager.GetUserByEmailAsync(model.Email);
+        if (user == null || !(await _usuarioManager.IsEmailConfirmedAsync(user)))
+        {
+            // Por seguridad, no revelamos si el usuario existe o si está confirmado
+            return RedirectToAction("ForgotPasswordConfirmation");
+        }
+        var result = await _registroManager.BlanquearPasswordAsync(model.Email);
 
-         var token = await _usuarioManager.GeneratePasswordResetTokenAsync(user);
-         var callbackUrl = Url.Action("ResetPassword", "Account", new { token, email = model.Email }, Request.Scheme);
+        if (result != null)
+        {
+            TempData["SuccessMessage"] = "Se realizó el blanqueo de la contraseña, se envió un link a su email";
 
-         // Enviás el mail (con SendGrid o SMTP o lo que uses)
-        /* await _emailSender.SendEmailAsync(model.Email, "Resetear contraseña",
-             $"Hacé click <a href='{callbackUrl}'>acá</a> para resetear tu contraseña.");
-        */
+        }
+
+
         return RedirectToAction("ForgotPasswordOk");
     }
 
@@ -134,40 +174,10 @@ public class UsuarioController : Controller
         return View();
     }
 
-    [HttpGet]
-    [AllowAnonymous]
-    public IActionResult ConfirmarUsuario(string token, string userEmail)
-    {
-        TempData["Token"] = token;
-        TempData["Email"] = userEmail;
-        return View();
-    }
-    [AllowAnonymous]
-    [HttpPost]
-    public async Task<IActionResult> ConfirmarUsuario(string token, string email, string password)
-    {
-        var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
-        if (result.Succeeded)
-        {
 
-            string usuario = IdentityHelper.GetUserLicitARGuid(User);
-
-            bool confirmarUsuario = await _emailConfirmationManager.ConfirmarTokenAsync(token, usuario);
-
-           // var token = await _emailConfirmationManager.GetTokenByToken(token);
-            
-            if (confirmarUsuario)
-            {
-
-                return RedirectToAction("Index", "Home");
-            }
-        }
-
-        ModelState.AddModelError("", "Login incorrecto");
-        return View();
-    }
 
     [HttpGet]
+    [AllowAnonymous]
     public IActionResult ResetPassword(string token, string email)
     {
         if (token == null || email == null)
@@ -177,25 +187,32 @@ public class UsuarioController : Controller
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
     {
         if (!ModelState.IsValid)
             return View(model);
 
-     /*   var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null)
-            return RedirectToAction("ResetPasswordConfirmation");
+        var user = await _registroManager.ResetPasswordAsync(model.Token, model.Email, model.Password);
 
-        var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
-        if (result.Succeeded)
-            return RedirectToAction("ResetPasswordConfirmation");
+        if (user != null)
+        {
+            TempData["SuccessMessage"] = "Se realizó el blanqueo de la contraseña de forma exitosa, por favor click en el siguiente link para iniciar sesión";
 
-        foreach (var error in result.Errors)
-            ModelState.AddModelError("", error.Description);
-     */
+            return RedirectToAction("ResetPasswordOk");
+        }
+
         return View(model);
     }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ResetPasswordOk()
+    {
+        return View();
+    }
+
 
     public async Task<IActionResult> MiPerfil()
     {

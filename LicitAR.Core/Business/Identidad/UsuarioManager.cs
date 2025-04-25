@@ -24,7 +24,7 @@ namespace LicitAR.Core.Business.Identidad
         Task<bool> UpdateUserAsync(UsuarioModel model, int userId);
         Task<bool> ToggleUserEnabledAsync(int userId, bool enabled);
         Task<bool> IsEmailConfirmedAsync(UsuarioModel user);
-        Task<string> GeneratePasswordResetTokenAsync(UsuarioModel user);
+        Task<bool> ConfirmEmailAsync(string Token, string Email);
     }
 
     public class UsuarioManager : IUsuarioManager
@@ -32,7 +32,7 @@ namespace LicitAR.Core.Business.Identidad
         private readonly LicitARIdentityDbContext _context;
         private readonly UserManager<LicitArUser> _userManager;
 
-        public UsuarioManager(UserManager<LicitArUser> userManager, LicitARIdentityDbContext context)
+        public UsuarioManager(UserManager<LicitArUser> userManager,  LicitARIdentityDbContext context)
         {
             _context = context;
             _userManager = userManager;
@@ -142,22 +142,17 @@ namespace LicitAR.Core.Business.Identidad
         }
         public async Task<bool> ConfirmEmailAsync(string Token,  string Email)
         {
-            return true;
-        }
-        public async Task<string> GeneratePasswordResetTokenAsync(UsuarioModel user)
-        {
-            try
-            {
+            LicitArUser user = await _context.Users.FirstOrDefaultAsync(x => x.Email == Email); // await _userManager.FindByEmailAsync(Email);
 
-            }
-            catch (Exception ex) 
-            {
-                
-            }
 
-            return "";
+            var result = await _userManager.ConfirmEmailAsync(user, Token);
+
+           /* if (result.Succeeded) 
+                await _context.SaveChangesAsync();
+           */
+            return result.Succeeded;
         }
-    }
+     }
 }
 
 
