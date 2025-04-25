@@ -21,11 +21,9 @@ namespace LicitAR.Core.Data
         }
 
         /*Identificacion*/
-        public DbSet<EmailConfirmationToken> AspNetUserEmailConfirmationTokens { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<LicitArUser>().OwnsOne(p => p.Audit); 
-            builder.Entity<EmailConfirmationToken>().OwnsOne(p=> p.Audit);
 
             // Ignorar escritura de IdUsuario después del insert
             builder.Entity<LicitArUser>()

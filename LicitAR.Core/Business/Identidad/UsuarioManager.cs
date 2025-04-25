@@ -19,12 +19,12 @@ namespace LicitAR.Core.Business.Identidad
     public interface IUsuarioManager
     {
         Task<IEnumerable<UsuarioModel>> GetAllUsersAsync();
-        Task<UsuarioModel> GetUserAsync(int userId);
+        Task<UsuarioModel?> GetUserAsync(int userId);
         Task<UsuarioModel?> GetUserByEmailAsync(string email);
         Task<bool> UpdateUserAsync(UsuarioModel model, int userId);
         Task<bool> ToggleUserEnabledAsync(int userId, bool enabled);
-        Task<bool> IsEmailConfirmedAsync(UsuarioModel user);
         Task<bool> ConfirmEmailAsync(string Token, string Email);
+        bool IsEmailConfirmed(UsuarioModel user);
     }
 
     public class UsuarioManager : IUsuarioManager
@@ -38,16 +38,18 @@ namespace LicitAR.Core.Business.Identidad
             _userManager = userManager;
         }
 
-        public async Task<UsuarioModel> GetUserAsync(int userId)
+        public async Task<UsuarioModel?> GetUserAsync(int userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
+            if (user == null)
+                return null;
 
             return new UsuarioModel
             {
                 IdUsuario = user.IdUsuario,
                 Nombre = user.Nombre,
                 Apellido = user.Apellido,
-                Email = user.Email,
+                Email = user.Email ?? "",
                 FechaNacimiento = user.FechaNacimiento,
                 Cuit = user.Cuit
             };
@@ -56,13 +58,13 @@ namespace LicitAR.Core.Business.Identidad
 
         public async Task<IEnumerable<UsuarioModel>> GetAllUsersAsync()
         {
-            var users = _userManager.Users.ToList();
+            var users = await _userManager.Users.ToListAsync();
             return users.Select(user => new UsuarioModel
             {
                 IdUsuario = user.IdUsuario,
                 Nombre = user.Nombre,
                 Apellido = user.Apellido,
-                Email = user.Email,
+                Email = user.Email ?? "",
                 FechaNacimiento = user.FechaNacimiento,
                 Cuit = user.Cuit,
                 Enabled = user.Enabled
@@ -81,7 +83,7 @@ namespace LicitAR.Core.Business.Identidad
                 IdUsuario = user.IdUsuario,
                 Nombre = user.Nombre,
                 Apellido = user.Apellido,
-                Email = user.Email,
+                Email = user.Email ?? "",
                 FechaNacimiento = user.FechaNacimiento,
                 Cuit = user.Cuit,
                 Enabled = user.Enabled,
@@ -134,7 +136,7 @@ namespace LicitAR.Core.Business.Identidad
             return true;
         }
 
-        public async Task<bool> IsEmailConfirmedAsync(UsuarioModel user)
+        public bool IsEmailConfirmed(UsuarioModel user)
         {
             return user.EmailConfirmed;
 
@@ -142,8 +144,10 @@ namespace LicitAR.Core.Business.Identidad
         }
         public async Task<bool> ConfirmEmailAsync(string Token,  string Email)
         {
-            LicitArUser user = await _context.Users.FirstOrDefaultAsync(x => x.Email == Email); // await _userManager.FindByEmailAsync(Email);
+            LicitArUser? user = await _context.Users.FirstOrDefaultAsync(x => x.Email == Email); // await _userManager.FindByEmailAsync(Email);
 
+            if (user == null)
+                return false;
 
             var result = await _userManager.ConfirmEmailAsync(user, Token);
 

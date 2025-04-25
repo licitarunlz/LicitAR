@@ -19,9 +19,9 @@ namespace LicitAR.Core.Business.Identidad
     public interface IRegistroManager
     {
         Task<LicitArUser> RegistrarAsync(RegistroModel usuario, int idUsuario);
-         
-        Task<LicitArUser> BlanquearPasswordAsync(string email);
-        Task<LicitArUser> ResetPasswordAsync(string token, string email, string password);
+
+        Task<LicitArUser?> BlanquearPasswordAsync(string email);
+        Task<LicitArUser?> ResetPasswordAsync(string token, string email, string password);
     }
 
     public class RegistroManager : IRegistroManager
@@ -29,23 +29,23 @@ namespace LicitAR.Core.Business.Identidad
         private readonly LicitARIdentityDbContext _context;
         private readonly ParametrosDbContext _parametrosDbContext;
         private readonly UserManager<LicitArUser> _userManager;
-        private readonly IEmailSender _emailSender; 
+        private readonly IEmailSender _emailSender;
 
-        public RegistroManager(UserManager<LicitArUser> userManager,   ParametrosDbContext parametrosDbContext, IEmailSender emailSender, LicitARIdentityDbContext context)
+        public RegistroManager(UserManager<LicitArUser> userManager, ParametrosDbContext parametrosDbContext, IEmailSender emailSender, LicitARIdentityDbContext context)
         {
             _context = context;
             _parametrosDbContext = parametrosDbContext;
             _userManager = userManager;
-            _emailSender = emailSender; 
+            _emailSender = emailSender;
         }
 
-       
+
 
         public async Task<LicitArUser> RegistrarAsync(RegistroModel usuario, int IdUsuario)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
-            LicitArUser user = null;
-            string token = null;
+            LicitArUser? user = null;
+            string? token = null;
             bool success = false;
             try
             {
@@ -61,7 +61,7 @@ namespace LicitAR.Core.Business.Identidad
                 user.Audit = AuditHelper.GetCreationData(IdUsuario);
 
                 var result = await _userManager.CreateAsync(user, usuario.Password);
-                 
+
 
                 token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
@@ -71,7 +71,7 @@ namespace LicitAR.Core.Business.Identidad
                 success = true;
 
             }
-            catch (Exception ex)
+            catch
             {
                 await transaction.RollbackAsync();
                 throw;
@@ -81,43 +81,44 @@ namespace LicitAR.Core.Business.Identidad
             {
                 if (success && token != null && user != null)
                 {
-                    var url = _parametrosDbContext.Parametria.FirstOrDefault(x => x.Clave.ToLower() == "urlaplicacion").Valor;
-                   
+                    var url = _parametrosDbContext.Parametria.FirstOrDefault(x => x.Clave.ToLower() == "urlaplicacion")?.Valor;
+
                     string encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
                     var callbackUrl = url + "/Usuario/ConfirmarUsuario?token=" + encodedToken + "&userEmail=" + user.Email;
 
 
                     //envío mail de verificación
-                    await _emailSender.SendEmailAsync(user.UserName, "LicitAR - Confirmar Email", $"Hacé click <a href='{callbackUrl}'>acá</a> para Confirmar tu cuenta.");
+                    await _emailSender.SendEmailAsync(user.UserName ?? "", "LicitAR - Confirmar Email", $"Hacé click <a href='{callbackUrl}'>acá</a> para Confirmar tu cuenta.");
                 }
             }
             return user;
 
 
         }
-   
-        public async Task<LicitArUser> BlanquearPasswordAsync(string email)
+
+        public async Task<LicitArUser?> BlanquearPasswordAsync(string email)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
-            LicitArUser user = null;
-            string token = null;
+            LicitArUser? user = null;
+            string? token = null;
             bool success = false;
             try
             {
                 user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
+                if (user != null)
+                {
 
+                    token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-                token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    await _context.SaveChangesAsync();
 
-                await _context.SaveChangesAsync();
-
-                await transaction.CommitAsync();
-                success = true;
-
+                    await transaction.CommitAsync();
+                    success = true;
+                }
             }
-            catch (Exception ex)
+            catch
             {
                 user = null;
                 await transaction.RollbackAsync();
@@ -127,25 +128,24 @@ namespace LicitAR.Core.Business.Identidad
             finally
             {
                 if (success && token != null && user != null)
-                { 
+                {
 
-                    var url = _parametrosDbContext.Parametria.FirstOrDefault(x => x.Clave.ToLower() == "urlaplicacion").Valor;
+                    var url = _parametrosDbContext.Parametria.FirstOrDefault(x => x.Clave.ToLower() == "urlaplicacion")?.Valor;
                     string encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
                     url += "/Usuario/ResetPassword?token=" + encodedToken + "&email=" + user.Email;
                     // Enviás el mail (con SendGrid o SMTP o lo que uses)
-                    await _emailSender.SendEmailAsync(user.Email, "Resetear contraseña",
+                    await _emailSender.SendEmailAsync(user.Email ?? "", "Resetear contraseña",
                         $"Hacé click <a href='{url}'>acá</a> para resetear tu contraseña.");
                 }
             }
             return user;
         }
 
-        public async Task<LicitArUser> ResetPasswordAsync(string encodedtoken, string email, string password)
+        public async Task<LicitArUser?> ResetPasswordAsync(string encodedtoken, string email, string password)
         {
 
-            LicitArUser user = null;
-            bool success = false;
+            LicitArUser? user = null;
             string token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedtoken));
 
 
@@ -153,21 +153,23 @@ namespace LicitAR.Core.Business.Identidad
             try
             {
                 user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
-
-                var identityResult= await _userManager.ResetPasswordAsync(user, token, password);
-                
-                if (identityResult.Succeeded)
+                if (user != null)
                 {
-                    success = true;
+                    var identityResult = await _userManager.ResetPasswordAsync(user, token, password);
+
+                    if (!identityResult.Succeeded)
+                    {
+                        throw new Exception(identityResult.Errors.ToString());
+                    }
                 }
 
 
             }
-            catch (Exception ex)
-            { 
+            catch
+            {
                 throw;
 
-            } 
+            }
             return user;
         }
     }

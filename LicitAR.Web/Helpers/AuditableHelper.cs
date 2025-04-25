@@ -7,7 +7,7 @@ namespace LicitAR.Web.Helpers
     {
         public static int GetUserLicitARId(ClaimsPrincipal user)
         {
-            Claim userId = user.Claims.FirstOrDefault(x => x.Type.ToLower() == "licitarid");
+            Claim? userId = user.Claims.FirstOrDefault(x => x.Type.ToLower() == "licitarid");
 
             if (userId == null)
             {
@@ -19,7 +19,7 @@ namespace LicitAR.Web.Helpers
 
         public static string GetUserLicitARGuid(ClaimsPrincipal user)
         {
-            Claim userId = user.Claims.FirstOrDefault(x => x.Type.ToLower() == ClaimTypes.NameIdentifier);
+            Claim? userId = user.Claims.FirstOrDefault(x => x.Type.ToLower() == ClaimTypes.NameIdentifier);
 
             if (userId == null)
             {

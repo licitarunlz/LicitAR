@@ -13,9 +13,10 @@ namespace LicitAR.Core.Utils.DataAnnotations
     {
         public override bool IsValid(object value)
         {
-            if (value == null) return true;
+            if (value == null) 
+                return true;
 
-            string cuit = value.ToString().Replace("-", "").Trim();
+            string cuit = value.ToString()??"".Replace("-", "").Trim();
 
             if (cuit.Length != 11 || !long.TryParse(cuit, out _))
                 return false;

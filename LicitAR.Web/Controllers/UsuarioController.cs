@@ -150,7 +150,7 @@ public class UsuarioController : Controller
             return View(model);
 
         var user = await _usuarioManager.GetUserByEmailAsync(model.Email);
-        if (user == null || !(await _usuarioManager.IsEmailConfirmedAsync(user)))
+        if (user == null || !(_usuarioManager.IsEmailConfirmed(user)))
         {
             // Por seguridad, no revelamos si el usuario existe o si está confirmado
             return RedirectToAction("ForgotPasswordConfirmation");
