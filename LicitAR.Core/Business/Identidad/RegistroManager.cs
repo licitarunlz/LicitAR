@@ -62,6 +62,7 @@ namespace LicitAR.Core.Business.Identidad
 
                 var result = await _userManager.CreateAsync(user, usuario.Password);
 
+                await _userManager.AddToRoleAsync(user, "Administrador Principal");
 
                 token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
