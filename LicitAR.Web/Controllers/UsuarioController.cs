@@ -7,6 +7,10 @@ using LicitAR.Web.Business.Identidad.Usuario;
 using LicitAR.Core.Business.Identidad;
 using LicitAR.Web.Helpers;
 using LicitAR.Web.Helpers.Authorization;
+using LicitAR.Web.Models.Usuario;
+using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
+using LicitAR.Core.Data.Models.Identidad;
 
 namespace LicitAR.Web.Controllers;
 
@@ -121,18 +125,149 @@ public class UsuarioController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegistroModel usuario)
     {
-        if (ModelState.IsValid) 
+        try
         {
-            LicitArUser user = await _registroManager.RegistrarAsync(usuario, 1);
-            if (user != null)
+            if (ModelState.IsValid)
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
+                LicitArUser user = await _registroManager.RegistrarAsync(usuario, 1);
+                if (user != null)
+                {
+                    return RedirectToAction("RegisterOk", "Usuario");
+
+                }
+            }
+
+            ModelState.AddModelError("", "Error en el registro");
+        }catch(Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+        }
+        return View(usuario);
+    }
+
+    [AllowAnonymous]
+    public IActionResult RegisterOk()
+    {
+        TempData["SuccessMessage"] = "Usuario creado exitosamente!, pronto le va a llegar un correo al email registrado";
+        TempData["MensajeCarga"] = "Procesando... Por favor espere.";
+        return View();
+    }
+
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ConfirmarUsuario(string token, string userEmail)
+    {
+        TempData["Token"] = token;
+        TempData["Email"] = userEmail;
+        return View();
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<IActionResult> ConfirmarUsuario(string token, string email, string password)
+    {
+        var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
+        if (result.Succeeded)
+        {
+            string decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+
+            var confirmarUsuario = await _usuarioManager.ConfirmEmailAsync(decodedToken, email);
+
+
+
+            if (confirmarUsuario)
+            {
                 return RedirectToAction("Index", "Home");
             }
         }
-        ModelState.AddModelError("", "Error en el registro");
-        return View(usuario);
+
+        ModelState.AddModelError("", "Login incorrecto");
+        return View();
     }
+
+
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ForgotPasswordBasic()
+    {
+        return View();
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPasswordBasic(ForgotPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = await _usuarioManager.GetUserByEmailAsync(model.Email);
+        if (user == null || !(_usuarioManager.IsEmailConfirmed(user)))
+        {
+            // Por seguridad, no revelamos si el usuario existe o si está confirmado
+            return RedirectToAction("ForgotPasswordConfirmation");
+        }
+        var result = await _registroManager.BlanquearPasswordAsync(model.Email);
+
+        if (result != null)
+        {
+            TempData["SuccessMessage"] = "Se realizó el blanqueo de la contraseña, se envió un link a su email";
+
+        }
+
+
+        return RedirectToAction("ForgotPasswordOk");
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ForgotPasswordOk()
+    {
+        return View();
+    }
+
+
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ResetPassword(string token, string email)
+    {
+        if (token == null || email == null)
+            return BadRequest("Faltan datos");
+
+        return View(new ResetPasswordViewModel { Password = "", ConfirmPassword = "", Token = token, Email = email });
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = await _registroManager.ResetPasswordAsync(model.Token, model.Email, model.Password);
+
+        if (user != null)
+        {
+            TempData["SuccessMessage"] = "Se realizó el blanqueo de la contraseña de forma exitosa, por favor click en el siguiente link para iniciar sesión";
+
+            return RedirectToAction("ResetPasswordOk");
+        }
+
+        return View(model);
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ResetPasswordOk()
+    {
+        return View();
+    }
+
+
     
     [AuthorizeClaim("Perfil.Ver")]
     public async Task<IActionResult> MiPerfil()

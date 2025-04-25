@@ -1,5 +1,5 @@
 ﻿using LicitAR.Core.Data;
-using LicitAR.Core.Data.Models;
+using LicitAR.Core.Data.Models.Identidad;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;

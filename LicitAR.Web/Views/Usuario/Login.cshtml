@@ -24,6 +24,15 @@
           </div>
           <h4 class="mb-1">Bienvenido! 👋</h4>
           <p class="mb-6">Por favor inicie sesión</p>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <div>@error.ErrorMessage</div>
+                }
+            </div>
+        }
 
           <form id="formAuthentication" class="mb-6" asp-action="Login" method="post">
 
@@ -47,7 +56,7 @@
                     Recordarme
                   </label>
                 </div>
-                <a href="/Auth/ForgotPasswordBasic">
+                <a  asp-controller="Usuario" asp-action="ForgotPasswordBasic">
                   <span>Olvidaste tu contraseña?</span>
                 </a>
               </div>

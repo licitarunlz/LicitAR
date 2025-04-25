@@ -27,7 +27,7 @@ namespace LicitAR.Core.Data
         public DbSet<TipoContacto> TiposContacto { get; set; }
         public DbSet<TipoPersona> TiposPersona { get; set; }
 
-
+        public DbSet<Parametria> Parametria { get; set; }
 
         /*Fin Parametria*/
 
@@ -37,6 +37,7 @@ namespace LicitAR.Core.Data
             builder.Entity<Provincia>().OwnsOne(p => p.Audit);
             builder.Entity<TipoContacto>().OwnsOne(p => p.Audit);
             builder.Entity<TipoPersona>().OwnsOne(p => p.Audit);
+            builder.Entity<Parametria>().OwnsOne(p => p.Audit);
 
             base.OnModelCreating(builder);
         }

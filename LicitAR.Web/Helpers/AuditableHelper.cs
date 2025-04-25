@@ -25,6 +25,18 @@ namespace LicitAR.Web.Helpers
             Console.WriteLine($"LicitARId claim found: {userId.Value}");
             return int.Parse(userId.Value);
         }
+
+        public static string GetUserLicitARGuid(ClaimsPrincipal user)
+        {
+            Claim? userId = user.Claims.FirstOrDefault(x => x.Type.ToLower() == ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                throw new Exception("Usuario No encontrado");
+            }
+            else
+                return userId.Value;
+        }
     }
     public static class AuditableHelper
     {

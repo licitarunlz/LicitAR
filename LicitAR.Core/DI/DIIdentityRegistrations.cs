@@ -3,6 +3,7 @@ using LicitAR.Core.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using LicitAR.Core.Data.Models.Identidad;
 
 namespace LicitAR.Core.DI
 {

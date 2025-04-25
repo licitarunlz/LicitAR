@@ -43,6 +43,29 @@ namespace LicitAR.Core.Migrations.Parametros
                     b.ToTable("Localidades");
                 });
 
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.Parametria", b =>
+                {
+                    b.Property<int>("IdParametria")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdParametria"));
+
+                    b.Property<string>("Clave")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Valor")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.HasKey("IdParametria");
+
+                    b.ToTable("Parametria");
+                });
+
             modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.Provincia", b =>
                 {
                     b.Property<int>("IdProvincia")
@@ -128,6 +151,43 @@ namespace LicitAR.Core.Migrations.Parametros
 
                             b1.WithOwner()
                                 .HasForeignKey("LocalidadIdLocalidad");
+                        });
+
+                    b.Navigation("Audit")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.Parametria", b =>
+                {
+                    b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
+                        {
+                            b1.Property<int>("ParametriaIdParametria")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime>("FechaAlta")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("FechaBaja")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("FechaModificacion")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<int>("IdUsuarioAlta")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("IdUsuarioBaja")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("IdUsuarioModificacion")
+                                .HasColumnType("int");
+
+                            b1.HasKey("ParametriaIdParametria");
+
+                            b1.ToTable("Parametria");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ParametriaIdParametria");
                         });
 
                     b.Navigation("Audit")

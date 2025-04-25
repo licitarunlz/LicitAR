@@ -22,7 +22,7 @@ namespace LicitAR.Core.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LicitAR.Core.Data.Models.LicitArUser", b =>
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Identidad.LicitArUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -247,7 +247,7 @@ namespace LicitAR.Core.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("LicitAR.Core.Data.Models.LicitArUser", b =>
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Identidad.LicitArUser", b =>
                 {
                     b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
                         {
@@ -295,7 +295,7 @@ namespace LicitAR.Core.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("LicitAR.Core.Data.Models.LicitArUser", null)
+                    b.HasOne("LicitAR.Core.Data.Models.Identidad.LicitArUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -304,7 +304,7 @@ namespace LicitAR.Core.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("LicitAR.Core.Data.Models.LicitArUser", null)
+                    b.HasOne("LicitAR.Core.Data.Models.Identidad.LicitArUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -319,7 +319,7 @@ namespace LicitAR.Core.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LicitAR.Core.Data.Models.LicitArUser", null)
+                    b.HasOne("LicitAR.Core.Data.Models.Identidad.LicitArUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -328,7 +328,7 @@ namespace LicitAR.Core.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("LicitAR.Core.Data.Models.LicitArUser", null)
+                    b.HasOne("LicitAR.Core.Data.Models.Identidad.LicitArUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

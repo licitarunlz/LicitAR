@@ -13,6 +13,7 @@ namespace LicitAR.Core.Utils
         public const string MINLENGTH = "Los caracteres ingresados no alcanzan el mínimo solicitado";
         public const string REQUIRED =  "El campo es requerido.";
         public const string VALIDEMAIL = "Email inválido.";
+        public const string PASSWORDMISMATCH = "Las contraseñas no coinciden";
 
 
     }

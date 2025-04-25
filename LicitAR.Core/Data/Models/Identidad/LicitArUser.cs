@@ -8,7 +8,7 @@ using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Utils;
 using Microsoft.AspNetCore.Identity;
 
-namespace LicitAR.Core.Data.Models
+namespace LicitAR.Core.Data.Models.Identidad
 {
     public class LicitArUser : IdentityUser
     {

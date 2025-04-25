@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using LicitAR.Core.Utils;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
+using LicitAR.Core.Data.Models.Identidad;
 
 namespace LicitAR.Core.Business.Identidad
 {
@@ -25,6 +26,8 @@ namespace LicitAR.Core.Business.Identidad
 
         Task<bool> UpdateUserAsync(UsuarioModel model, int userId);
         Task<bool> ToggleUserEnabledAsync(int userId, bool enabled);
+        Task<bool> ConfirmEmailAsync(string Token, string Email);
+        bool IsEmailConfirmed(LicitArUser user);
     }
 
     public class UsuarioManager : IUsuarioManager
@@ -40,16 +43,18 @@ namespace LicitAR.Core.Business.Identidad
             _logger = logger;
         }
 
-        public async Task<UsuarioModel> GetUserAsync(int userId)
+        public async Task<UsuarioModel?> GetUserAsync(int userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
+            if (user == null)
+                return null;
 
             return new UsuarioModel
             {
                 IdUsuario = user.IdUsuario,
                 Nombre = user.Nombre,
                 Apellido = user.Apellido,
-                Email = user.Email,
+                Email = user.Email ?? "",
                 FechaNacimiento = user.FechaNacimiento,
                 Cuit = user.Cuit
             };
@@ -58,13 +63,13 @@ namespace LicitAR.Core.Business.Identidad
 
         public async Task<IEnumerable<UsuarioModel>> GetAllUsersAsync()
         {
-            var users = _userManager.Users.ToList();
+            var users = await _userManager.Users.ToListAsync();
             return users.Select(user => new UsuarioModel
             {
                 IdUsuario = user.IdUsuario,
                 Nombre = user.Nombre,
                 Apellido = user.Apellido,
-                Email = user.Email,
+                Email = user.Email ?? "",
                 FechaNacimiento = user.FechaNacimiento,
                 Cuit = user.Cuit,
                 Enabled = user.Enabled
@@ -148,7 +153,29 @@ namespace LicitAR.Core.Business.Identidad
             return roleClaims;
         }
 
-    }
+    
+
+        public bool IsEmailConfirmed(LicitArUser user)
+        {
+            return user.EmailConfirmed;
+
+
+        }
+        public async Task<bool> ConfirmEmailAsync(string Token,  string Email)
+        {
+            LicitArUser? user = await _context.Users.FirstOrDefaultAsync(x => x.Email == Email); // await _userManager.FindByEmailAsync(Email);
+
+            if (user == null)
+                return false;
+
+            var result = await _userManager.ConfirmEmailAsync(user, Token);
+
+           /* if (result.Succeeded) 
+                await _context.SaveChangesAsync();
+           */
+            return result.Succeeded;
+        }
+     }
 }
 
 
