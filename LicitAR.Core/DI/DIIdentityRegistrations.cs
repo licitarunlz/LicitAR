@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using LicitAR.Core.Data.Models.Identidad;
+using LicitAR.Core.Utils;
 
 namespace LicitAR.Core.DI
 {
@@ -11,6 +12,8 @@ namespace LicitAR.Core.DI
     {
         public static IServiceCollection AddIdentityRegistrations(this IServiceCollection services, IConfiguration config)
         {
+            services.AddScoped<IUserClaimsPrincipalFactory<LicitArUser>, CustomClaimsPrincipalFactory>();
+
             // Configuración de Identity con soporte para roles
             services.AddIdentity<LicitArUser, IdentityRole>(options =>
             {
