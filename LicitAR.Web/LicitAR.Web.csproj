@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LicitAR.Core\Licitar.Core.csproj" />
+    <ProjectReference Include="..\LicitAR.FileStorage\LicitAR.FileStorage.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -10,6 +11,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
   </ItemGroup>
 
   <PropertyGroup>

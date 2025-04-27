@@ -1,0 +1,57 @@
+@model LicitAR.Core.Data.Models.UsuarioModel
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="row">
+    <div class="col-xl-8 offset-xl-2">
+        <div class="card">
+            <!-- <h5 class="card-header">Editar Usuario</h5> -->
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <div class="mb-4 row">
+                        <label for="Nombre" class="col-md-3 col-form-label">Nombre</label>
+                        <div class="col-md-9">
+                            <input asp-for="Nombre" class="form-control" />
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-4 row">
+                        <label for="Apellido" class="col-md-3 col-form-label">Apellido</label>
+                        <div class="col-md-9">
+                            <input asp-for="Apellido" class="form-control" />
+                            <span asp-validation-for="Apellido" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-4 row">
+                        <label for="Email" class="col-md-3 col-form-label">Email</label>
+                        <div class="col-md-9">
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-4 row">
+                        <label for="FechaNacimiento" class="col-md-3 col-form-label">Fecha de Nacimiento</label>
+                        <div class="col-md-9">
+                            <input asp-for="FechaNacimiento" type="date" class="form-control" />
+                            <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-4 row">
+                        <label for="Cuit" class="col-md-3 col-form-label">CUIT</label>
+                        <div class="col-md-9">
+                            <input asp-for="Cuit" class="form-control" />
+                            <span asp-validation-for="Cuit" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <input type="hidden" asp-for="IdUsuario" />
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

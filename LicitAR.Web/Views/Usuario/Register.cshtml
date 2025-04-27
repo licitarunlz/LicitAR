@@ -1,17 +1,106 @@
-﻿
-@model LicitAR.Web.Views.Account.Register
-
+﻿@model LicitAR.Web.Business.Identidad.Usuario.RegistroModel
 @{
 
     Layout = "_BlankLayout";
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Registro de Usuario";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+            <div class="card px-sm-6 px-0">
+                <div class="card-body">
+                    <div class="app-brand justify-content-center">
+                        <a href="/" class="app-brand-link gap-2">
+                            <img src="/images/Logo_LicitAR_rectangle_small.png" alt="Logo LicitAR" class="app-brand-logo" style="height: 50px; width: 85px;" />
+                            <span class="app-brand-text demo text-heading fw-bold"></span>
+                        </a>
+                    </div>
 
- 
-<form asp-action="Register" method="post">
-    <input type="email" name="email" placeholder="Email" required />
-    <input type="password" name="password" placeholder="Password" required />
-    <button type="submit">Registrarse</button>
-</form>
+                    <h4 class="mb-1 fw-bold">Registro de nuevo usuario</h4>
+                    <h5 class=" py-3 "><i class="fas fa-user-plus "></i> Información Personal</h5>
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+                        </div>
+                    }
+                    @using (Html.BeginForm("Register", "Usuario", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate", @id = "form-licitar" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            .
+                            <div class="col-md-12 mb-3">
+                                @Html.LabelFor(m => m.Cuit, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.Cuit, new { @class = "form-control", maxlength = 11 })
+                                @Html.ValidationMessageFor(m => m.Cuit, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                @Html.LabelFor(m => m.Nombre, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", maxlength = 30, required = "required" })
+                                @Html.ValidationMessageFor(m => m.Nombre, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                @Html.LabelFor(m => m.Apellido, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.Apellido, new { @class = "form-control", maxlength = 30, required = "required" })
+                                @Html.ValidationMessageFor(m => m.Apellido, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                @Html.LabelFor(m => m.FechaNacimiento, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.FechaNacimiento, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                                @Html.ValidationMessageFor(m => m.FechaNacimiento, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+
+
+                        <h5 class="py-3 mt-4"><i class="fas fa-user-plus  "></i> Datos de Usuario</h5>
+
+                        <div class="row">
+
+                            <div class="col-md-12 mb-3">
+                                @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", maxlength = 50, required = "required" })
+                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control", maxlength = 50, required = "required" })
+                                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                @Html.LabelFor(m => m.ConfirmaPassword, new { @class = "form-label" })
+                                @Html.PasswordFor(m => m.ConfirmaPassword, new { @class = "form-control", maxlength = 50, required = "required" })
+                                @Html.ValidationMessageFor(m => m.ConfirmaPassword, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" id="btnSubmit" class="btn btn-primary">Registrar</button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section BusinessScripts {
+
+    <script>
+
+
+    </script>
+
+                        }

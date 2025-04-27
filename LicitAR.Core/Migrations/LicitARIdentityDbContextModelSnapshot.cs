@@ -22,7 +22,7 @@ namespace LicitAR.Core.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LicitAR.Core.Data.Models.LicitArUser", b =>
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Identidad.LicitArUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -32,11 +32,17 @@ namespace LicitAR.Core.Migrations
 
                     b.Property<string>("Apellido")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Cuit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -45,8 +51,17 @@ namespace LicitAR.Core.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("FechaNacimiento")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("IdUsuario")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUsuario"));
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -56,7 +71,8 @@ namespace LicitAR.Core.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -231,6 +247,43 @@ namespace LicitAR.Core.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Identidad.LicitArUser", b =>
+                {
+                    b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
+                        {
+                            b1.Property<string>("LicitArUserId")
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<DateTime>("FechaAlta")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("FechaBaja")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("FechaModificacion")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<int>("IdUsuarioAlta")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("IdUsuarioBaja")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("IdUsuarioModificacion")
+                                .HasColumnType("int");
+
+                            b1.HasKey("LicitArUserId");
+
+                            b1.ToTable("AspNetUsers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LicitArUserId");
+                        });
+
+                    b.Navigation("Audit")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -242,7 +295,7 @@ namespace LicitAR.Core.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("LicitAR.Core.Data.Models.LicitArUser", null)
+                    b.HasOne("LicitAR.Core.Data.Models.Identidad.LicitArUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -251,7 +304,7 @@ namespace LicitAR.Core.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("LicitAR.Core.Data.Models.LicitArUser", null)
+                    b.HasOne("LicitAR.Core.Data.Models.Identidad.LicitArUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -266,7 +319,7 @@ namespace LicitAR.Core.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LicitAR.Core.Data.Models.LicitArUser", null)
+                    b.HasOne("LicitAR.Core.Data.Models.Identidad.LicitArUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -275,7 +328,7 @@ namespace LicitAR.Core.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("LicitAR.Core.Data.Models.LicitArUser", null)
+                    b.HasOne("LicitAR.Core.Data.Models.Identidad.LicitArUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

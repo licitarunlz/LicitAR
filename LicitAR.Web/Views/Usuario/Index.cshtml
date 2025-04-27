@@ -1,8 +1,132 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<LicitAR.Core.Data.Models.UsuarioModel>
+
+@{
+    ViewData["Title"] = "Usuarios";
+    var query = Context.Request.Query;
+    var habilitadoOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Todos", Value = "" },
+        new SelectListItem { Text = "Habilitados", Value = "true", Selected = query["habilitado"] == "true" },
+        new SelectListItem { Text = "Deshabilitados", Value = "false", Selected = query["habilitado"] == "false" }
+    };
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="card">
+    <div class="card-body">
+        <form method="get" asp-action="Index">
+            <div class="row mb-3">
+                <div class="col-md-2">
+                    <input type="text" name="nombre" class="form-control" placeholder="Nombre" value="@query["nombre"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="apellido" class="form-control" placeholder="Apellido" value="@query["apellido"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="email" class="form-control" placeholder="Email" value="@query["email"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="cuit" class="form-control" placeholder="CUIT" value="@query["cuit"]" />
+                </div>
+                <div class="col-md-2">
+                    <select name="habilitado" class="form-select" asp-items="habilitadoOptions"></select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Email</th>
+                    <th>Fecha de Nacimiento</th>
+                    <th>CUIT</th>
+                    <th>Habilitado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.IdUsuario</td>
+                        <td>@user.Nombre</td>
+                        <td>@user.Apellido</td>
+                        <td>@user.Email</td>
+                        <td>@user.FechaNacimiento.ToShortDateString()</td>
+                        <td>@user.CuitFormateado</td>
+                        <td>
+                            @if (user.Enabled)
+                            {
+                                <span class="badge bg-label-success">Sí</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-label-danger">No</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@user.IdUsuario">
+                                        <i class="bx bx-edit-alt me-1"></i> Editar
+                                    </a>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="confirmToggleEnabled('@user.IdUsuario', @(user.Enabled ? "false" : "true"))">
+                                        <i class="bx bx-trash me-1"></i> @(user.Enabled ? "Deshabilitar" : "Habilitar")
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+<div class="card-footer d-flex justify-content-center">
+    <nav>
+        <ul class="pagination pagination-rounded mb-0">
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-pageSize="10">&laquo;</a>
+                </li>
+            }
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="10">@i</a>
+                </li>
+            }
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-pageSize="10">&raquo;</a>
+                </li>
+            }
+        </ul>
+    </nav>
 </div>
+
+@section PageScripts {
+    <script>
+        function confirmToggleEnabled(userId, enabled) {
+            const action = enabled ? "habilitar" : "deshabilitar";
+            if (confirm(`¿Desea ${action} este usuario?`)) {
+                const form = document.createElement("form");
+                form.method = "post";
+                form.action = `/Usuario/ToggleEnabled?id=${userId}&enabled=${enabled}`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+}

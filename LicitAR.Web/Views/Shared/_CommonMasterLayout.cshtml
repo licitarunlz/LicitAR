@@ -38,10 +38,14 @@
 </head>
 
 <body>
+
+    <div id="overlay" style="display:none;">
+        <div class="spinner"></div>
+        <div class="mensaje-carga">@(TempData["MensajeCarga"] ?? "Procesando...")</div>
+    </div>
   <!-- Layout Content -->
   @RenderBody()
-  <!--/ Layout Content -->
-
+  <!--/ Layout Content --> 
   <!-- Core Scripts -->
   @await Html.PartialAsync("Sections/_Scripts")
 
@@ -59,6 +63,25 @@
 
   <!-- Place this tag in your head or just before your close body tag. -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+   
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/vendor/js/bootstrap.js"></script>
+    <script src="~/js/validators.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- jQuery -->
+    <!-- jQuery Validation + Unobtrusive -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+
+ 
+    @RenderSection("BusinessScripts", required: false)
+
+
 
 </body>
 
