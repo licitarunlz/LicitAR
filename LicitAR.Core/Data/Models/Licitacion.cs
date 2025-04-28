@@ -23,9 +23,11 @@ namespace LicitAR.Core.Data.Models
         public required int IdEntidadLicitante { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        [MaxLength(8, ErrorMessage = ErrorMessages.MAXLENGTH)]
         public string? CodigoLicitacion { get; set; }
         
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        [MaxLength(200, ErrorMessage = ErrorMessages.MAXLENGTH)]
         public required string Titulo { get; set; }
 
 

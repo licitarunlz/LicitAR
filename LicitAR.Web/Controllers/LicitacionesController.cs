@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LicitAR.Core.Data;
 using LicitAR.Core.Data.Models;
+using Microsoft.IdentityModel.Tokens;
+using LicitAR.Core.Utils;
+using LicitAR.Web.Helpers;
 
 namespace LicitAR.Web.Controllers
 {
@@ -58,6 +61,8 @@ namespace LicitAR.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
+                licitacion.Audit = audit;
                 _context.Add(licitacion);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
