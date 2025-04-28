@@ -29,6 +29,9 @@ namespace LicitAR.Core.Data
 
         public DbSet<Parametria> Parametria { get; set; }
 
+        public DbSet<EstadoLicitacion> EstadosLicitacion { get; set; }
+        public DbSet<CategoriaLicitacion> CategoriasLicitacion { get; set; }
+
         /*Fin Parametria*/
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -38,6 +41,8 @@ namespace LicitAR.Core.Data
             builder.Entity<TipoContacto>().OwnsOne(p => p.Audit);
             builder.Entity<TipoPersona>().OwnsOne(p => p.Audit);
             builder.Entity<Parametria>().OwnsOne(p => p.Audit);
+            builder.Entity<EstadoLicitacion>().OwnsOne(p => p.Audit);
+            builder.Entity<CategoriaLicitacion>().OwnsOne(p => p.Audit);
 
             base.OnModelCreating(builder);
         }
