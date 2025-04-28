@@ -1,0 +1,66 @@
+﻿@model LicitAR.Core.Data.Models.Licitacion
+
+@{
+    ViewData["Title"] = "Details"; 
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Licitacion</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IdLicitacion)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IdLicitacion)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CodigoLicitacion)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CodigoLicitacion)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Titulo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Titulo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Descripcion)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Descripcion)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.FechaPublicacion)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FechaPublicacion)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.FechaCierre)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FechaCierre)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IdEstadoLicitacion)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IdEstadoLicitacion)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IdCategoriaLicitacion)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IdCategoriaLicitacion)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.IdEntidadLicitante">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

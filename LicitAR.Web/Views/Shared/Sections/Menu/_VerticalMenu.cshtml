@@ -69,6 +69,14 @@
                 <div class="text-truncate">Entidades Licitantes</div>
             </a>
         </li>
+
+        <!-- Usuarios (listado completo de usuarios del sistema) -->
+        <li class='menu-item@(currentPage.StartsWith("/Licitaciones/Index") ? " active" : "")'>
+            <a asp-controller="Licitaciones" asp-action="Index" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-group"></i>
+                <div class="text-truncate">Licitaciones</div>
+            </a>
+        </li>
   </ul>
 </aside>
 <!-- / Menu -->
