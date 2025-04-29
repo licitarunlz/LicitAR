@@ -1,0 +1,30 @@
+﻿@model LicitAR.Core.Data.Models.Licitacion
+
+@{
+    ViewData["Title"] = "Eliminar licitacion";
+}
+
+
+<div class="row mb-12 g-6">
+    <div class="col-md-8 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                Confirmar eliminación de la Licitacion:
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.Titulo</h5>
+                <p class="card-text">
+                    <strong>Código:</strong> @Model.CodigoLicitacion <br />
+                    <strong>Descripción:</strong> @Model.Descripcion <br />
+                    <strong>Publicado:</strong> @Model.FechaPublicacion.ToShortDateString() <br />
+                    <strong>Cierre:</strong> @Model.FechaCierre.ToShortDateString()
+                </p>
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="IdLicitacion" />
+                    <input type="submit" value="Eliminar" class="btn btn-danger" />
+                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

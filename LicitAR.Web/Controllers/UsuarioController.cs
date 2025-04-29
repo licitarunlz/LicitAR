@@ -206,14 +206,14 @@ public class UsuarioController : Controller
         var user = await _usuarioManager.GetUserByEmailAsync(model.Email);
         if (user == null || !(_usuarioManager.IsEmailConfirmed(user)))
         {
-            // Por seguridad, no revelamos si el usuario existe o si está confirmado
+            // Por seguridad, no revelamos si el usuario existe o si estï¿½ confirmado
             return RedirectToAction("ForgotPasswordConfirmation");
         }
         var result = await _registroManager.BlanquearPasswordAsync(model.Email);
 
         if (result != null)
         {
-            TempData["SuccessMessage"] = "Se realizó el blanqueo de la contraseña, se envió un link a su email";
+            TempData["SuccessMessage"] = "Se realizï¿½ el blanqueo de la contraseï¿½a, se enviï¿½ un link a su email";
 
         }
 
@@ -252,7 +252,7 @@ public class UsuarioController : Controller
 
         if (user != null)
         {
-            TempData["SuccessMessage"] = "Se realizó el blanqueo de la contraseña de forma exitosa, por favor click en el siguiente link para iniciar sesión";
+            TempData["SuccessMessage"] = "Se realizï¿½ el blanqueo de la contraseï¿½a de forma exitosa, por favor click en el siguiente link para iniciar sesiï¿½n";
 
             return RedirectToAction("ResetPasswordOk");
         }
@@ -290,7 +290,7 @@ public class UsuarioController : Controller
                 if (user == null)
                 {
                     Console.WriteLine($"Error: User with ID {idUsuario} not found.");
-                    return NotFound();
+                    return View("NotFound");
                 }
 
                 Console.WriteLine($"User retrieved: {user.Email.ToString()}");
@@ -305,7 +305,7 @@ public class UsuarioController : Controller
         else
         {
             Console.WriteLine("Error: User is not authenticated.");
-            return NotFound();
+            return View("NotFound");
         }
     }
 
@@ -356,7 +356,7 @@ public class UsuarioController : Controller
         var user = await _usuarioManager.GetUserAsync(id);
         if (user == null)
         {
-            return NotFound();
+            return View("NotFound");
         }
 
         return View(user);
@@ -389,7 +389,7 @@ public class UsuarioController : Controller
         var result = await _usuarioManager.ToggleUserEnabledAsync(id, enabled);
         if (!result)
         {
-            return NotFound();
+            return View("NotFound");
         }
 
         return RedirectToAction("Index");

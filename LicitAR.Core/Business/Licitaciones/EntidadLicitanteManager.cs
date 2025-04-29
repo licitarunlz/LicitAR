@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LicitAR.Core.Business.Identidad
+namespace LicitAR.Core.Business.Licitaciones
 {
     public interface IEntidadLicitanteManager
     {

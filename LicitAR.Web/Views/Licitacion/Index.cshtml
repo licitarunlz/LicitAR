@@ -1,0 +1,102 @@
+﻿@model IEnumerable<LicitAR.Core.Data.Models.Licitacion>
+
+@{
+    ViewData["Title"] = "Licitaciones";
+    var query = Context.Request.Query;
+}
+
+<div class="card">
+    <div class="card-body">
+        <form method="get" asp-action="Index">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <input type="text" name="codigoLicitacion" class="form-control" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="titulo" class="form-control" placeholder="Título" value="@query["titulo"]" />
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="fechaPublicacion" class="form-control" placeholder="Fecha Publicación" value="@query["fechaPublicacion"]" />
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="fechaCierre" class="form-control" placeholder="Fecha Cierre" value="@query["fechaCierre"]" />
+                </div>
+                <div class="col-md-2 mt-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Código Licitación</th>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Fecha Publicación</th>
+                    <th>Fecha Cierre</th>
+                    <th>Estado</th>
+                    <th>Categoría</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IdLicitacion</td>
+                        <td>@item.CodigoLicitacion</td>
+                        <td>@item.Titulo</td>
+                        <td>@item.Descripcion</td>
+                        <td>@item.FechaPublicacion.ToShortDateString()</td>
+                        <td>@item.FechaCierre.ToShortDateString()</td>
+                        <td>@item.IdEstadoLicitacion</td>
+                        <td>@item.IdCategoriaLicitacion</td>
+                        <td>
+                            <div class="dropdown">
+                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdLicitacion">
+                                        <i class="bx bx-edit-alt me-1"></i> Editar
+                                    </a>
+                                    <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdLicitacion">
+                                        <i class="bx bx-trash me-1"></i> Eliminar
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer d-flex justify-content-center">
+        <nav>
+            <ul class="pagination pagination-rounded mb-0">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-pageSize="10">&laquo;</a>
+                    </li>
+                }
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="10">@i</a>
+                    </li>
+                }
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-pageSize="10">&raquo;</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
