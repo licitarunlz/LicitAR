@@ -1,0 +1,36 @@
+﻿@model LicitAR.Core.Data.Models.Licitacion
+
+@{
+    ViewData["Title"] = "Detalle de la licitacion";
+}
+
+<div class="row">
+    <div class="col-xl">
+        <div class="card mb-6">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><b>@Html.DisplayFor(model => model.CodigoLicitacion)</b> - @Html.DisplayFor(model => model.Titulo) </h5>
+            </div>
+            <div class="card-body">
+                <dl class="row"> 
+                    
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Descripcion)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Descripcion)</dd>
+                    
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.FechaPublicacion)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.FechaPublicacion)</dd>
+                    
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.FechaCierre)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.FechaCierre)</dd>
+                   
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.IdCategoriaLicitacion)</b></dt>
+                    <dd class="col-sm-9">@Html.Raw(Model.IdCategoriaLicitacion==1?"Privada":"Pública")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.IdLicitacion" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+</div>

@@ -11,15 +11,15 @@ public partial class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddContextRegistrations(builder.Configuration);
+        builder.Services.AddContextRegistrations(builder.Configuration);
 
-builder.Services.AddIdentityRegistrations(builder.Configuration);
+        builder.Services.AddIdentityRegistrations(builder.Configuration);
 
-builder.Services.AddAppBusinessRegistrations(builder.Configuration);
+        builder.Services.AddAppBusinessRegistrations(builder.Configuration);
 
-builder.Services.AddServicesRegistrations(builder.Configuration);
+        builder.Services.AddServicesRegistrations(builder.Configuration);
 
-builder.Services.AddFileStorageRegistrations(builder.Configuration);
+        builder.Services.AddFileStorageRegistrations(builder.Configuration);
 
         // Add services to the container.
         builder.Services.AddControllersWithViews(options =>

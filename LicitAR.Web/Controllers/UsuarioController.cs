@@ -206,14 +206,14 @@ public class UsuarioController : Controller
         var user = await _usuarioManager.GetUserByEmailAsync(model.Email);
         if (user == null || !(_usuarioManager.IsEmailConfirmed(user)))
         {
-            // Por seguridad, no revelamos si el usuario existe o si está confirmado
+            // Por seguridad, no revelamos si el usuario existe o si estï¿½ confirmado
             return RedirectToAction("ForgotPasswordConfirmation");
         }
         var result = await _registroManager.BlanquearPasswordAsync(model.Email);
 
         if (result != null)
         {
-            TempData["SuccessMessage"] = "Se realizó el blanqueo de la contraseña, se envió un link a su email";
+            TempData["SuccessMessage"] = "Se realizï¿½ el blanqueo de la contraseï¿½a, se enviï¿½ un link a su email";
 
         }
 
@@ -252,7 +252,7 @@ public class UsuarioController : Controller
 
         if (user != null)
         {
-            TempData["SuccessMessage"] = "Se realizó el blanqueo de la contraseña de forma exitosa, por favor click en el siguiente link para iniciar sesión";
+            TempData["SuccessMessage"] = "Se realizï¿½ el blanqueo de la contraseï¿½a de forma exitosa, por favor click en el siguiente link para iniciar sesiï¿½n";
 
             return RedirectToAction("ResetPasswordOk");
         }
@@ -270,63 +270,81 @@ public class UsuarioController : Controller
 
     
     [AuthorizeClaim("Perfil.Ver")]
-    public async Task<IActionResult> MiPerfil()
+    public async Task<IActionResult> MyProfile()
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            // Log all claims for debugging
-            var claims = User.Claims.Select(c => $"{c.Type}: {c.Value}").ToList();
-            //Console.WriteLine("Available Claims in MiPerfil:");
-            //claims.ForEach(Console.WriteLine);
-
             try
             {
-                // Retrieve LicitARId from claims
                 int idUsuario = IdentityHelper.GetUserLicitARId(User);
-                Console.WriteLine($"Retrieved LicitARId: {idUsuario}");
-
-                // Retrieve user by id
                 var user = await _usuarioManager.GetUserAsync(idUsuario);
                 if (user == null)
                 {
-                    Console.WriteLine($"Error: User with ID {idUsuario} not found.");
-                    return NotFound();
+                    return View("NotFound");
                 }
-
-                Console.WriteLine($"User retrieved: {user.Email.ToString()}");
                 return View(user);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in MiPerfil: {ex.Message}");
+                Console.WriteLine($"Error in MyProfile: {ex.Message}");
                 throw;
             }
         }
         else
         {
-            Console.WriteLine("Error: User is not authenticated.");
-            return NotFound();
+            return View("NotFound");
         }
     }
 
     [HttpPost]
     [Authorize]
+    public IActionResult UploadPhoto()
+    {
+        // Placeholder logic for file upload
+        return RedirectToAction("MyProfile");
+    }
+
+    [HttpPost]
+    [Authorize]
+    public IActionResult ResetPhoto()
+    {
+        // Placeholder logic for resetting photo
+        return RedirectToAction("MyProfile");
+    }
+
+    [HttpPost]
+    [Authorize]
     [AuthorizeClaim("Perfil.Editar")] 
-    public async Task<IActionResult> EditarMiPerfil(UsuarioModel model)
+    public async Task<IActionResult> EditMyProfile(UsuarioModel model)
     {
         if (!ModelState.IsValid)
         {
-            return View(model);
+            _logger.LogWarning("ModelState is invalid: {@ModelState}", ModelState);
+            return View("MyProfile", model);
         }
+
         int IdUsuario = IdentityHelper.GetUserLicitARId(User);
-        var result = await _usuarioManager.UpdateUserAsync(model, IdUsuario);
-        if (!result)
+        _logger.LogInformation("Updating user with ID: {IdUsuario}", IdUsuario);
+
+        try
         {
-            ModelState.AddModelError("", "Error al actualizar el usuario.");
-            return View(model);
+            var result = await _usuarioManager.UpdateUserAsync(model, IdUsuario);
+            if (!result)
+            {
+                _logger.LogError("Failed to update user with ID: {IdUsuario}", IdUsuario);
+                ModelState.AddModelError("", "Error al actualizar el usuario.");
+                return View("MyProfile", model);
+            }
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while updating user with ID: {IdUsuario}", IdUsuario);
+            ModelState.AddModelError("", "OcurriÃ³ un error inesperado al actualizar el perfil.");
+            return View("MyProfile", model);
+        }
+
         TempData["SuccessMessage"] = "Perfil actualizado correctamente.";
-        return RedirectToAction("MiPerfil");
+        return RedirectToAction("MyProfile");
     }
 
     public IActionResult GoogleLogin()
@@ -356,7 +374,7 @@ public class UsuarioController : Controller
         var user = await _usuarioManager.GetUserAsync(id);
         if (user == null)
         {
-            return NotFound();
+            return View("NotFound");
         }
 
         return View(user);
@@ -386,12 +404,24 @@ public class UsuarioController : Controller
     [AuthorizeClaim("Usuarios.Eliminar")] 
     public async Task<IActionResult> ToggleEnabled(int id, bool enabled)
     {
-        var result = await _usuarioManager.ToggleUserEnabledAsync(id, enabled);
-        if (!result)
-        {
-            return NotFound();
-        }
+        _logger.LogInformation("ToggleEnabled called with id: {id}, enabled: {enabled}", id, enabled);
 
-        return RedirectToAction("Index");
+        try
+        {
+            var result = await _usuarioManager.ToggleUserEnabledAsync(id, enabled);
+            if (!result)
+            {
+                _logger.LogWarning("ToggleEnabled failed for id: {id}", id);
+                return View("NotFound");
+            }
+
+            _logger.LogInformation("Successfully toggled Enabled property for user ID: {id} to {enabled}", id, enabled);
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while toggling Enabled property for user ID: {id}", id);
+            return View("Error");
+        }
     }
 }

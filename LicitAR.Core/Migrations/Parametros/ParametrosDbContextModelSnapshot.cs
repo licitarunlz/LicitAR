@@ -22,6 +22,42 @@ namespace LicitAR.Core.Migrations.Parametros
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.CategoriaLicitacion", b =>
+                {
+                    b.Property<int>("IdCategoriaLicitacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCategoriaLicitacion"));
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("IdCategoriaLicitacion");
+
+                    b.ToTable("CategoriasLicitacion");
+                });
+
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.EstadoLicitacion", b =>
+                {
+                    b.Property<int>("IdEstadoLicitacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdEstadoLicitacion"));
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("IdEstadoLicitacion");
+
+                    b.ToTable("EstadosLicitacion");
+                });
+
             modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.Localidad", b =>
                 {
                     b.Property<int>("IdLocalidad")
@@ -118,6 +154,80 @@ namespace LicitAR.Core.Migrations.Parametros
                     b.HasKey("IdTipoPersona");
 
                     b.ToTable("TiposPersona");
+                });
+
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.CategoriaLicitacion", b =>
+                {
+                    b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
+                        {
+                            b1.Property<int>("CategoriaLicitacionIdCategoriaLicitacion")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime>("FechaAlta")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("FechaBaja")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("FechaModificacion")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<int>("IdUsuarioAlta")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("IdUsuarioBaja")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("IdUsuarioModificacion")
+                                .HasColumnType("int");
+
+                            b1.HasKey("CategoriaLicitacionIdCategoriaLicitacion");
+
+                            b1.ToTable("CategoriasLicitacion");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CategoriaLicitacionIdCategoriaLicitacion");
+                        });
+
+                    b.Navigation("Audit")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.EstadoLicitacion", b =>
+                {
+                    b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
+                        {
+                            b1.Property<int>("EstadoLicitacionIdEstadoLicitacion")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime>("FechaAlta")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("FechaBaja")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("FechaModificacion")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<int>("IdUsuarioAlta")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("IdUsuarioBaja")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("IdUsuarioModificacion")
+                                .HasColumnType("int");
+
+                            b1.HasKey("EstadoLicitacionIdEstadoLicitacion");
+
+                            b1.ToTable("EstadosLicitacion");
+
+                            b1.WithOwner()
+                                .HasForeignKey("EstadoLicitacionIdEstadoLicitacion");
+                        });
+
+                    b.Navigation("Audit")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.Localidad", b =>
