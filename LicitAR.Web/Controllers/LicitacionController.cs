@@ -3,6 +3,7 @@ using LicitAR.Core.Business.Licitaciones;
 using LicitAR.Core.Data.Models;
 using LicitAR.Web.Helpers;
 using LicitAR.Core.Utils;
+using LicitAR.Web.Models;
 
 namespace LicitAR.Web.Controllers
 {
@@ -81,16 +82,19 @@ namespace LicitAR.Web.Controllers
         // POST: Licitacion/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdLicitacion,IdEntidadLicitante,CodigoLicitacion,Titulo,Descripcion,FechaPublicacion,FechaCierre,IdEstadoLicitacion,IdCategoriaLicitacion")] Licitacion licitacion)
+        public async Task<IActionResult> Create( LicitacionModel licitacionModel)
         {
+            
+
             if (ModelState.IsValid)
             {
                 var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
+                Licitacion licitacion = licitacionModel.GetLicitacion(audit);
                 licitacion.Audit = audit;
                 await _licitacionManager.CreateLicitacionAsync(licitacion);
                 return RedirectToAction(nameof(Index));
             }
-            return View(licitacion);
+            return View(licitacionModel);
         }
 
         // GET: Licitacion/Edit/5
