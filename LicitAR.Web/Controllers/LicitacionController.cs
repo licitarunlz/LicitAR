@@ -170,5 +170,26 @@ namespace LicitAR.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Licitacion/Oferentes/5
+        public async Task<IActionResult> Offerer(int id)
+        {
+            // Obtener la licitación desde la base de datos
+            var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id);
+            if (licitacion == null)
+            {
+                return View("NotFound"); // Manejar caso de licitación no encontrada
+            }
+
+            // Simulación de datos de oferentes
+            var oferentes = new List<OferenteModel>
+            {
+                new OferenteModel { Id = 1, IdLicitacion = id, TituloLicitacion = licitacion.Titulo, RequisitosLicitacion = licitacion.Descripcion, NombreEntidad = "Entidad A", Fecha = DateTime.Now.AddDays(-2), CumpleRequisitos = true },
+                new OferenteModel { Id = 2, IdLicitacion = id, TituloLicitacion = licitacion.Titulo, RequisitosLicitacion = licitacion.Descripcion, NombreEntidad = "Entidad B", Fecha = DateTime.Now.AddDays(-1), CumpleRequisitos = false },
+                new OferenteModel { Id = 3, IdLicitacion = id, TituloLicitacion = licitacion.Titulo, RequisitosLicitacion = licitacion.Descripcion, NombreEntidad = "Entidad C", Fecha = DateTime.Now, CumpleRequisitos = true }
+            };
+
+            return View(oferentes);
+        }
     }
 }

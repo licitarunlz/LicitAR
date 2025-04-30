@@ -7,12 +7,6 @@
 
 <div class="card">
     <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="card-title">Licitaciones</h5>
-            <a asp-action="Create" class="btn btn-succes" title="Agregar nueva Licitación">
-                <i class="bx bx-message-square-add"></i> 
-            </a>
-        </div>
         <form method="get" asp-action="Index">
             <div class="row mb-3">
                 <div class="col-md-3">
@@ -27,8 +21,13 @@
                 <div class="col-md-2">
                     <input type="date" name="fechaCierre" class="form-control" placeholder="Fecha Cierre" value="@query["fechaCierre"]" />
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                <div class="col-md-2 d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary w-100 me-2">
+                        <i class="bx bx-filter-alt"></i> Filtrar
+                    </button>
+                    <a asp-action="Create" class="btn btn-success" title="Agregar nueva Licitación">
+                        <i class="bx bx-message-square-add"></i>
+                    </a>
                 </div>
             </div>
         </form>
@@ -71,6 +70,9 @@
                                     </a>
                                     <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdLicitacion">
                                         <i class="bx bx-show me-1"></i> Detalles
+                                    </a>
+                                    <a class="dropdown-item" asp-action="Offerer" asp-route-id="@item.IdLicitacion">
+                                        <i class="bx bx-group me-1"></i> Ver Oferentes
                                     </a>
                                     <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdLicitacion">
                                         <i class="bx bx-trash me-1"></i> Eliminar

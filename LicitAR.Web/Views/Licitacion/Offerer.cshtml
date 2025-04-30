@@ -1,0 +1,60 @@
+@model IEnumerable<LicitAR.Web.Models.OferenteModel>
+@{
+    ViewData["Title"] = "Oferentes - " + Model.FirstOrDefault()?.TituloLicitacion;
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">@Model.FirstOrDefault()?.TituloLicitacion</h5>
+        <p>@Model.FirstOrDefault()?.RequisitosLicitacion</p>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre Entidad</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var oferente in Model)
+                {
+                    <tr>
+                        <td>@oferente.Id</td>
+                        <td>@oferente.NombreEntidad</td>
+                        <td>@oferente.Fecha.ToShortDateString()</td>
+                        <td>
+                            <span class="badge @(oferente.CumpleRequisitos ? "bg-label-success" : "bg-label-danger")">
+                                @(oferente.CumpleRequisitos ? "Sí" : "No")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="javascript:void(0);">
+                                        <i class="bx bx-edit-alt me-1"></i> Editar
+                                    </a>
+                                    <a class="dropdown-item" href="javascript:void(0);">
+                                        <i class="bx bx-trash me-1"></i> Eliminar
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4 mb-3">
+    <a href="/Licitacion/Index" class="btn btn-primary">
+        <i class="bx bx-arrow-back"></i> Volver a Licitaciones
+    </a>
+</div>
