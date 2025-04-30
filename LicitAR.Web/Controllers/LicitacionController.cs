@@ -90,8 +90,8 @@ namespace LicitAR.Web.Controllers
             {
                 var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
                 Licitacion licitacion = licitacionModel.GetLicitacion(audit);
-                licitacion.Audit = audit;
-                await _licitacionManager.CreateLicitacionAsync(licitacion);
+              
+                await _licitacionManager.CreateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
                 return RedirectToAction(nameof(Index));
             }
             return View(licitacionModel);
@@ -110,30 +110,34 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound"); 
             }
-
-            return View(licitacion);
+            var lic = new LicitacionModel();
+            lic.SetLicitacionData(licitacion);
+            return View( lic);
         }
 
         // POST: Licitacion/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdLicitacion,IdEntidadLicitante,CodigoLicitacion,Titulo,Descripcion,FechaPublicacion,FechaCierre,IdEstadoLicitacion,IdCategoriaLicitacion")] Licitacion licitacion)
+        public async Task<IActionResult> Edit(int id, LicitacionModel licitacionModel)
         {
-            if (id != licitacion.IdLicitacion) // Fix comparison to match IdLicitacion
+            if (id != licitacionModel.IdLicitacion) // Fix comparison to match IdLicitacion
             {
                 return View("NotFound"); // Updated
             }
 
             if (ModelState.IsValid)
             {
-                var result = await _licitacionManager.UpdateLicitacionAsync(licitacion);
+                var licitacion = licitacionModel.GetLicitacion(AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User)));
+                licitacion.IdLicitacion = licitacionModel.IdLicitacion;
+
+                var result = await _licitacionManager.UpdateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
                 if (!result)
                 {
                     return View("NotFound"); // Updated
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(licitacion);
+            return View(licitacionModel);
         }
 
         // GET: Licitacion/Delete/5

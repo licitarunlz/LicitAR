@@ -13,7 +13,7 @@ namespace LicitAR.Web.Models
             public int IdLicitacion { get; set; }
 
             [Required(ErrorMessage = ErrorMessages.REQUIRED)]
-            public required int IdEntidadLicitante { get; set; }
+            public int IdEntidadLicitante { get; set; }
 
             [Required(ErrorMessage = ErrorMessages.REQUIRED)]
             [MaxLength(20, ErrorMessage = ErrorMessages.MAXLENGTH)]
@@ -23,29 +23,29 @@ namespace LicitAR.Web.Models
             [Required(ErrorMessage = ErrorMessages.REQUIRED)]
             [MaxLength(200, ErrorMessage = ErrorMessages.MAXLENGTH)]
             [Display(Name = "Título")]
-            public required string Titulo { get; set; }
+            public string Titulo { get; set; }
 
 
             [Required(ErrorMessage = ErrorMessages.REQUIRED)]
             [MaxLength(2000, ErrorMessage = ErrorMessages.MAXLENGTH)]
             [Display(Name = "Descripción")]
-            public required string Descripcion { get; set; }
+            public string Descripcion { get; set; }
 
             [Required(ErrorMessage = ErrorMessages.REQUIRED)]
             [Display(Name = "Fecha de Publicación")]
-            public required DateTime FechaPublicacion { get; set; }
+            public DateTime FechaPublicacion { get; set; }
 
             [Required(ErrorMessage = ErrorMessages.REQUIRED)]
             [Display(Name = "Fecha de Cierre")]
-            public required DateTime FechaCierre { get; set; }
+            public DateTime FechaCierre { get; set; }
 
             [Required(ErrorMessage = ErrorMessages.REQUIRED)]
             [Display(Name = "Estado")]
-            public required int IdEstadoLicitacion { get; set; }
+            public int IdEstadoLicitacion { get; set; }
 
             [Required(ErrorMessage = ErrorMessages.REQUIRED)]
             [Display(Name = "Categoría Licitación")]
-            public required int IdCategoriaLicitacion { get; set; }
+            public int IdCategoriaLicitacion { get; set; }
 
 
         public Licitacion GetLicitacion(AuditTable audit)
@@ -62,6 +62,18 @@ namespace LicitAR.Web.Models
                 IdEstadoLicitacion = this.IdEstadoLicitacion,
                 Titulo = this.Titulo
             };
+        }
+
+        public void SetLicitacionData(Licitacion licitacion)
+        {
+            this.CodigoLicitacion = licitacion.CodigoLicitacion;
+            this.Descripcion = licitacion.Descripcion;
+            this.FechaCierre = licitacion.FechaCierre;
+            this.FechaPublicacion = licitacion.FechaPublicacion;
+            this.IdCategoriaLicitacion = licitacion.IdCategoriaLicitacion;
+            this.IdEntidadLicitante = licitacion.IdEntidadLicitante;
+            this.IdLicitacion = licitacion.IdLicitacion;
+            this.Titulo = licitacion.Titulo;
         }
 
     }

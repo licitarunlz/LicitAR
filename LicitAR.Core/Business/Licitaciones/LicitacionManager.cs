@@ -1,5 +1,6 @@
 using LicitAR.Core.Data;
 using LicitAR.Core.Data.Models;
+using LicitAR.Core.Utils;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
@@ -9,8 +10,8 @@ namespace LicitAR.Core.Business.Licitaciones
     {
         Task<List<Licitacion>> GetAllLicitacionesAsync();
         Task<Licitacion?> GetLicitacionByIdAsync(int id);
-        Task CreateLicitacionAsync(Licitacion licitacion);
-        Task<bool> UpdateLicitacionAsync(Licitacion licitacion);
+        Task CreateLicitacionAsync(Licitacion licitacion, int userId);
+        Task<bool> UpdateLicitacionAsync(Licitacion licitacion, int userId);
         Task<bool> DeleteLicitacionAsync(int id);
     }
 
@@ -33,13 +34,13 @@ namespace LicitAR.Core.Business.Licitaciones
             return await _context.Licitaciones.FirstOrDefaultAsync(l => l.IdLicitacion == id);
         }
 
-        public async Task CreateLicitacionAsync(Licitacion licitacion)
+        public async Task CreateLicitacionAsync(Licitacion licitacion, int userId)
         {
             try
             {
                 licitacion.CodigoLicitacion = await this.ObtenerProximoCodigoAsync();
                 licitacion.IdEstadoLicitacion = 1; //arranca en Borrador
-
+                licitacion.Audit = AuditHelper.GetCreationData(userId);
                 _context.Licitaciones.Add(licitacion);
                 await _context.SaveChangesAsync();
             }
@@ -49,11 +50,31 @@ namespace LicitAR.Core.Business.Licitaciones
             }
         }
 
-        public async Task<bool> UpdateLicitacionAsync(Licitacion licitacion)
+        public async Task<bool> UpdateLicitacionAsync(Licitacion licitacion, int userId)
         {
-            _context.Licitaciones.Update(licitacion);
             try
             {
+                var licitacionFromDdbb = await _context.Licitaciones.FirstOrDefaultAsync(x => x.IdLicitacion == licitacion.IdLicitacion);
+                if (licitacionFromDdbb == null)
+                    return false;
+
+                licitacionFromDdbb.Titulo = licitacion.Titulo;
+                licitacionFromDdbb.Descripcion = licitacion.Descripcion;
+                licitacionFromDdbb.IdCategoriaLicitacion = licitacion.IdCategoriaLicitacion;
+                licitacionFromDdbb.FechaPublicacion = licitacion.FechaPublicacion;
+                licitacionFromDdbb.FechaCierre = licitacion.FechaCierre;
+
+                licitacionFromDdbb.Audit = AuditHelper.SetModificationData(licitacionFromDdbb.Audit, userId);
+                /*
+                // Marcar solo los campos modificados 
+                _context.Entry(licitacionFromDdbb).Property(u => u.Titulo).IsModified = true;
+                _context.Entry(licitacionFromDdbb).Property(u => u.Descripcion).IsModified = true;
+                _context.Entry(licitacionFromDdbb).Property(u => u.IdCategoriaLicitacion).IsModified = true;
+                _context.Entry(licitacionFromDdbb).Property(u => u.FechaPublicacion).IsModified = true;
+                _context.Entry(licitacionFromDdbb).Property(u => u.FechaCierre).IsModified = true;
+                */
+                _context.Licitaciones.Update(licitacionFromDdbb);
+            
                 await _context.SaveChangesAsync();
                 return true;
             }
