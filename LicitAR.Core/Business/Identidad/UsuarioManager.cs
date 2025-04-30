@@ -77,47 +77,92 @@ namespace LicitAR.Core.Business.Identidad
         }
         public async Task<bool> UpdateUserAsync(UsuarioModel model, int userId)
         {
-            // Buscar el usuario por su ID
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.IdUsuario == model.IdUsuario);
-            if (user == null)
+            _logger.LogInformation("Starting UpdateUserAsync for user ID: {userId}", userId);
+
+            try
             {
+                // Buscar el usuario por su ID
+                _logger.LogInformation("Fetching user with ID: {userId}", userId);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
+                if (user == null)
+                {
+                    _logger.LogWarning("User with ID {userId} not found.", userId);
+                    return false;
+                }
+
+                // Log current user data
+                _logger.LogInformation("Current user data: {@User}", user);
+
+                // Actualizar solo los campos editables
+                _logger.LogInformation("Updating user properties for user ID: {userId}",userId);
+                user.Nombre = model.Nombre;
+                user.Apellido = model.Apellido;
+                user.Email = model.Email;
+                user.FechaNacimiento = model.FechaNacimiento;
+                user.Cuit = model.Cuit;
+
+                user.Audit = AuditHelper.SetModificationData(user.Audit, userId);
+
+                // Marcar solo los campos modificados
+                _logger.LogInformation("Marking modified properties for user ID: {userId}", userId);
+                _context.Entry(user).Property(u => u.Nombre).IsModified = true;
+                _context.Entry(user).Property(u => u.Apellido).IsModified = true;
+                _context.Entry(user).Property(u => u.Email).IsModified = true;
+                _context.Entry(user).Property(u => u.FechaNacimiento).IsModified = true;
+                _context.Entry(user).Property(u => u.Cuit).IsModified = true;
+
+                // Guardar los cambios
+                _logger.LogInformation("Saving changes for user ID: {userId}", userId);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Successfully updated user ID: {userid}", userId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occurred while updating user ID: {userid}", userId);
                 return false;
             }
-
-            // Actualizar solo los campos editables
-            user.Nombre = model.Nombre;
-            user.Apellido = model.Apellido;
-            user.Email = model.Email;
-            user.FechaNacimiento = model.FechaNacimiento;
-            user.Cuit = model.Cuit;
-
-            user.Audit = AuditHelper.SetModificationData(user.Audit, userId);
-
-            // Marcar solo los campos modificados
-            _context.Entry(user).Property(u => u.Nombre).IsModified = true;
-            _context.Entry(user).Property(u => u.Apellido).IsModified = true;
-            _context.Entry(user).Property(u => u.Email).IsModified = true;
-            _context.Entry(user).Property(u => u.FechaNacimiento).IsModified = true;
-            _context.Entry(user).Property(u => u.Cuit).IsModified = true; 
-
-            // Guardar los cambios
-            await _context.SaveChangesAsync();
-            return true;
         }
+
 
         public async Task<bool> ToggleUserEnabledAsync(int userId, bool enabled)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
-            if (user == null)
+            _logger.LogInformation("Starting ToggleUserEnabledAsync for user ID: {userId} with enabled: {enabled}", userId, enabled);
+
+            try
             {
+                // Buscar el usuario por su ID
+                _logger.LogInformation("Fetching user with ID: {userId}");
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
+                if (user == null)
+                {
+                    _logger.LogWarning("User with ID {userId} not found.");
+                    return false;
+                }
+
+                // Log current user state
+                _logger.LogInformation("Current user state: {@User}", user);
+
+                // Actualizar el estado de habilitación
+                _logger.LogInformation("Updating Enabled property for user ID: {userId} to {enabled}", userId, enabled);
+                user.Enabled = enabled;
+
+                // Marcar la propiedad como modificada
+                _context.Entry(user).Property(u => u.Enabled).IsModified = true;
+
+                // Guardar los cambios
+                _logger.LogInformation("Saving changes for user ID: {userId}");
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Successfully updated Enabled property for user ID: {userId}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occurred while toggling Enabled property for user ID: {userId}");
                 return false;
             }
-
-            user.Enabled = enabled;
-
-            _context.Entry(user).Property(u => u.Enabled).IsModified = true;
-            await _context.SaveChangesAsync();
-            return true;
         }
 
         public async Task<LicitArUser> GetUserByEmailAsync(string email)
