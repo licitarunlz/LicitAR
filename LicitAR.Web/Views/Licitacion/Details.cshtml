@@ -8,34 +8,22 @@
     <div class="col-xl">
         <div class="card mb-6">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Detalles de la Licitación</h5>
-                <small class="text-body float-end">Ver los detalles</small>
+                <h5 class="mb-0"><b>@Html.DisplayFor(model => model.CodigoLicitacion)</b> - @Html.DisplayFor(model => model.Titulo) </h5>
             </div>
             <div class="card-body">
-                <dl class="row">
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IdLicitacion)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.IdLicitacion)</dd>
+                <dl class="row"> 
                     
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CodigoLicitacion)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.CodigoLicitacion)</dd>
-                    
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Titulo)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Titulo)</dd>
-                    
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Descripcion)</dt>
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Descripcion)</b></dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.Descripcion)</dd>
                     
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FechaPublicacion)</dt>
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.FechaPublicacion)</b></dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.FechaPublicacion)</dd>
                     
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FechaCierre)</dt>
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.FechaCierre)</b></dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.FechaCierre)</dd>
-                    
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IdEstadoLicitacion)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.IdEstadoLicitacion)</dd>
-                    
-                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IdCategoriaLicitacion)</dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.IdCategoriaLicitacion)</dd>
+                   
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.IdCategoriaLicitacion)</b></dt>
+                    <dd class="col-sm-9">@Html.Raw(Model.IdCategoriaLicitacion==1?"Privada":"Pública")</dd>
                 </dl>
             </div>
         </div>

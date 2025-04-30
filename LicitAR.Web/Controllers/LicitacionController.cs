@@ -162,7 +162,7 @@ namespace LicitAR.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var result = await _licitacionManager.DeleteLicitacionAsync(id);
+            var result = await _licitacionManager.DeleteLicitacionAsync(id, IdentityHelper.GetUserLicitARId(User));
             if (!result)
             {
                 return View("NotFound"); // Updated

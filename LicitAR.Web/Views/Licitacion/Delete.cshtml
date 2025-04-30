@@ -16,6 +16,7 @@
                 <p class="card-text">
                     <strong>Código:</strong> @Model.CodigoLicitacion <br />
                     <strong>Descripción:</strong> @Model.Descripcion <br />
+                    <strong>Tipo de Licitación:</strong> @(Model.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")<br />
                     <strong>Publicado:</strong> @Model.FechaPublicacion.ToShortDateString() <br />
                     <strong>Cierre:</strong> @Model.FechaCierre.ToShortDateString()
                 </p>
