@@ -12,7 +12,7 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<Licitacion?> GetLicitacionByIdAsync(int id);
         Task CreateLicitacionAsync(Licitacion licitacion, int userId);
         Task<bool> UpdateLicitacionAsync(Licitacion licitacion, int userId);
-        Task<bool> DeleteLicitacionAsync(int id);
+        Task<bool> DeleteLicitacionAsync(int id, int idUsuario);
     }
 
     public class LicitacionManager : ILicitacionManager
@@ -26,7 +26,7 @@ namespace LicitAR.Core.Business.Licitaciones
 
         public async Task<List<Licitacion>> GetAllLicitacionesAsync()
         {
-            return await _context.Licitaciones.ToListAsync();
+            return await _context.Licitaciones.Where(x=> x.Audit.FechaBaja == null).ToListAsync();
         }
 
         public async Task<Licitacion?> GetLicitacionByIdAsync(int id)
@@ -84,15 +84,16 @@ namespace LicitAR.Core.Business.Licitaciones
             }
         }
 
-        public async Task<bool> DeleteLicitacionAsync(int id)
+        public async Task<bool> DeleteLicitacionAsync(int id, int idUsuario)
         {
             var licitacion = await _context.Licitaciones.FindAsync(id);
             if (licitacion == null)
             {
                 return false;
             }
+            licitacion.Audit = AuditHelper.SetDeletionData(licitacion.Audit, idUsuario);
 
-            _context.Licitaciones.Remove(licitacion);
+            _context.Licitaciones.Update(licitacion);
             await _context.SaveChangesAsync();
             return true;
         }
