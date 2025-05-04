@@ -1,7 +1,8 @@
-﻿@model IEnumerable<LicitAR.Core.Data.Models.EntidadLicitante>
+﻿@model IEnumerable<EntidadLicitanteModel>
 
 @{
     ViewData["Title"] = "Entidades Licitantes";
+    var query = Context.Request.Query;
 }
 
 <!DOCTYPE html>
@@ -12,13 +13,13 @@
     <title>Index</title>
 </head>
 <body>
-<p>
+    <p>
         <a asp-action="Create" class="btn btn-success" title="Agregar nueva Entidad Licitante">
             <i class="bx bx-message-square-add"></i>
         </a>
 
-</p>
-    <div class="row">
+    </p>
+    @*  <div class="row">
         @foreach (var item in Model)
         {
             <div class="col-12 mb-4">
@@ -29,14 +30,7 @@
                             <h5 class="card-title">@item.RazonSocial</h5>
                             <p class="card-text mb-2">
                                 <strong>CUIT:</strong> @item.Cuit<br />
-                               @* <strong>Provincia:</strong> @item.IdProvincia<br />
-                                <strong>Localidad:</strong> @item.IdLocalidad<br />
-                                <strong>Barrio:</strong> @item.DireccionBarrio<br />
-                                <strong>Calle:</strong> @item.DireccionCalle<br />
-                                <strong>Número:</strong> @item.DireccionNumero<br />
-                                <strong>Piso:</strong> @item.DireccionPiso<br />
-                                <strong>Depto:</strong> @item.DireccionDepto<br />
-                                <strong>CP:</strong> @item.DireccionCodigoPostal *@
+
                             </p>
                         </div>
 
@@ -63,85 +57,142 @@
             </div>
         }
     </div>
+    *@
+    <div class="card">
+        <div class="card-body">
+            <form method="get" asp-action="Index">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <input type="text" name="codigoLicitacion" class="form-control" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="titulo" class="form-control" placeholder="Título" value="@query["titulo"]" />
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" name="fechaPublicacion" class="form-control" placeholder="Fecha Publicación" value="@query["fechaPublicacion"]" />
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" name="fechaCierre" class="form-control" placeholder="Fecha Cierre" value="@query["fechaCierre"]" />
+                    </div>
+                    <div class="col-md-2 d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary w-100 me-2">
+                            <i class="bx bx-filter-alt"></i> Filtrar
+                        </button>
+                        <a asp-action="Create" class="btn btn-success" title="Agregar nueva Licitación">
+                            <i class="bx bx-message-square-add"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="table-responsive text-nowrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Cuit)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.RazonSocial)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.IdProvincia)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.IdLocalidad)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionBarrio)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionCalle)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionNumero)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionPiso)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionDepto)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionCodigoPostal)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Cuit)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.RazonSocial)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IdProvincia)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IdLocalidad)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionBarrio)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionCalle)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionNumero)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionPiso)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionDepto)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionCodigoPostal)
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.IdEntidadLicitante">Edit</a> |
+                                <a asp-action="Details" asp-route-id="@item.IdEntidadLicitante">Details</a> |
+                                <a asp-action="Delete" asp-route-id="@item.IdEntidadLicitante">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
-@* 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Cuit)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RazonSocial)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdProvincia)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdLocalidad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DireccionBarrio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DireccionCalle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DireccionNumero)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DireccionPiso)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DireccionDepto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DireccionCodigoPostal)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cuit)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RazonSocial)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdProvincia)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdLocalidad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DireccionBarrio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DireccionCalle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DireccionNumero)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DireccionPiso)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DireccionDepto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DireccionCodigoPostal)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdEntidadLicitante">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdEntidadLicitante">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdEntidadLicitante">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table> *@
+        </div>
+        <div class="card-footer d-flex justify-content-center">
+            <nav>
+                <ul class="pagination pagination-rounded mb-0">
+                    @if (ViewBag.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-pageSize="10">&laquo;</a>
+                        </li>
+                    }
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="10">@i</a>
+                        </li>
+                    }
+                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-pageSize="10">&raquo;</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+
 </body>
 </html>

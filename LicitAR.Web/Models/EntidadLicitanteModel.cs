@@ -25,6 +25,9 @@ namespace LicitAR.Web.Models
         [DisplayName("Razón Social")]
         public string RazonSocial { get; set; }
 
+        public string? Provincia { get; set; }
+        public string? Localidad { get; set; }
+
 
 
         public EntidadLicitante GetEntidadLicitante(AuditTable audit)

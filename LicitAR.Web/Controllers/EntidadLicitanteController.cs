@@ -19,12 +19,14 @@ namespace LicitAR.Web.Controllers
     {
         private readonly ActoresDbContext _context;
         private readonly IEntidadLicitanteManager _entidadLicitanteManager;
+        private readonly ParametrosDbContext _parametrosDbContext;
         private IMessageManager _messageManager;
 
-        public EntidadLicitanteController(ActoresDbContext context, IEntidadLicitanteManager entidadLicitanteManager, IMessageManager message)
+        public EntidadLicitanteController(ActoresDbContext context, ParametrosDbContext parametrosDbContext, IEntidadLicitanteManager entidadLicitanteManager, IMessageManager message)
         {
             _context = context;
             _entidadLicitanteManager = entidadLicitanteManager;
+            _parametrosDbContext = parametrosDbContext;
             _messageManager = message;
         }
 
@@ -55,6 +57,19 @@ namespace LicitAR.Web.Controllers
         // GET: EntidadLicitante/Create
         public IActionResult Create()
         {
+            var items = _parametrosDbContext.Provincias
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.IdProvincia.ToString(),
+                        Text = x.Descripcion
+                    })
+                    .ToList();
+            var itemsLocalidades = _parametrosDbContext.Localidades.ToList();
+                  
+            ViewBag.ComboProvincias = items;
+            ViewBag.ComboLocalidades = itemsLocalidades;
+
+
             return View();
         }
 

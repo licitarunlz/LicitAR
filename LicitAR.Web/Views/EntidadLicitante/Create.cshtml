@@ -4,15 +4,7 @@
     ViewData["Title"] = "Entidades Licitantes";
 }
 
-
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Crear</title>
-</head>
-<body>
+ 
 
     <div class="row">
         <div class="col-xl">
@@ -40,13 +32,17 @@
                         <hr />
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label asp-for="IdProvincia" class="form-label"></label>
-                                <input asp-for="IdProvincia" class="form-control" />
+                                <label asp-for="IdProvincia" class="form-label"></label> 
+                                <select asp-for="IdProvincia" asp-items="ViewBag.ComboProvincias" class="form-control" >
+                                    <option value="">Seleccione una provincia</option>
+                                </select> 
                                 <span asp-validation-for="IdProvincia" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label asp-for="IdLocalidad" class="form-label"></label>
-                                <input asp-for="IdLocalidad" class="form-control" />
+                                <label asp-for="IdLocalidad" class="form-label"></label> 
+                                <select asp-for="IdLocalidad" class="form-control">
+                                    <option value="">Seleccione una localidad</option>
+                                </select>
                                 <span asp-validation-for="IdLocalidad" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
@@ -92,6 +88,29 @@
             </div>
         </div>
     </div> 
+ 
 
-</body>
-</html>
+@section BusinessScripts {
+
+    <script>
+             $(document).ready(function () {
+            $("#IdProvincia").change(function () {
+                debugger;
+                var provinciaId = $(this).val();
+                $("#IdLocalidad").empty();
+                if (provinciaId) {
+                    $.getJSON('/Provincias/GetLocalidades', { provinciaId: provinciaId }, function (data) {
+                        $("#IdLocalidad").append('<option value="">Seleccione una localidad</option>');
+                        $.each(data, function (index, localidad) {
+                            $("#IdLocalidad").append('<option value="' + localidad.idLocalidad + '">' + localidad.descripcion + '</option>');
+                        });
+                    });
+                } else {
+                    $("#IdLocalidad").append('<option value="">Seleccione una localidad</option>');
+                }
+            });
+        });
+
+    </script>
+
+                        }
