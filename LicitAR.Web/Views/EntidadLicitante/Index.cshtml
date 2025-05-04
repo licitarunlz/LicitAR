@@ -13,7 +13,9 @@
 </head>
 <body>
 <p>
-    <a asp-action="Create">Create New</a>
+        <a asp-action="Create" class="btn btn-success" title="Agregar nueva Entidad Licitante">
+            <i class="bx bx-message-square-add"></i>
+        </a>
 
 </p>
     <div class="row">
@@ -27,28 +29,28 @@
                             <h5 class="card-title">@item.RazonSocial</h5>
                             <p class="card-text mb-2">
                                 <strong>CUIT:</strong> @item.Cuit<br />
-                                <strong>Provincia:</strong> @item.IdProvincia<br />
+                               @* <strong>Provincia:</strong> @item.IdProvincia<br />
                                 <strong>Localidad:</strong> @item.IdLocalidad<br />
                                 <strong>Barrio:</strong> @item.DireccionBarrio<br />
                                 <strong>Calle:</strong> @item.DireccionCalle<br />
                                 <strong>Número:</strong> @item.DireccionNumero<br />
                                 <strong>Piso:</strong> @item.DireccionPiso<br />
                                 <strong>Depto:</strong> @item.DireccionDepto<br />
-                                <strong>CP:</strong> @item.DireccionCodigoPostal
+                                <strong>CP:</strong> @item.DireccionCodigoPostal *@
                             </p>
                         </div>
 
                         <!-- Derecha: solo íconos con tooltips -->
                         <div class="d-flex align-items-start gap-2" style="white-space: nowrap;">
-                            <a asp-action="Edit" asp-route-id="@item.IdEntidadLicitante"
-                               class="btn btn-sm btn-outline-primary"
-                               data-bs-toggle="tooltip" data-bs-placement="top" title="Editar">
-                                <i class="bx bx-edit-alt"></i>
-                            </a>
                             <a asp-action="Details" asp-route-id="@item.IdEntidadLicitante"
                                class="btn btn-sm btn-outline-secondary"
                                data-bs-toggle="tooltip" data-bs-placement="top" title="Detalles">
                                 <i class="bx bx-show"></i>
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.IdEntidadLicitante"
+                               class="btn btn-sm btn-outline-primary"
+                               data-bs-toggle="tooltip" data-bs-placement="top" title="Editar">
+                                <i class="bx bx-edit-alt"></i>
                             </a>
                             <a asp-action="Delete" asp-route-id="@item.IdEntidadLicitante"
                                class="btn btn-sm btn-outline-danger"

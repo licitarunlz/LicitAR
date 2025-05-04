@@ -11,6 +11,7 @@ using LicitAR.Web.Models;
 using LicitAR.Core.Utils;
 using LicitAR.Web.Helpers;
 using LicitAR.Core.Business.Licitaciones;
+using AspNetCoreGeneratedDocument;
 
 namespace LicitAR.Web.Controllers
 {
@@ -30,7 +31,7 @@ namespace LicitAR.Web.Controllers
         // GET: EntidadLicitante
         public async Task<IActionResult> Index()
         {
-            return View(await _context.EntidadesLicitantes.ToListAsync());
+            return View(await _entidadLicitanteManager.GetAllEntidadesLicitantesAsync());
         }
 
         // GET: EntidadLicitante/Details/5
@@ -93,12 +94,14 @@ namespace LicitAR.Web.Controllers
                 return NotFound();
             }
 
-            var entidadLicitante = await _context.EntidadesLicitantes.FindAsync(id);
+            var entidadLicitante = await _entidadLicitanteManager.GetEntidadLicitanteByIdAsync(id.Value);
             if (entidadLicitante == null)
             {
                 return NotFound();
             }
-            return View(entidadLicitante);
+            EntidadLicitanteModel ent = new EntidadLicitanteModel();
+            ent.SetEntidadLicitanteData(entidadLicitante);
+            return View(ent);
         }
 
         // POST: EntidadLicitante/Edit/5
@@ -106,7 +109,7 @@ namespace LicitAR.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdEntidadLicitante,Cuit,RazonSocial,IdProvincia,IdLocalidad,DireccionBarrio,DireccionCalle,DireccionNumero,DireccionPiso,DireccionDepto,DireccionCodigoPostal")] EntidadLicitante entidadLicitante)
+        public async Task<IActionResult> Edit(int id, EntidadLicitanteModel entidadLicitante)
         {
             if (id != entidadLicitante.IdEntidadLicitante)
             {
@@ -117,21 +120,24 @@ namespace LicitAR.Web.Controllers
             {
                 try
                 {
-                    _context.Update(entidadLicitante);
-                    await _context.SaveChangesAsync();
+                    var entidad = entidadLicitante.GetEntidadLicitante(AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User)));
+                    entidad.IdEntidadLicitante = entidadLicitante.IdEntidadLicitante;
+
+                    _messageManager = await _entidadLicitanteManager.ModificarAsync(entidad, id, IdentityHelper.GetUserLicitARId(User));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!EntidadLicitanteExists(entidadLicitante.IdEntidadLicitante))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _messageManager.ErrorMessage("Excepcion al intentar modificar una licitaciòn: Ex - " + ex.ToString());
                 }
-                return RedirectToAction(nameof(Index));
+                finally
+                {
+                    ViewBag.messages = _messageManager.messages;
+                }
+
+                if (_messageManager.HasErrors)
+                    return View(entidadLicitante);
+                else 
+                    return RedirectToAction(nameof(Index));
             }
             return View(entidadLicitante);
         }
@@ -159,14 +165,15 @@ namespace LicitAR.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var entidadLicitante = await _context.EntidadesLicitantes.FindAsync(id);
-            if (entidadLicitante != null)
-            {
-                _context.EntidadesLicitantes.Remove(entidadLicitante);
-            }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            _messageManager = await _entidadLicitanteManager.BajaLogicaAsync(id, IdentityHelper.GetUserLicitARId(User));
+
+            ViewBag.messages = _messageManager.messages;
+
+            if (_messageManager.HasErrors)
+                return View(id);
+            else
+                return RedirectToAction(nameof(Index));
         }
 
         private bool EntidadLicitanteExists(int id)

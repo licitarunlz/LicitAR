@@ -3,25 +3,27 @@ using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Utils;
 using LicitAR.Web.Helpers;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace LicitAR.Web.Models
 {
-     
-        [PrimaryKey("IdEntidadLicitante")]
-        public class EntidadLicitanteModel : WithDireccion
-        {
-            [Key]
-            [Required(ErrorMessage = ErrorMessages.REQUIRED)]
-            public int IdEntidadLicitante { get; set; }
 
-            [Required(ErrorMessage = ErrorMessages.REQUIRED)]
-            [MaxLength(30, ErrorMessage = ErrorMessages.MAXLENGTH)]
-            public required string Cuit { get; set; }
+    [PrimaryKey("IdEntidadLicitante")]
+    public class EntidadLicitanteModel : WithDireccion
+    {
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        public int IdEntidadLicitante { get; set; }
 
-            [Required(ErrorMessage = ErrorMessages.REQUIRED)]
-            [MaxLength(200, ErrorMessage = ErrorMessages.MAXLENGTH)]
-            public required string RazonSocial { get; set; }
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        [MaxLength(30, ErrorMessage = ErrorMessages.MAXLENGTH)]
+        public string Cuit { get; set; }
+
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        [MaxLength(200, ErrorMessage = ErrorMessages.MAXLENGTH)]
+
+        [DisplayName("Razón Social")]
+        public string RazonSocial { get; set; }
 
 
 
@@ -45,7 +47,7 @@ namespace LicitAR.Web.Models
 
         public void SetEntidadLicitanteData(EntidadLicitante entidadLicitante)
         {
-
+            this.IdEntidadLicitante = entidadLicitante.IdEntidadLicitante;
             this.Cuit = entidadLicitante.Cuit;
             this.RazonSocial = entidadLicitante.RazonSocial;
             this.DireccionBarrio = entidadLicitante.DireccionBarrio;
@@ -56,8 +58,8 @@ namespace LicitAR.Web.Models
             this.DireccionPiso = entidadLicitante.DireccionPiso;
             this.IdLocalidad = entidadLicitante.IdLocalidad;
             this.IdProvincia = entidadLicitante.IdProvincia;
-             
+
         }
     }
-     
+
 }
