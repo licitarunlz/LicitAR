@@ -1,0 +1,145 @@
+﻿@model IEnumerable<LicitAR.Core.Data.Models.EntidadLicitante>
+
+@{
+    ViewData["Title"] = "Entidades Licitantes";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+<p>
+    <a asp-action="Create">Create New</a>
+
+</p>
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body d-flex justify-content-between align-items-start">
+                        <!-- Izquierda: contenido -->
+                        <div>
+                            <h5 class="card-title">@item.RazonSocial</h5>
+                            <p class="card-text mb-2">
+                                <strong>CUIT:</strong> @item.Cuit<br />
+                                <strong>Provincia:</strong> @item.IdProvincia<br />
+                                <strong>Localidad:</strong> @item.IdLocalidad<br />
+                                <strong>Barrio:</strong> @item.DireccionBarrio<br />
+                                <strong>Calle:</strong> @item.DireccionCalle<br />
+                                <strong>Número:</strong> @item.DireccionNumero<br />
+                                <strong>Piso:</strong> @item.DireccionPiso<br />
+                                <strong>Depto:</strong> @item.DireccionDepto<br />
+                                <strong>CP:</strong> @item.DireccionCodigoPostal
+                            </p>
+                        </div>
+
+                        <!-- Derecha: solo íconos con tooltips -->
+                        <div class="d-flex align-items-start gap-2" style="white-space: nowrap;">
+                            <a asp-action="Edit" asp-route-id="@item.IdEntidadLicitante"
+                               class="btn btn-sm btn-outline-primary"
+                               data-bs-toggle="tooltip" data-bs-placement="top" title="Editar">
+                                <i class="bx bx-edit-alt"></i>
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.IdEntidadLicitante"
+                               class="btn btn-sm btn-outline-secondary"
+                               data-bs-toggle="tooltip" data-bs-placement="top" title="Detalles">
+                                <i class="bx bx-show"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.IdEntidadLicitante"
+                               class="btn btn-sm btn-outline-danger"
+                               data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar">
+                                <i class="bx bx-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+@* 
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Cuit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RazonSocial)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdProvincia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdLocalidad)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DireccionBarrio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DireccionCalle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DireccionNumero)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DireccionPiso)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DireccionDepto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DireccionCodigoPostal)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cuit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RazonSocial)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdProvincia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdLocalidad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DireccionBarrio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DireccionCalle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DireccionNumero)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DireccionPiso)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DireccionDepto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DireccionCodigoPostal)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdEntidadLicitante">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdEntidadLicitante">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdEntidadLicitante">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table> *@
+</body>
+</html>

@@ -12,11 +12,11 @@ namespace LicitAR.Core.Business.Licitaciones
 {
     public interface IEntidadLicitanteManager
     {
-        Task<IMessageManager> AgregarAsync(EntidadLicitante entidadLicitante);
-        Task<IMessageManager> BajaLogicaAsync(int idEntidadLicitante);
+        Task<IMessageManager> AgregarAsync(EntidadLicitante entidadLicitante, int idUser);
+        Task<IMessageManager> BajaLogicaAsync(int idEntidadLicitante, int idUser);
         Task<IEnumerable<EntidadLicitante>> GetAllEntidadesLicitantesAsync();
         Task<EntidadLicitante> GetEntidadLicitanteByIdAsync(int idEntidadLicitante);
-        Task<IMessageManager> ModificarAsync(EntidadLicitante entidadLicitante, int idEntidadLicitante);
+        Task<IMessageManager> ModificarAsync(EntidadLicitante entidadLicitante, int idEntidadLicitante, int idUser);
     }
 
     public class EntidadLicitanteManager : IEntidadLicitanteManager
@@ -38,15 +38,29 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             return await this._actoresDbContext.EntidadesLicitantes.FirstOrDefaultAsync(x => x.IdEntidadLicitante == idEntidadLicitante);
         }
-        public async Task<IMessageManager> AgregarAsync(EntidadLicitante entidadLicitante)
+        public async Task<IMessageManager> AgregarAsync(EntidadLicitante entidadLicitante, int idUser)
+        {
+            try
+            { 
+                entidadLicitante.Audit = AuditHelper.GetCreationData(idUser);
+                _actoresDbContext.EntidadesLicitantes.Add(entidadLicitante);
+                await _actoresDbContext.SaveChangesAsync();
+                
+                _messageManager.OkMessage("Entidad Licitante agregada exitosamente!");
+            }
+            catch (Exception ex) 
+            {
+                _messageManager.ClearMessages();
+                _messageManager.ErrorMessage("Error al intnetar actualizar la base de datos " + ex.ToString());
+            }
+
+            return _messageManager;
+        }
+        public async Task<IMessageManager> ModificarAsync(EntidadLicitante entidadLicitante, int idEntidadLicitante, int idUser)
         {
             return _messageManager;
         }
-        public async Task<IMessageManager> ModificarAsync(EntidadLicitante entidadLicitante, int idEntidadLicitante)
-        {
-            return _messageManager;
-        }
-        public async Task<IMessageManager> BajaLogicaAsync(int idEntidadLicitante)
+        public async Task<IMessageManager> BajaLogicaAsync(int idEntidadLicitante, int idUser)
         {
 
             return _messageManager;
