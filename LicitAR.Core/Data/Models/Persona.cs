@@ -1,4 +1,5 @@
 ﻿using LicitAR.Core.Data.Models.Helpers;
+using LicitAR.Core.Data.Models.Parametros;
 using LicitAR.Core.Utils;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,7 +14,7 @@ namespace LicitAR.Core.Data.Models
     [PrimaryKey("IdPersona")]
     public class Persona : WithDireccion
     {
-
+        [Key]
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         public int IdPersona { get; set; }
 
@@ -28,6 +29,18 @@ namespace LicitAR.Core.Data.Models
         [MaxLength(30, ErrorMessage = ErrorMessages.MAXLENGTH)]
         public required string Cuit { get; set; }
 
+        [EmailAddress(ErrorMessage = ErrorMessages.VALIDEMAIL)]
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        [MaxLength(30, ErrorMessage = ErrorMessages.MAXLENGTH)]
+        public string? Email { get; set; }
+
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        [MaxLength(30, ErrorMessage = ErrorMessages.MAXLENGTH)]
+        public string? Telefono { get; set; }
+
+        public Provincia Provincia { get; set; }
+        public Localidad Localidad { get; set; }
+        public TipoPersona TipoPersona { get; set; }
         public required AuditTable Audit { get; set; }
         
 

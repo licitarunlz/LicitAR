@@ -1,0 +1,141 @@
+﻿using LicitAR.Core.Data.Models;
+using LicitAR.Core.Data;
+using LicitAR.Core.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
+namespace LicitAR.Core.Business.Licitaciones
+{
+    public interface IPersonaManager
+    {
+        Task<IMessageManager> AgregarAsync(Persona persona, int idUser);
+        Task<IMessageManager> BajaLogicaAsync(int idPersona, int idUser);
+        Task<IEnumerable<Persona>> GetAllPersonasAsync();
+        Task<Persona?> GetPersonaByIdAsync(int idPersona);
+        Task<IMessageManager> ModificarAsync(Persona persona, int idPersona, int idUser);
+    }
+
+    public class PersonaManager : IPersonaManager
+    {
+        private IMessageManager _messageManager;
+        private ActoresDbContext _actoresDbContext;
+
+        public PersonaManager(IMessageManager messageManager, ActoresDbContext actoresDbContext)
+        {
+            this._messageManager = messageManager;
+            this._actoresDbContext = actoresDbContext;
+        }
+
+        public async Task<IEnumerable<Persona>> GetAllPersonasAsync()
+        {
+            return this._actoresDbContext.Personas
+    .Include(p => p.Provincia)
+    .Include(p => p.Localidad)
+    .Include(p => p.TipoPersona)
+    .Where(x => x.Audit.FechaBaja == null);
+        }
+        public async Task<Persona?> GetPersonaByIdAsync(int idPersona)
+        {
+            return await this._actoresDbContext.Personas
+    .Include(p => p.Provincia)
+    .Include(p => p.Localidad)
+    .Include(p => p.TipoPersona).FirstOrDefaultAsync(x => x.IdPersona == idPersona);
+        }
+        public async Task<IMessageManager> AgregarAsync(Persona persona, int idUser)
+        {
+            try
+            {
+                persona.Audit = AuditHelper.GetCreationData(idUser);
+                _actoresDbContext.Personas.Add(persona);
+                await _actoresDbContext.SaveChangesAsync();
+
+                _messageManager.OkMessage("Persona agregada exitosamente!");
+            }
+            catch (Exception ex)
+            {
+                _messageManager.ClearMessages();
+                _messageManager.ErrorMessage("Error al intentar actualizar la base de datos " + ex.ToString());
+            }
+
+            return _messageManager;
+        }
+        public async Task<IMessageManager> ModificarAsync(Persona persona, int idPersona, int idUser)
+        {
+            try
+            {
+                var entidadFromDdbb = await _actoresDbContext.Personas.FirstOrDefaultAsync(x => x.IdPersona == idPersona);
+                if (entidadFromDdbb == null)
+                {
+                    _messageManager.ErrorMessage("Persona no encontrada");
+                }
+                else
+                {
+                    entidadFromDdbb.Email = persona.Email;
+                    entidadFromDdbb.Telefono = persona.Telefono;
+                    entidadFromDdbb.Cuit = persona.Cuit;
+                    entidadFromDdbb.RazonSocial = persona.RazonSocial;
+                    entidadFromDdbb.IdLocalidad = persona.IdLocalidad;
+                    entidadFromDdbb.IdProvincia = persona.IdProvincia;
+                    entidadFromDdbb.DireccionBarrio = persona.DireccionBarrio;
+                    entidadFromDdbb.DireccionCalle = persona.DireccionCalle;
+                    entidadFromDdbb.DireccionNumero = persona.DireccionNumero;
+                    entidadFromDdbb.DireccionPiso = persona.DireccionPiso;
+                    entidadFromDdbb.DireccionDepto = persona.DireccionDepto;
+                    entidadFromDdbb.DireccionCodigoPostal = persona.DireccionCodigoPostal;
+
+                    entidadFromDdbb.Audit = AuditHelper.SetModificationData(entidadFromDdbb.Audit, idUser);
+
+                    _actoresDbContext.Personas.Update(entidadFromDdbb);
+
+                    await _actoresDbContext.SaveChangesAsync();
+
+                    _messageManager.OkMessage("Persona modificada exitosamente");
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageManager.ClearMessages();
+                _messageManager.ErrorMessage("Excepcion al modificar la entidad licitante: Ex - " + ex.ToString());
+            }
+            return _messageManager;
+
+
+        }
+        public async Task<IMessageManager> BajaLogicaAsync(int idPersona, int idUser)
+        {
+            try
+            {
+                var persona = await _actoresDbContext.Personas.FirstOrDefaultAsync(x => x.IdPersona == idPersona);
+                if (persona == null)
+                {
+                    _messageManager.ErrorMessage("Persona no encontrada");
+                }
+                else
+                {
+                    persona.Audit = AuditHelper.SetDeletionData(persona.Audit, idUser);
+
+                    _actoresDbContext.Personas.Update(persona);
+                    await _actoresDbContext.SaveChangesAsync();
+
+                    _messageManager.OkMessage("Persona eliminada exitosamente");
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageManager.ClearMessages();
+                _messageManager.ErrorMessage("Excepcion al eliminar la entidad licitante: Ex - " + ex.ToString());
+
+            }
+            return _messageManager;
+        }
+
+    }
+}

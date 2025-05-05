@@ -96,7 +96,25 @@
                 </li>
             </ul>
         </li>
-
+        <!-- Personas -->
+        <li class='menu-item'>
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div class="text-truncate" data-i18n="Personas">Personas</div>
+            </a>
+            <ul class="menu-sub">
+                <li class='menu-item'>
+                    <a asp-action="Index" asp-controller="Persona" class="menu-link">
+                        <div>Listado</div>
+                    </a>
+                </li>
+                <li class='menu-item'>
+                    <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                        <div>Postulaciones</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
     <!-- Configuración -->
     <li class='menu-item'>
       <a href="javascript:void(0);" class="menu-link menu-toggle">
