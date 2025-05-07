@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EntidadLicitanteModel>
+﻿@model IEnumerable<LicitAR.Core.Data.Models.EntidadLicitante>
 
 @{
     ViewData["Title"] = "Entidades Licitantes";
@@ -13,72 +13,21 @@
     <title>Index</title>
 </head>
 <body>
-    <p>
-        <a asp-action="Create" class="btn btn-success" title="Agregar nueva Entidad Licitante">
-            <i class="bx bx-message-square-add"></i>
-        </a>
-
-    </p>
-    @*  <div class="row">
-        @foreach (var item in Model)
-        {
-            <div class="col-12 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-body d-flex justify-content-between align-items-start">
-                        <!-- Izquierda: contenido -->
-                        <div>
-                            <h5 class="card-title">@item.RazonSocial</h5>
-                            <p class="card-text mb-2">
-                                <strong>CUIT:</strong> @item.Cuit<br />
-
-                            </p>
-                        </div>
-
-                        <!-- Derecha: solo íconos con tooltips -->
-                        <div class="d-flex align-items-start gap-2" style="white-space: nowrap;">
-                            <a asp-action="Details" asp-route-id="@item.IdEntidadLicitante"
-                               class="btn btn-sm btn-outline-secondary"
-                               data-bs-toggle="tooltip" data-bs-placement="top" title="Detalles">
-                                <i class="bx bx-show"></i>
-                            </a>
-                            <a asp-action="Edit" asp-route-id="@item.IdEntidadLicitante"
-                               class="btn btn-sm btn-outline-primary"
-                               data-bs-toggle="tooltip" data-bs-placement="top" title="Editar">
-                                <i class="bx bx-edit-alt"></i>
-                            </a>
-                            <a asp-action="Delete" asp-route-id="@item.IdEntidadLicitante"
-                               class="btn btn-sm btn-outline-danger"
-                               data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar">
-                                <i class="bx bx-trash"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-    *@
     <div class="card">
         <div class="card-body">
             <form method="get" asp-action="Index">
                 <div class="row mb-3">
                     <div class="col-md-3">
-                        <input type="text" name="codigoLicitacion" class="form-control" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
+                        <input type="text" name="cuit" class="form-control" placeholder="CUIT" value="@query["cuit"]" />
                     </div>
                     <div class="col-md-3">
-                        <input type="text" name="titulo" class="form-control" placeholder="Título" value="@query["titulo"]" />
-                    </div>
-                    <div class="col-md-2">
-                        <input type="date" name="fechaPublicacion" class="form-control" placeholder="Fecha Publicación" value="@query["fechaPublicacion"]" />
-                    </div>
-                    <div class="col-md-2">
-                        <input type="date" name="fechaCierre" class="form-control" placeholder="Fecha Cierre" value="@query["fechaCierre"]" />
+                        <input type="text" name="razonSocial" class="form-control" placeholder="Razón Social" value="@query["razonSocial"]" />
                     </div>
                     <div class="col-md-2 d-flex justify-content-between">
                         <button type="submit" class="btn btn-primary w-100 me-2">
                             <i class="bx bx-filter-alt"></i> Filtrar
                         </button>
-                        <a asp-action="Create" class="btn btn-success" title="Agregar nueva Licitación">
+                        <a asp-action="Create" class="btn btn-success" title="Agregar nueva Entidad Licitante">
                             <i class="bx bx-message-square-add"></i>
                         </a>
                     </div>
@@ -127,7 +76,14 @@
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Cuit)
+                                @if (!string.IsNullOrEmpty(item.Cuit) && item.Cuit.Length == 11)
+                                {
+                                    @($"{item.Cuit.Substring(0, 2)}-{item.Cuit.Substring(2, 8)}-{item.Cuit.Substring(10, 1)}")
+                                }
+                                else
+                                {
+                                    @item.Cuit
+                                }
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.RazonSocial)
@@ -157,9 +113,22 @@
                                 @Html.DisplayFor(modelItem => item.DireccionCodigoPostal)
                             </td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.IdEntidadLicitante">Edit</a> |
-                                <a asp-action="Details" asp-route-id="@item.IdEntidadLicitante">Details</a> |
-                                <a asp-action="Delete" asp-route-id="@item.IdEntidadLicitante">Delete</a>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdEntidadLicitante">
+                                            <i class="bx bx-edit-alt me-1"></i> Editar
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdEntidadLicitante">
+                                            <i class="bx bx-show me-1"></i> Detalles
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdEntidadLicitante">
+                                            <i class="bx bx-trash me-1"></i> Eliminar
+                                        </a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     }

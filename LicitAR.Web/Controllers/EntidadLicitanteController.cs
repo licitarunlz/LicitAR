@@ -30,9 +30,32 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: EntidadLicitante
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
-            return View(await _entidadLicitanteManager.GetAllEntidadesLicitantesAsync());
+            var query = _context.EntidadesLicitantes.AsQueryable();
+
+            if (!string.IsNullOrEmpty(cuit))
+            {
+                query = query.Where(e => e.Cuit.Contains(cuit));
+            }
+
+            if (!string.IsNullOrEmpty(razonSocial))
+            {
+                query = query.Where(e => e.RazonSocial.Contains(razonSocial));
+            }
+
+            var totalItems = query.Count();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var items = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            return View(items);
         }
 
         // GET: EntidadLicitante/Details/5
