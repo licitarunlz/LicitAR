@@ -1,87 +1,32 @@
 ﻿@model LicitAR.Core.Data.Models.EntidadLicitante
- 
 
-<!DOCTYPE html>
+@{
+    ViewData["Title"] = "Eliminar Entidad Licitante";
+}
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Delete</title>
-</head>
-<body>
-
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>EntidadLicitante</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cuit)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cuit)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RazonSocial)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RazonSocial)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdProvincia)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdProvincia)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdLocalidad)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdLocalidad)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DireccionBarrio)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DireccionBarrio)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DireccionCalle)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DireccionCalle)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DireccionNumero)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DireccionNumero)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DireccionPiso)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DireccionPiso)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DireccionDepto)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DireccionDepto)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DireccionCodigoPostal)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DireccionCodigoPostal)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="IdEntidadLicitante" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+<div class="row mb-12 g-6">
+    <div class="col-md-8 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                Confirmar eliminación de la Entidad Licitante:
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.RazonSocial</h5>
+                <p class="card-text">
+                    <strong>CUIT:</strong> @Model.Cuit <br />
+                    <strong>Provincia:</strong> @Model.IdProvincia <br />
+                    <strong>Localidad:</strong> @Model.IdLocalidad <br />
+                    <strong>Dirección:</strong> 
+                    @Model.DireccionCalle @Model.DireccionNumero, 
+                    Piso @Model.DireccionPiso, Depto @Model.DireccionDepto <br />
+                    <strong>Código Postal:</strong> @Model.DireccionCodigoPostal
+                </p>
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="IdEntidadLicitante" />
+                    <input type="submit" value="Eliminar" class="btn btn-danger" />
+                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
-</body>
-</html>
