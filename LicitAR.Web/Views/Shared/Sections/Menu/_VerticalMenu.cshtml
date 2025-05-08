@@ -3,13 +3,6 @@
   TempData.Keep();
   string? currentPage = ViewContext.HttpContext.Request.Path;
   var user = ViewContext.HttpContext.User;
-
-  // Debugging: List all claims of the user
-  var logger = ViewContext.HttpContext.RequestServices.GetService<ILogger<AuthorizeClaimAttribute>>();
-  foreach (var claim in user.Claims)
-  {
-      logger?.LogInformation($"Claim: {claim.Type} = {claim.Value}");
-  }
 }
 
 <!-- Menu -->
