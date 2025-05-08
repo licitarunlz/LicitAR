@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LicitAR.Core.Data;
@@ -10,7 +6,8 @@ using LicitAR.Core.Data.Models;
 using LicitAR.Web.Models;
 using LicitAR.Core.Utils;
 using LicitAR.Web.Helpers;
-using LicitAR.Core.Business.Licitaciones; 
+using LicitAR.Core.Business.Licitaciones;
+using LicitAR.Web.Helpers.Authorization;
 
 namespace LicitAR.Web.Controllers
 {
@@ -30,6 +27,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: EntidadLicitante
+        [AuthorizeClaim("EntidadLicitante.Ver")]
         public IActionResult Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
             var query = _context.EntidadesLicitantes.AsQueryable();
@@ -59,6 +57,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: EntidadLicitante/Details/5
+        [AuthorizeClaim("EntidadLicitante.Ver")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -77,6 +76,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: EntidadLicitante/Create
+        [AuthorizeClaim("EntidadLicitante.Crear")]
         public IActionResult Create()
         {
             var items = _parametrosDbContext.Provincias
@@ -100,6 +100,7 @@ namespace LicitAR.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuthorizeClaim("EntidadLicitante.Crear")]
         public async Task<IActionResult> Create(EntidadLicitanteModel entidadLicitanteModel)
         {
             if (ModelState.IsValid)
@@ -124,6 +125,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: EntidadLicitante/Edit/5
+        [AuthorizeClaim("EntidadLicitante.Editar")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -146,6 +148,7 @@ namespace LicitAR.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuthorizeClaim("EntidadLicitante.Editar")]
         public async Task<IActionResult> Edit(int id, EntidadLicitanteModel entidadLicitante)
         {
             if (id != entidadLicitante.IdEntidadLicitante)
@@ -180,6 +183,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: EntidadLicitante/Delete/5
+        [AuthorizeClaim("EntidadLicitante.Eliminar")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -200,6 +204,7 @@ namespace LicitAR.Web.Controllers
         // POST: EntidadLicitante/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [AuthorizeClaim("EntidadLicitante.Eliminar")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
 

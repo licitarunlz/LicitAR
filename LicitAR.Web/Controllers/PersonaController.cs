@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using LicitAR.Core.Data;
 using LicitAR.Core.Data.Models;
 using LicitAR.Core.Business.Licitaciones;
 using LicitAR.Core.Utils;
 using LicitAR.Web.Models;
 using LicitAR.Web.Helpers;
+using LicitAR.Web.Helpers.Authorization;
 
 namespace LicitAR.Web.Controllers
 {
@@ -30,6 +26,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Persona
+        [AuthorizeClaim("Persona.Ver")]
         public async Task<IActionResult> Index()
         {
             var personas = await _personaManager.GetAllPersonasAsync();
@@ -46,6 +43,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Persona/Details/5
+        [AuthorizeClaim("Persona.Ver")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -64,6 +62,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Persona/Create
+        [AuthorizeClaim("Persona.Crear")]
         public IActionResult Create()
         {
             var items = _parametrosDbContext.Provincias
@@ -89,8 +88,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // POST: Persona/Create
-        // To protect from  overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [AuthorizeClaim("Persona.Crear")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PersonaModel personaModel)
@@ -119,6 +117,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Persona/Edit/5
+        [AuthorizeClaim("Persona.Editar")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -151,8 +150,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // POST: Persona/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [AuthorizeClaim("Persona.Editar")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, PersonaModel personaModel)
@@ -190,6 +188,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Persona/Delete/5
+        [AuthorizeClaim("Persona.Eliminar")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -210,6 +209,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // POST: Persona/Delete/5
+        [AuthorizeClaim("Persona.Eliminar")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
