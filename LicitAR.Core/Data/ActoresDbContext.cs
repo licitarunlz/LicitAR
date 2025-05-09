@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection.Emit;
 
 namespace LicitAR.Core.Data
 {
@@ -53,6 +54,20 @@ namespace LicitAR.Core.Data
             builder.Entity<TipoContacto>().OwnsOne(p => p.Audit);
             builder.Entity<TipoPersona>().OwnsOne(p => p.Audit);
             builder.Entity<EntidadLicitanteUsuario>().OwnsOne(e => e.Audit);
+
+            builder.Entity<EntidadLicitanteUsuario>()
+                .HasKey(eu => new { eu.IdEntidadLicitante, eu.IdUsuario });
+
+            builder.Entity<EntidadLicitanteUsuario>()
+                .HasOne(eu => eu.EntidadLicitante)
+                .WithMany(e => e.Usuarios)
+                .HasForeignKey(eu => eu.IdEntidadLicitante);
+
+            builder.Entity<EntidadLicitanteUsuario>()
+                .HasOne(eu => eu.Usuario)
+                .WithMany(u => u.EntidadesLicitantes)
+                .HasForeignKey(eu => eu.IdUsuario);
+
 
             base.OnModelCreating(builder);
         }
