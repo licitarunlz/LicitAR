@@ -25,15 +25,17 @@ public class AuthorizeClaimAttribute : Attribute, IAuthorizationFilter
             return;
         }
 
-        //Log all claims for debugging
         var logger = context.HttpContext.RequestServices.GetService<ILogger<AuthorizeClaimAttribute>>();
-        /*foreach (var claim in user.Claims)
+
+        /* Log all claims for debugging
+        foreach (var claim in user.Claims)
         {
             logger?.LogInformation($"User claim: {claim.Type} = {claim.Value}");
-        }*/
+        }
 
-        //logger?.LogInformation($"Checking for claim: permission = {_claimValue}");
-
+        logger?.LogInformation($"Checking for claim: permission = {_claimValue}");
+        */
+        
         // Check for "permission" as the claim type and match the value
         var hasClaim = user.Claims.Any(c => 
             string.Equals(c.Type, "permission", StringComparison.OrdinalIgnoreCase) && 

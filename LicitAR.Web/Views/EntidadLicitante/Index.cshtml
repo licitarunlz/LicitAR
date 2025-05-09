@@ -1,0 +1,167 @@
+﻿@model IEnumerable<LicitAR.Core.Data.Models.EntidadLicitante>
+
+@{
+    ViewData["Title"] = "Entidades Licitantes";
+    var query = Context.Request.Query;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div class="card">
+        <div class="card-body">
+            <form method="get" asp-action="Index">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <input type="text" name="cuit" class="form-control" placeholder="CUIT" value="@query["cuit"]" />
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="razonSocial" class="form-control" placeholder="Razón Social" value="@query["razonSocial"]" />
+                    </div>
+                    <div class="col-md-2 d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary w-100 me-2">
+                            <i class="bx bx-filter-alt"></i> Filtrar
+                        </button>
+                        <a asp-action="Create" class="btn btn-success" title="Agregar nueva Entidad Licitante">
+                            <i class="bx bx-message-square-add"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="table-responsive text-nowrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Cuit)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.RazonSocial)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.IdProvincia)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.IdLocalidad)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionBarrio)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionCalle)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionNumero)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionPiso)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionDepto)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DireccionCodigoPostal)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Cuit) && item.Cuit.Length == 11)
+                                {
+                                    @($"{item.Cuit.Substring(0, 2)}-{item.Cuit.Substring(2, 8)}-{item.Cuit.Substring(10, 1)}")
+                                }
+                                else
+                                {
+                                    @item.Cuit
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.RazonSocial)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IdProvincia)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IdLocalidad)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionBarrio)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionCalle)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionNumero)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionPiso)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionDepto)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DireccionCodigoPostal)
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdEntidadLicitante">
+                                            <i class="bx bx-edit-alt me-1"></i> Editar
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdEntidadLicitante">
+                                            <i class="bx bx-show me-1"></i> Detalles
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdEntidadLicitante">
+                                            <i class="bx bx-trash me-1"></i> Eliminar
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+        <div class="card-footer d-flex justify-content-center">
+            <nav>
+                <ul class="pagination pagination-rounded mb-0">
+                    @if (ViewBag.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-pageSize="10">&laquo;</a>
+                        </li>
+                    }
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="10">@i</a>
+                        </li>
+                    }
+                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-pageSize="10">&raquo;</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+
+</body>
+</html>

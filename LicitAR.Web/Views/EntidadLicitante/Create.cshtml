@@ -1,0 +1,117 @@
+﻿@model EntidadLicitanteModel
+
+@{
+    ViewData["Title"] = "Entidades Licitantes";
+}
+
+ 
+
+    <div class="row">
+        <div class="col-xl">
+            <div class="card mb-6">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Crear Entidad Licitante</h3>
+                    <small class="text-body float-end">Ingrese los detalles</small>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group  mb-3">
+                            <label asp-for="Cuit" class="form-label"></label>
+                            <input asp-for="Cuit" class="form-control" />
+                            <span asp-validation-for="Cuit" class="text-danger"></span>
+                        </div>
+
+
+                        <div class="form-group mb-3">
+                            <label asp-for="RazonSocial" class="form-label"></label>
+                            <input asp-for="RazonSocial" class="form-control" />
+                            <span asp-validation-for="RazonSocial" class="text-danger"></span>
+                        </div>
+                        <h4 class="mt-6"> Domicilio </h4>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="IdProvincia" class="form-label"></label> 
+                                <select asp-for="IdProvincia" asp-items="ViewBag.ComboProvincias" class="form-control" >
+                                    <option value="">Seleccione una provincia</option>
+                                </select> 
+                                <span asp-validation-for="IdProvincia" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="IdLocalidad" class="form-label"></label> 
+                                <select asp-for="IdLocalidad" class="form-control">
+                                    <option value="">Seleccione una localidad</option>
+                                </select>
+                                <span asp-validation-for="IdLocalidad" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="DireccionBarrio" class="form-label"></label>
+                                <input asp-for="DireccionBarrio" class="form-control" />
+                                <span asp-validation-for="DireccionBarrio" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="DireccionCalle" class="form-label"></label>
+                                <input asp-for="DireccionCalle" class="form-control" />
+                                <span asp-validation-for="DireccionCalle" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label asp-for="DireccionNumero" class="form-label"></label>
+                                <input asp-for="DireccionNumero" class="form-control" />
+                                <span asp-validation-for="DireccionNumero" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label asp-for="DireccionPiso" class="form-label"></label>
+                                <input asp-for="DireccionPiso" class="form-control" />
+                                <span asp-validation-for="DireccionPiso" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label asp-for="DireccionDepto" class="form-label"></label>
+                                <input asp-for="DireccionDepto" class="form-control" />
+                                <span asp-validation-for="DireccionDepto" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label asp-for="DireccionCodigoPostal" class="form-label"></label>
+                                <input asp-for="DireccionCodigoPostal" class="form-control" />
+                                <span asp-validation-for="DireccionCodigoPostal" class="text-danger"></span>
+                            </div>
+
+                        </div>
+                        <div class="text-end mt-8">
+                            <a asp-action="Index" class="btn btn-secondary ">Volver a la Lista</a>
+                            <input type="submit" value="Crear" class="btn btn-primary" />
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> 
+ 
+
+@section BusinessScripts {
+
+    <script>
+             $(document).ready(function () {
+            $("#IdProvincia").change(function () {
+                debugger;
+                var provinciaId = $(this).val();
+                $("#IdLocalidad").empty();
+                if (provinciaId) {
+                    $.getJSON('/Provincias/GetLocalidades', { provinciaId: provinciaId }, function (data) {
+                        $("#IdLocalidad").append('<option value="">Seleccione una localidad</option>');
+                        $.each(data, function (index, localidad) {
+                            $("#IdLocalidad").append('<option value="' + localidad.idLocalidad + '">' + localidad.descripcion + '</option>');
+                        });
+                    });
+                } else {
+                    $("#IdLocalidad").append('<option value="">Seleccione una localidad</option>');
+                }
+            });
+        });
+
+    </script>
+
+                        }

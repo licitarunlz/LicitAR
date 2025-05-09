@@ -67,16 +67,17 @@
                         </div>
                     </div>
                      
-                     
-                    
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <div class="text-start mt-8">
+                        <input type="submit" value="Editar" class="btn btn-primary">
+                        <i class="bi bi-pencil-square"></i> <!-- Icon for Edit -->
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver a la Lista <!-- Icon for Back -->
+                        </a>
+                    </div>    
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index" class="btn btn-secondary mt-3">Volver a la Lista</a>
-</div>
 

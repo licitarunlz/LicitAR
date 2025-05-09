@@ -29,12 +29,11 @@
 
 @section PageScripts{ @RenderSection("PageScripts", required: false) }
 
+ 
 
-@{
-    if (IsSectionDefined("BusinessScripts"))
-    {
+@section BusinessScripts { 
+
         @RenderSection("BusinessScripts", required: false)
-    }
 }
 
 @{

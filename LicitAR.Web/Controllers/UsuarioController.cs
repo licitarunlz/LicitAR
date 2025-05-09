@@ -228,8 +228,6 @@ public class UsuarioController : Controller
         return View();
     }
 
-
-
     [HttpGet]
     [AllowAnonymous]
     public IActionResult ResetPassword(string token, string email)
@@ -266,8 +264,6 @@ public class UsuarioController : Controller
     {
         return View();
     }
-
-
     
     [AuthorizeClaim("Perfil.Ver")]
     public async Task<IActionResult> MyProfile()

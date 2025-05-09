@@ -1,0 +1,50 @@
+﻿@model LicitAR.Core.Data.Models.EntidadLicitante
+
+@{
+    ViewData["Title"] = "Detalle de la Entidad Licitante";
+}
+
+<div class="row">
+    <div class="col-xl">
+        <div class="card mb-6">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><b>@Html.DisplayFor(model => model.RazonSocial)</b></h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Cuit)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Cuit)</dd>
+
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.IdProvincia)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.IdProvincia)</dd>
+
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.IdLocalidad)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.IdLocalidad)</dd>
+
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionBarrio)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionBarrio)</dd>
+
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionCalle)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionCalle)</dd>
+
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionNumero)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionNumero)</dd>
+
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionPiso)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionPiso)</dd>
+
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionDepto)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionDepto)</dd>
+
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionCodigoPostal)</b></dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionCodigoPostal)</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.IdEntidadLicitante" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+</div>

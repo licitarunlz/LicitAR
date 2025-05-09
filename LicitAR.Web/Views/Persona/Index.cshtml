@@ -1,0 +1,142 @@
+﻿@model IEnumerable<PersonaModel>
+
+@{
+    ViewData["Title"] = "Personas";
+    var query = Context.Request.Query;
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+}
+
+<h1>Index</h1>
+<p>
+    <a asp-action="Create" class="btn btn-success" title="Agregar nueva Persona">
+        <i class="bx bx-message-square-add"></i>
+    </a>
+
+</p>
+<div class="card">
+    <div class="card-body">
+        <form method="get" asp-action="Index">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <input type="text" name="codigoLicitacion" class="form-control" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="titulo" class="form-control" placeholder="Título" value="@query["titulo"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="fechaPublicacion" class="form-control" placeholder="Fecha Publicación" value="@query["fechaPublicacion"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="fechaCierre" class="form-control" placeholder="Fecha Cierre" value="@query["fechaCierre"]" />
+                </div>
+                <div class="col-md-2 d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary w-100 me-2">
+                        <i class="bx bx-filter-alt"></i> Filtrar
+                    </button>
+                    <a asp-action="Create" class="btn btn-success" title="Agregar nueva Licitación">
+                        <i class="bx bx-message-square-add"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RazonSocial)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IdTipoPersona)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Cuit)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Email)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Telefono)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IdProvincia)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IdLocalidad)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DireccionBarrio)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DireccionCalle)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DireccionNumero)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DireccionPiso)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DireccionDepto)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DireccionCodigoPostal)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RazonSocial)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TipoPersona)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Cuit)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Telefono)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Provincia)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Localidad)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DireccionBarrio)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DireccionCalle)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DireccionNumero)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DireccionPiso)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DireccionDepto)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DireccionCodigoPostal)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.IdPersona">Editar</a> |
+                            <a asp-action="Details" asp-route-id="@item.IdPersona">Detalles</a> |
+                            <a asp-action="Delete" asp-route-id="@item.IdPersona">Eliminar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

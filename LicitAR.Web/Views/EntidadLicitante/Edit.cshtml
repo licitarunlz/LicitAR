@@ -1,0 +1,98 @@
+﻿@model EntidadLicitanteModel
+
+
+@{
+    ViewData["Title"] = "Entidades Licitantes";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Editar</title>
+</head>
+<body>
+
+    <div class="row">
+        <div class="col-xl">
+            <div class="card mb-6">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Editar Entidad Licitante</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="IdEntidadLicitante" />
+                        <div class="form-group  mb-3">
+                            <label asp-for="Cuit" class="form-label"></label>
+                            <input asp-for="Cuit" class="form-control" />
+                            <span asp-validation-for="Cuit" class="text-danger"></span>
+                        </div> 
+
+
+                        <div class="form-group mb-3">
+                            <label asp-for="RazonSocial" class="form-label"></label>
+                            <input asp-for="RazonSocial" class="form-control" />
+                            <span asp-validation-for="RazonSocial" class="text-danger"></span>
+                        </div>
+                        <h4 class="mt-6"> Domicilio </h4>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="IdProvincia" class="form-label"></label>
+                                <input asp-for="IdProvincia" class="form-control" />
+                                <span asp-validation-for="IdProvincia" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="IdLocalidad" class="form-label"></label>
+                                <input asp-for="IdLocalidad" class="form-control" />
+                                <span asp-validation-for="IdLocalidad" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="DireccionBarrio" class="form-label"></label>
+                                <input asp-for="DireccionBarrio" class="form-control" />
+                                <span asp-validation-for="DireccionBarrio" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="DireccionCalle" class="form-label"></label>
+                                <input asp-for="DireccionCalle" class="form-control" />
+                                <span asp-validation-for="DireccionCalle" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label asp-for="DireccionNumero" class="form-label"></label>
+                                <input asp-for="DireccionNumero" class="form-control" />
+                                <span asp-validation-for="DireccionNumero" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label asp-for="DireccionPiso" class="form-label"></label>
+                                <input asp-for="DireccionPiso" class="form-control" />
+                                <span asp-validation-for="DireccionPiso" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label asp-for="DireccionDepto" class="form-label"></label>
+                                <input asp-for="DireccionDepto" class="form-control" />
+                                <span asp-validation-for="DireccionDepto" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label asp-for="DireccionCodigoPostal" class="form-label"></label>
+                                <input asp-for="DireccionCodigoPostal" class="form-control" />
+                                <span asp-validation-for="DireccionCodigoPostal" class="text-danger"></span>
+                            </div>
+
+                        </div>
+                        <div class="text-start mt-8">
+                            <input type="submit" value="Editar" class="btn btn-primary">
+                            <i class="bi bi-pencil-square"></i> <!-- Icon for Edit -->
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver a la Lista <!-- Icon for Back -->
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
