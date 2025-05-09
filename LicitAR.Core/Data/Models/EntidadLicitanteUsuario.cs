@@ -1,7 +1,8 @@
 using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Data.Models.Identidad; // Add this line to resolve LicitArUser
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using LicitAR.Core.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace LicitAR.Core.Data.Models
