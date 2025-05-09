@@ -23,6 +23,6 @@ namespace LicitAR.Core.Data.Models
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         public LicitArUser Usuario { get; set; }
 
-        public AuditTable Audit { get; set; }
+        public required AuditTable Audit { get; set; }
     }
 }
