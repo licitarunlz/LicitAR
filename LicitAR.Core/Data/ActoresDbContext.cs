@@ -48,12 +48,12 @@ namespace LicitAR.Core.Data
                     .WithMany()
                     .HasForeignKey(l => l.IdTipoPersona);
 
-
-            builder.Entity<EntidadLicitante>().OwnsOne(p=> p.Audit);
             builder.Entity<Localidad>().OwnsOne(p => p.Audit);
             builder.Entity<Provincia>().OwnsOne(p => p.Audit);
             builder.Entity<TipoContacto>().OwnsOne(p => p.Audit);
             builder.Entity<TipoPersona>().OwnsOne(p => p.Audit);
+            builder.Entity<EntidadLicitanteUsuario>().OwnsOne(e => e.Audit);
+
             base.OnModelCreating(builder);
         }
 

@@ -27,6 +27,9 @@ namespace LicitAR.Core.Data
         {
             builder.Entity<Licitacion>().OwnsOne(p => p.Audit); 
 
+            // Ignorar la propiedad Audit de EntidadLicitante
+            builder.Entity<EntidadLicitante>().Ignore(p => p.Audit);
+
             base.OnModelCreating(builder);
         }
     }

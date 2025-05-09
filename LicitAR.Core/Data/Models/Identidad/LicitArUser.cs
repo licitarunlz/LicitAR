@@ -34,5 +34,7 @@ namespace LicitAR.Core.Data.Models.Identidad
 
         // Nuevo campo Enabled (eliminacion logica)
         public bool Enabled { get; set; } = true; // Por defecto, habilitado
+
+        public ICollection<EntidadLicitanteUsuario> EntidadesLicitantes { get; set; }
     }
 }

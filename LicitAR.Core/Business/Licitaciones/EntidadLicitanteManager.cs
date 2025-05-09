@@ -17,6 +17,8 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<IEnumerable<EntidadLicitante>> GetAllEntidadesLicitantesAsync();
         Task<EntidadLicitante> GetEntidadLicitanteByIdAsync(int idEntidadLicitante);
         Task<IMessageManager> ModificarAsync(EntidadLicitante entidadLicitante, int idEntidadLicitante, int idUser);
+        Task<IMessageManager> AsociarUsuarioAsync(int idEntidadLicitante, string idUsuario, int idUser);
+        Task<IMessageManager> DesasociarUsuarioAsync(int idEntidadLicitante, string idUsuario, int idUser);
     }
 
     public class EntidadLicitanteManager : IEntidadLicitanteManager
@@ -125,6 +127,57 @@ namespace LicitAR.Core.Business.Licitaciones
                 _messageManager.ErrorMessage("Excepcion al eliminar la entidad licitante: Ex - " + ex.ToString());
 
             }
+            return _messageManager;
+        }
+
+        public async Task<IMessageManager> AsociarUsuarioAsync(int idEntidadLicitante, string idUsuario, int idUser)
+        {
+            try
+            {
+                var association = new EntidadLicitanteUsuario
+                {
+                    IdEntidadLicitante = idEntidadLicitante,
+                    IdUsuario = idUsuario,
+                    Audit = AuditHelper.GetCreationData(idUser)
+                };
+
+                _actoresDbContext.Add(association);
+                await _actoresDbContext.SaveChangesAsync();
+
+                _messageManager.OkMessage("Usuario asociado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                _messageManager.ErrorMessage("Error al asociar usuario: " + ex.Message);
+            }
+
+            return _messageManager;
+        }
+
+        public async Task<IMessageManager> DesasociarUsuarioAsync(int idEntidadLicitante, string idUsuario, int idUser)
+        {
+            try
+            {
+                var association = await _actoresDbContext.Set<EntidadLicitanteUsuario>()
+                    .FirstOrDefaultAsync(eu => eu.IdEntidadLicitante == idEntidadLicitante && eu.IdUsuario == idUsuario);
+
+                if (association != null)
+                {
+                    _actoresDbContext.Remove(association);
+                    await _actoresDbContext.SaveChangesAsync();
+
+                    _messageManager.OkMessage("Usuario desasociado exitosamente.");
+                }
+                else
+                {
+                    _messageManager.ErrorMessage("Asociación no encontrada.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageManager.ErrorMessage("Error al desasociar usuario: " + ex.Message);
+            }
+
             return _messageManager;
         }
     }
