@@ -5,17 +5,17 @@ namespace LicitAR.Web.Controllers
 {
     public class GeografiaController : Controller
     {
-        private ParametrosDbContext _parametrosDbContext;
+        private readonly LicitARDbContext _context;
 
-        public GeografiaController(ParametrosDbContext parametrosDbContext)
+        public GeografiaController(LicitARDbContext context)
         {
-            _parametrosDbContext = parametrosDbContext;
-
+            _context = context;
         }
+
         [HttpGet("/Provincias/GetLocalidades")]
         public JsonResult GetLocalidades(int provinciaId)
         {
-            var localidades = _parametrosDbContext.Localidades
+            var localidades = _context.Localidades
                                       .Where(l => l.IdProvincia == provinciaId)
                                       .Select(l => new { l.IdLocalidad, l.Descripcion })
                                       .ToList();

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +26,10 @@ namespace LicitAR.Core.Data.Models
         [MaxLength(200, ErrorMessage = ErrorMessages.MAXLENGTH)]
         public required string RazonSocial { get; set; }
 
+        [NotMapped]
         public required AuditTable Audit { get; set; }
+
+        public ICollection<EntidadLicitanteUsuario> Usuarios { get; set; }
     }
 
 
@@ -43,6 +47,7 @@ namespace LicitAR.Core.Data.Models
         public string? CodigoArea { get; set; }
         public string? Numero { get; set; }
 
+        [NotMapped]
         public required AuditTable Audit { get; set; }
 
     }
