@@ -32,13 +32,13 @@ namespace LicitAR.Core.Business.Identidad
 
     public class UsuarioManager : IUsuarioManager
     {
-        private readonly LicitARIdentityDbContext _context;
+        private readonly LicitARDbContext _dbContext;
         private readonly UserManager<LicitArUser> _userManager;
         private readonly ILogger<UsuarioManager> _logger;
 
-        public UsuarioManager(UserManager<LicitArUser> userManager, LicitARIdentityDbContext context, ILogger<UsuarioManager> logger)
+        public UsuarioManager(UserManager<LicitArUser> userManager, LicitARDbContext dbContext, ILogger<UsuarioManager> logger)
         {
-            _context = context;
+            _dbContext = dbContext;
             _userManager = userManager;
             _logger = logger;
         }
@@ -83,7 +83,7 @@ namespace LicitAR.Core.Business.Identidad
             {
                 // Buscar el usuario por su ID
                 _logger.LogInformation("Fetching user with ID: {userId}", userId);
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
                 if (user == null)
                 {
                     _logger.LogWarning("User with ID {userId} not found.", userId);
@@ -105,15 +105,15 @@ namespace LicitAR.Core.Business.Identidad
 
                 // Marcar solo los campos modificados
                 _logger.LogInformation("Marking modified properties for user ID: {userId}", userId);
-                _context.Entry(user).Property(u => u.Nombre).IsModified = true;
-                _context.Entry(user).Property(u => u.Apellido).IsModified = true;
-                _context.Entry(user).Property(u => u.Email).IsModified = true;
-                _context.Entry(user).Property(u => u.FechaNacimiento).IsModified = true;
-                _context.Entry(user).Property(u => u.Cuit).IsModified = true;
+                _dbContext.Entry(user).Property(u => u.Nombre).IsModified = true;
+                _dbContext.Entry(user).Property(u => u.Apellido).IsModified = true;
+                _dbContext.Entry(user).Property(u => u.Email).IsModified = true;
+                _dbContext.Entry(user).Property(u => u.FechaNacimiento).IsModified = true;
+                _dbContext.Entry(user).Property(u => u.Cuit).IsModified = true;
 
                 // Guardar los cambios
                 _logger.LogInformation("Saving changes for user ID: {userId}", userId);
-                await _context.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully updated user ID: {userid}", userId);
                 return true;
@@ -134,7 +134,7 @@ namespace LicitAR.Core.Business.Identidad
             {
                 // Buscar el usuario por su ID
                 _logger.LogInformation("Fetching user with ID: {userId}");
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
                 if (user == null)
                 {
                     _logger.LogWarning("User with ID {userId} not found.");
@@ -149,11 +149,11 @@ namespace LicitAR.Core.Business.Identidad
                 user.Enabled = enabled;
 
                 // Marcar la propiedad como modificada
-                _context.Entry(user).Property(u => u.Enabled).IsModified = true;
+                _dbContext.Entry(user).Property(u => u.Enabled).IsModified = true;
 
                 // Guardar los cambios
                 _logger.LogInformation("Saving changes for user ID: {userId}");
-                await _context.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully updated Enabled property for user ID: {userId}");
                 return true;
@@ -177,14 +177,14 @@ namespace LicitAR.Core.Business.Identidad
 
         public async Task<IList<Claim>> GetRoleClaimsAsync(string role)
         {
-            var roleEntity = await _context.Roles.FirstOrDefaultAsync(r => r.Name == role);
+            var roleEntity = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == role);
             if (roleEntity == null)
             {
                 _logger.LogWarning($"Role not found: {role}");
                 return new List<Claim>();
             }
 
-            var roleClaims = await _context.RoleClaims
+            var roleClaims = await _dbContext.RoleClaims
                 .Where(rc => rc.RoleId == roleEntity.Id)
                 .Select(rc => new Claim(rc.ClaimType, rc.ClaimValue))
                 .ToListAsync();
@@ -208,7 +208,7 @@ namespace LicitAR.Core.Business.Identidad
         }
         public async Task<bool> ConfirmEmailAsync(string Token,  string Email)
         {
-            LicitArUser? user = await _context.Users.FirstOrDefaultAsync(x => x.Email == Email); // await _userManager.FindByEmailAsync(Email);
+            LicitArUser? user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == Email); // await _userManager.FindByEmailAsync(Email);
 
             if (user == null)
                 return false;
@@ -216,7 +216,7 @@ namespace LicitAR.Core.Business.Identidad
             var result = await _userManager.ConfirmEmailAsync(user, Token);
 
            /* if (result.Succeeded) 
-                await _context.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
            */
             return result.Succeeded;
         }

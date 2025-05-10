@@ -23,7 +23,7 @@ namespace LicitAR.Core.DI
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
             })
-            .AddEntityFrameworkStores<LicitARIdentityDbContext>()
+            .AddEntityFrameworkStores<LicitARDbContext>()
             .AddDefaultTokenProviders();
 
             // Configuración de cookies

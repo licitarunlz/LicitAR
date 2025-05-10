@@ -24,29 +24,29 @@ namespace LicitAR.Core.Business.Licitaciones
     public class EntidadLicitanteManager : IEntidadLicitanteManager
     {
         private IMessageManager _messageManager;
-        private ActoresDbContext _actoresDbContext;
+        private readonly LicitARDbContext _dbContext;
 
-        public EntidadLicitanteManager(IMessageManager messageManager, ActoresDbContext actoresDbContext)
+        public EntidadLicitanteManager(IMessageManager messageManager, LicitARDbContext dbContext)
         {
             this._messageManager = messageManager;
-            this._actoresDbContext = actoresDbContext;
+            this._dbContext = dbContext;
         }
 
         public async Task<IEnumerable<EntidadLicitante>> GetAllEntidadesLicitantesAsync()
         {
-            return this._actoresDbContext.EntidadesLicitantes.Where(x => x.Audit.FechaBaja == null);
+            return this._dbContext.EntidadesLicitantes.Where(x => x.Audit.FechaBaja == null);
         }
         public async Task<EntidadLicitante?> GetEntidadLicitanteByIdAsync(int idEntidadLicitante)
         {
-            return await this._actoresDbContext.EntidadesLicitantes.FirstOrDefaultAsync(x => x.IdEntidadLicitante == idEntidadLicitante);
+            return await this._dbContext.EntidadesLicitantes.FirstOrDefaultAsync(x => x.IdEntidadLicitante == idEntidadLicitante);
         }
         public async Task<IMessageManager> AgregarAsync(EntidadLicitante entidadLicitante, int idUser)
         {
             try
             {
                 entidadLicitante.Audit = AuditHelper.GetCreationData(idUser);
-                _actoresDbContext.EntidadesLicitantes.Add(entidadLicitante);
-                await _actoresDbContext.SaveChangesAsync();
+                _dbContext.EntidadesLicitantes.Add(entidadLicitante);
+                await _dbContext.SaveChangesAsync();
 
                 _messageManager.OkMessage("Entidad Licitante agregada exitosamente!");
             }
@@ -62,7 +62,7 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             try
             {
-                var entidadFromDdbb = await _actoresDbContext.EntidadesLicitantes.FirstOrDefaultAsync(x => x.IdEntidadLicitante == idEntidadLicitante);
+                var entidadFromDdbb = await _dbContext.EntidadesLicitantes.FirstOrDefaultAsync(x => x.IdEntidadLicitante == idEntidadLicitante);
                 if (entidadFromDdbb == null)
                 {
                     _messageManager.ErrorMessage("Entidad Licitante no encontrada");
@@ -82,9 +82,9 @@ namespace LicitAR.Core.Business.Licitaciones
 
                     entidadFromDdbb.Audit = AuditHelper.SetModificationData(entidadFromDdbb.Audit, idUser);
 
-                    _actoresDbContext.EntidadesLicitantes.Update(entidadFromDdbb);
+                    _dbContext.EntidadesLicitantes.Update(entidadFromDdbb);
 
-                    await _actoresDbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
 
                     _messageManager.OkMessage("Entidad Licitante modificada exitosamente");
 
@@ -104,7 +104,7 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             try
             {
-                var entidadLicitante = await _actoresDbContext.EntidadesLicitantes.FirstOrDefaultAsync(x => x.IdEntidadLicitante == idEntidadLicitante);
+                var entidadLicitante = await _dbContext.EntidadesLicitantes.FirstOrDefaultAsync(x => x.IdEntidadLicitante == idEntidadLicitante);
                 if (entidadLicitante == null)
                 {
                     _messageManager.ErrorMessage("Entidad Licitante no encontrada");
@@ -113,8 +113,8 @@ namespace LicitAR.Core.Business.Licitaciones
                 {
                     entidadLicitante.Audit = AuditHelper.SetDeletionData(entidadLicitante.Audit, idUser);
 
-                    _actoresDbContext.EntidadesLicitantes.Update(entidadLicitante);
-                    await _actoresDbContext.SaveChangesAsync();
+                    _dbContext.EntidadesLicitantes.Update(entidadLicitante);
+                    await _dbContext.SaveChangesAsync();
 
                     _messageManager.OkMessage("Entidad Licitante eliminada exitosamente");
 
@@ -141,8 +141,8 @@ namespace LicitAR.Core.Business.Licitaciones
                     Audit = AuditHelper.GetCreationData(idUser)
                 };
 
-                _actoresDbContext.Add(association);
-                await _actoresDbContext.SaveChangesAsync();
+                _dbContext.Add(association);
+                await _dbContext.SaveChangesAsync();
 
                 _messageManager.OkMessage("Usuario asociado exitosamente.");
             }
@@ -158,13 +158,13 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             try
             {
-                var association = await _actoresDbContext.Set<EntidadLicitanteUsuario>()
+                var association = await _dbContext.Set<EntidadLicitanteUsuario>()
                     .FirstOrDefaultAsync(eu => eu.IdEntidadLicitante == idEntidadLicitante && eu.IdUsuario == idUsuario);
 
                 if (association != null)
                 {
-                    _actoresDbContext.Remove(association);
-                    await _actoresDbContext.SaveChangesAsync();
+                    _dbContext.Remove(association);
+                    await _dbContext.SaveChangesAsync();
 
                     _messageManager.OkMessage("Usuario desasociado exitosamente.");
                 }

@@ -22,17 +22,17 @@ namespace LicitAR.Core.Business.Licitaciones
     public class PersonaManager : IPersonaManager
     {
         private IMessageManager _messageManager;
-        private ActoresDbContext _actoresDbContext;
+        private readonly LicitARDbContext _dbContext;
 
-        public PersonaManager(IMessageManager messageManager, ActoresDbContext actoresDbContext)
+        public PersonaManager(IMessageManager messageManager, LicitARDbContext dbContext)
         {
             this._messageManager = messageManager;
-            this._actoresDbContext = actoresDbContext;
+            this._dbContext = dbContext;
         }
 
         public async Task<IEnumerable<Persona>> GetAllPersonasAsync()
         {
-            return this._actoresDbContext.Personas
+            return this._dbContext.Personas
     .Include(p => p.Provincia)
     .Include(p => p.Localidad)
     .Include(p => p.TipoPersona)
@@ -40,7 +40,7 @@ namespace LicitAR.Core.Business.Licitaciones
         }
         public async Task<Persona?> GetPersonaByIdAsync(int idPersona)
         {
-            return await this._actoresDbContext.Personas
+            return await this._dbContext.Personas
     .Include(p => p.Provincia)
     .Include(p => p.Localidad)
     .Include(p => p.TipoPersona).FirstOrDefaultAsync(x => x.IdPersona == idPersona);
@@ -50,8 +50,8 @@ namespace LicitAR.Core.Business.Licitaciones
             try
             {
                 persona.Audit = AuditHelper.GetCreationData(idUser);
-                _actoresDbContext.Personas.Add(persona);
-                await _actoresDbContext.SaveChangesAsync();
+                _dbContext.Personas.Add(persona);
+                await _dbContext.SaveChangesAsync();
 
                 _messageManager.OkMessage("Persona agregada exitosamente!");
             }
@@ -67,7 +67,7 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             try
             {
-                var entidadFromDdbb = await _actoresDbContext.Personas.FirstOrDefaultAsync(x => x.IdPersona == idPersona);
+                var entidadFromDdbb = await _dbContext.Personas.FirstOrDefaultAsync(x => x.IdPersona == idPersona);
                 if (entidadFromDdbb == null)
                 {
                     _messageManager.ErrorMessage("Persona no encontrada");
@@ -89,9 +89,9 @@ namespace LicitAR.Core.Business.Licitaciones
 
                     entidadFromDdbb.Audit = AuditHelper.SetModificationData(entidadFromDdbb.Audit, idUser);
 
-                    _actoresDbContext.Personas.Update(entidadFromDdbb);
+                    _dbContext.Personas.Update(entidadFromDdbb);
 
-                    await _actoresDbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
 
                     _messageManager.OkMessage("Persona modificada exitosamente");
 
@@ -111,7 +111,7 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             try
             {
-                var persona = await _actoresDbContext.Personas.FirstOrDefaultAsync(x => x.IdPersona == idPersona);
+                var persona = await _dbContext.Personas.FirstOrDefaultAsync(x => x.IdPersona == idPersona);
                 if (persona == null)
                 {
                     _messageManager.ErrorMessage("Persona no encontrada");
@@ -120,8 +120,8 @@ namespace LicitAR.Core.Business.Licitaciones
                 {
                     persona.Audit = AuditHelper.SetDeletionData(persona.Audit, idUser);
 
-                    _actoresDbContext.Personas.Update(persona);
-                    await _actoresDbContext.SaveChangesAsync();
+                    _dbContext.Personas.Update(persona);
+                    await _dbContext.SaveChangesAsync();
 
                     _messageManager.OkMessage("Persona eliminada exitosamente");
 

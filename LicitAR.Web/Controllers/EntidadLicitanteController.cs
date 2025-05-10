@@ -14,17 +14,15 @@ namespace LicitAR.Web.Controllers
 {
     public class EntidadLicitanteController : Controller
     {
-        private readonly ActoresDbContext _context;
+        private readonly LicitARDbContext _context;
         private readonly IEntidadLicitanteManager _entidadLicitanteManager;
-        private readonly ParametrosDbContext _parametrosDbContext;
         private IMessageManager _messageManager;
         private readonly IUsuarioManager _usuarioManager;
 
-        public EntidadLicitanteController(ActoresDbContext context, ParametrosDbContext parametrosDbContext, IEntidadLicitanteManager entidadLicitanteManager, IMessageManager message, IUsuarioManager usuarioManager)
+        public EntidadLicitanteController(LicitARDbContext context, IEntidadLicitanteManager entidadLicitanteManager, IMessageManager message, IUsuarioManager usuarioManager)
         {
             _context = context;
             _entidadLicitanteManager = entidadLicitanteManager;
-            _parametrosDbContext = parametrosDbContext;
             _messageManager = message;
             _usuarioManager = usuarioManager;
         }
@@ -82,18 +80,17 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("EntidadLicitante.Crear")]
         public IActionResult Create()
         {
-            var items = _parametrosDbContext.Provincias
+            var items = _context.Provincias
                     .Select(x => new SelectListItem
                     {
                         Value = x.IdProvincia.ToString(),
                         Text = x.Descripcion
                     })
                     .ToList();
-            var itemsLocalidades = _parametrosDbContext.Localidades.ToList();
-                  
+            var itemsLocalidades = _context.Localidades.ToList();
+
             ViewBag.ComboProvincias = items;
             ViewBag.ComboLocalidades = itemsLocalidades;
-
 
             return View();
         }

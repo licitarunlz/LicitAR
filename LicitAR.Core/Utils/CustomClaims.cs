@@ -14,12 +14,12 @@ namespace LicitAR.Core.Utils
 {
     public class CustomClaimsPrincipalFactory : UserClaimsPrincipalFactory<LicitArUser>
     {
-        private readonly LicitARIdentityDbContext _context;
+        private readonly LicitARDbContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<LicitArUser> _userManager;
 
         public CustomClaimsPrincipalFactory(
-            LicitARIdentityDbContext context,
+            LicitARDbContext context,
             UserManager<LicitArUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IOptions<IdentityOptions> optionsAccessor)

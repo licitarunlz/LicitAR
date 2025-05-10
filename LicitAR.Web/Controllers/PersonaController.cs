@@ -13,16 +13,14 @@ namespace LicitAR.Web.Controllers
     public class PersonaController : Controller
     {
         private readonly IPersonaManager _personaManager;
-        private readonly ActoresDbContext _context;
+        private readonly LicitARDbContext _context;
         private IMessageManager _messageManager;
-        private ParametrosDbContext _parametrosDbContext;
 
-        public PersonaController(ActoresDbContext context, ParametrosDbContext parametrosDbContext, IPersonaManager personaManager, IMessageManager messageManager)
+        public PersonaController(LicitARDbContext context, IPersonaManager personaManager, IMessageManager messageManager)
         {
             _personaManager = personaManager;
             _context = context;
             _messageManager = messageManager;
-            _parametrosDbContext = parametrosDbContext;
         }
 
         // GET: Persona
@@ -65,16 +63,16 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Persona.Crear")]
         public IActionResult Create()
         {
-            var items = _parametrosDbContext.Provincias
+            var items = _context.Provincias
                    .Select(x => new SelectListItem
                    {
                        Value = x.IdProvincia.ToString(),
                        Text = x.Descripcion
                    })
                    .ToList();
-            var itemsLocalidades = _parametrosDbContext.Localidades.ToList();
+            var itemsLocalidades = _context.Localidades.ToList();
 
-            var tiposPersonas = _parametrosDbContext.TiposPersona
+            var tiposPersonas = _context.TiposPersona
                     .Select(x => new SelectListItem 
                     { 
                         Value = x.IdTipoPersona.ToString(), 
@@ -131,14 +129,14 @@ namespace LicitAR.Web.Controllers
             {
                 return NotFound();
             }
-            var items = _parametrosDbContext.Provincias
+            var items = _context.Provincias
                    .Select(x => new SelectListItem
                    {
                        Value = x.IdProvincia.ToString(),
                        Text = x.Descripcion
                    })
                    .ToList();
-            var itemsLocalidades = _parametrosDbContext.Localidades.ToList();
+            var itemsLocalidades = _context.Localidades.ToList();
 
             ViewBag.ComboProvincias = items;
             ViewBag.ComboLocalidades = itemsLocalidades;
