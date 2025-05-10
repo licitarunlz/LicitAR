@@ -17,7 +17,7 @@ namespace LicitAR.Core.Data.Models
         public EntidadLicitante EntidadLicitante { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
-        [MaxLength(50, ErrorMessage = ErrorMessages.MAXLENGTH)]
+        [MaxLength(450, ErrorMessage = ErrorMessages.MAXLENGTH)]
         public string IdUsuario { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]

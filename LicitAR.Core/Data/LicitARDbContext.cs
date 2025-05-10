@@ -44,11 +44,11 @@ namespace LicitAR.Core.Data
             modelBuilder.Entity<CategoriaLicitacion>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<Licitacion>().OwnsOne(p => p.Audit);
 
-            // Configure the 'Audit' navigation property explicitly for LicitArUser
             modelBuilder.Entity<LicitArUser>(entity =>
             {
                 entity.OwnsOne(a => a.Audit); // Explicitly configure the Audit property
             });
+
 
             // Relaciones
             modelBuilder.Entity<EntidadLicitanteUsuario>()
