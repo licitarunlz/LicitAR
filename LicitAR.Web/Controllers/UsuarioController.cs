@@ -52,7 +52,11 @@ public class UsuarioController : Controller
         }
         if (!string.IsNullOrEmpty(cuit))
         {
-            users = users.Where(u => u.CuitFormateado.Contains(cuit, StringComparison.OrdinalIgnoreCase)).ToList();
+            cuit = new string(cuit.Where(char.IsDigit).ToArray()); // Remove non-numeric characters
+            if (cuit.Length <= 11)
+            {
+                users = users.Where(u => u.Cuit.Contains(cuit)).ToList();
+            }
         }
         if (habilitado.HasValue)
         {

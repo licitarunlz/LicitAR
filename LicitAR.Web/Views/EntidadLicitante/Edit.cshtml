@@ -23,17 +23,17 @@
                     <form asp-action="Edit">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <input type="hidden" asp-for="IdEntidadLicitante" />
-                        <div class="form-group  mb-3">
-                            <label asp-for="Cuit" class="form-label"></label>
-                            <input asp-for="Cuit" class="form-control" />
-                            <span asp-validation-for="Cuit" class="text-danger"></span>
-                        </div> 
-
-
-                        <div class="form-group mb-3">
-                            <label asp-for="RazonSocial" class="form-label"></label>
-                            <input asp-for="RazonSocial" class="form-control" />
-                            <span asp-validation-for="RazonSocial" class="text-danger"></span>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label asp-for="Cuit" class="form-label"></label>
+                                <input asp-for="Cuit" class="form-control" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" />
+                                <span asp-validation-for="Cuit" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-9">
+                                <label asp-for="RazonSocial" class="form-label"></label>
+                                <input asp-for="RazonSocial" class="form-control" />
+                                <span asp-validation-for="RazonSocial" class="text-danger"></span>
+                            </div>
                         </div>
                         <h4 class="mt-6"> Domicilio </h4>
                         <hr />
@@ -83,10 +83,11 @@
 
                         </div>
                         <div class="text-start mt-8">
-                            <input type="submit" value="Editar" class="btn btn-primary">
-                            <i class="bi bi-pencil-square"></i> <!-- Icon for Edit -->
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bx bx-edit"></i> Editar <!-- Icon for Edit -->
+                            </button>
                             <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> Volver a la Lista <!-- Icon for Back -->
+                                <i class="bx bx-arrow-back"></i> Volver a la Lista <!-- Icon for Back -->
                             </a>
                         </div>
                     </form>
@@ -94,5 +95,17 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('input', function (e) {
+            if (e.target.getAttribute('asp-for') === 'Cuit') {
+                let value = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+                if (value.length === 11) {
+                    e.target.value = value.replace(/(\d{2})(\d{8})(\d{1})/, '$1-$2-$3');
+                } else {
+                    e.target.value = value;
+                }
+            }
+        });
+    </script>
 </body>
 </html>
