@@ -41,6 +41,7 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>
                             @Html.DisplayNameFor(model => model.Cuit)
                         </th>
@@ -71,13 +72,33 @@
                         <th>
                             @Html.DisplayNameFor(model => model.DireccionCodigoPostal)
                         </th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdEntidadLicitante">
+                                            <i class="bx bx-edit-alt me-1"></i> Editar
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdEntidadLicitante">
+                                            <i class="bx bx-show me-1"></i> Detalles
+                                        </a>
+                                        <a class="dropdown-item" asp-action="AsociarUsuario" asp-route-id="@item.IdEntidadLicitante">
+                                            <i class="bx bx-user-plus me-1"></i> Asociar Usuario
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdEntidadLicitante">
+                                            <i class="bx bx-trash me-1"></i> Eliminar
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
                             <td>
                                 @if (!string.IsNullOrEmpty(item.Cuit) && item.Cuit.Length == 11)
                                 {
@@ -114,27 +135,6 @@
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.DireccionCodigoPostal)
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdEntidadLicitante">
-                                            <i class="bx bx-edit-alt me-1"></i> Editar
-                                        </a>
-                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdEntidadLicitante">
-                                            <i class="bx bx-show me-1"></i> Detalles
-                                        </a>
-                                        <a class="dropdown-item" asp-action="AsociarUsuario" asp-route-id="@item.IdEntidadLicitante">
-                                            <i class="bx bx-user-plus me-1"></i> Asociar Usuario
-                                        </a>
-                                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdEntidadLicitante">
-                                            <i class="bx bx-trash me-1"></i> Eliminar
-                                        </a>
-                                    </div>
-                                </div>
                             </td>
                         </tr>
                     }

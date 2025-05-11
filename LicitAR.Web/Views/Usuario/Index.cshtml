@@ -45,36 +45,19 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th></th>
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Email</th>
                     <th>Fecha de Nacimiento</th>
                     <th>CUIT</th>
                     <th>Habilitado</th>
-                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
                 @foreach (var user in Model)
                 {
                     <tr>
-                        <td>@user.IdUsuario</td>
-                        <td>@user.Nombre</td>
-                        <td>@user.Apellido</td>
-                        <td>@user.Email</td>
-                        <td>@user.FechaNacimiento.ToShortDateString()</td>
-                        <td>@user.CuitFormateado</td>
-                        <td>
-                            @if (user.Enabled)
-                            {
-                                <span class="badge bg-label-success">Sí</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-label-danger">No</span>
-                            }
-                        </td>
                         <td>
                             <div class="dropdown">
                                 <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -89,6 +72,21 @@
                                     </a>
                                 </div>
                             </div>
+                        </td>
+                        <td>@user.Nombre</td>
+                        <td>@user.Apellido</td>
+                        <td>@user.Email</td>
+                        <td>@user.FechaNacimiento.ToShortDateString()</td>
+                        <td>@user.CuitFormateado</td>
+                        <td>
+                            @if (user.Enabled)
+                            {
+                                <span class="badge bg-label-success">Sí</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-label-danger">No</span>
+                            }
                         </td>
                     </tr>
                 }

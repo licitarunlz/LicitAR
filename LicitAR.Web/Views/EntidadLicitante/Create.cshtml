@@ -16,17 +16,17 @@
                 <div class="card-body">
                     <form asp-action="Create">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <div class="form-group  mb-3">
-                            <label asp-for="Cuit" class="form-label"></label>
-                            <input asp-for="Cuit" class="form-control" />
-                            <span asp-validation-for="Cuit" class="text-danger"></span>
-                        </div>
-
-
-                        <div class="form-group mb-3">
-                            <label asp-for="RazonSocial" class="form-label"></label>
-                            <input asp-for="RazonSocial" class="form-control" />
-                            <span asp-validation-for="RazonSocial" class="text-danger"></span>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label asp-for="Cuit" class="form-label"></label>
+                                <input asp-for="Cuit" class="form-control" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" />
+                                <span asp-validation-for="Cuit" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-9">
+                                <label asp-for="RazonSocial" class="form-label"></label>
+                                <input asp-for="RazonSocial" class="form-control" />
+                                <span asp-validation-for="RazonSocial" class="text-danger"></span>
+                            </div>
                         </div>
                         <h4 class="mt-6"> Domicilio </h4>
                         <hr />
@@ -79,9 +79,13 @@
                             </div>
 
                         </div>
-                        <div class="text-end mt-8">
-                            <a asp-action="Index" class="btn btn-secondary ">Volver a la Lista</a>
-                            <input type="submit" value="Crear" class="btn btn-primary" />
+                        <div class="text-start mt-8">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bx bx-plus-circle"></i> Crear <!-- Icon for Create -->
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bx bx-arrow-back"></i> Volver a la Lista <!-- Icon for Back -->
+                            </a>
                         </div>
 
                     </form>
@@ -110,6 +114,17 @@
                     $("#IdLocalidad").append('<option value="">Seleccione una localidad</option>');
                 }
             });
+        });
+
+        document.addEventListener('input', function (e) {
+            if (e.target.getAttribute('asp-for') === 'Cuit') {
+                let value = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+                if (value.length === 11) {
+                    e.target.value = value.replace(/(\d{2})(\d{8})(\d{1})/, '$1-$2-$3');
+                } else {
+                    e.target.value = value;
+                }
+            }
         });
 
     </script>

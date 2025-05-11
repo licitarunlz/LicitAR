@@ -1,7 +1,7 @@
 ﻿@model LicitacionModel
 
 @{
-    ViewData["Title"] = "Crear una licitacion";
+    ViewData["Title"] = "Licitaciones";
 }
 
 <div class="row">
@@ -65,10 +65,13 @@
                         </div>
                     </div>
 
-                    <div class="text-end mt-8">
-                        <a asp-action="Index" class="btn btn-secondary ">Volver a la Lista</a>
-                        <button type="submit" class="btn btn-primary">Crear</button>
-
+                    <div class="text-start mt-8">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Crear <!-- Icon for Create -->
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver a la Lista <!-- Icon for Back -->
+                        </a>
                     </div>
                 </form>
             </div>
