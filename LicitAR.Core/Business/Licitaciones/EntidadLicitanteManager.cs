@@ -13,8 +13,10 @@ namespace LicitAR.Core.Business.Licitaciones
     public interface IEntidadLicitanteManager
     {
         Task<IMessageManager> AgregarAsync(EntidadLicitante entidadLicitante, int idUser);
-        Task<IMessageManager> BajaLogicaAsync(int idEntidadLicitante, int idUser);
+        Task<IMessageManager> DeleteEntidadLicitanteAsync(int idEntidadLicitante, int idUser);
         Task<IEnumerable<EntidadLicitante>> GetAllEntidadesLicitantesAsync();
+         Task<IEnumerable<EntidadLicitante>> GetAllActiveEntidadesLicitantesAsync();
+
         Task<EntidadLicitante> GetEntidadLicitanteByIdAsync(int idEntidadLicitante);
         Task<IMessageManager> ModificarAsync(EntidadLicitante entidadLicitante, int idEntidadLicitante, int idUser);
         Task<IMessageManager> AsociarUsuarioAsync(int idEntidadLicitante, string idUsuario, int idUser);
@@ -34,12 +36,18 @@ namespace LicitAR.Core.Business.Licitaciones
 
         public async Task<IEnumerable<EntidadLicitante>> GetAllEntidadesLicitantesAsync()
         {
+            return this._dbContext.EntidadesLicitantes;
+        }
+
+        public async Task<IEnumerable<EntidadLicitante>> GetAllActiveEntidadesLicitantesAsync()
+        {
             return this._dbContext.EntidadesLicitantes.Where(x => x.Audit.FechaBaja == null);
         }
         public async Task<EntidadLicitante?> GetEntidadLicitanteByIdAsync(int idEntidadLicitante)
         {
             return await this._dbContext.EntidadesLicitantes.FirstOrDefaultAsync(x => x.IdEntidadLicitante == idEntidadLicitante);
         }
+
         public async Task<IMessageManager> AgregarAsync(EntidadLicitante entidadLicitante, int idUser)
         {
             try
@@ -100,7 +108,7 @@ namespace LicitAR.Core.Business.Licitaciones
 
 
         }
-        public async Task<IMessageManager> BajaLogicaAsync(int idEntidadLicitante, int idUser)
+        public async Task<IMessageManager> DeleteEntidadLicitanteAsync(int idEntidadLicitante, int idUser)
         {
             try
             {
@@ -115,10 +123,7 @@ namespace LicitAR.Core.Business.Licitaciones
 
                     _dbContext.EntidadesLicitantes.Update(entidadLicitante);
                     await _dbContext.SaveChangesAsync();
-
                     _messageManager.OkMessage("Entidad Licitante eliminada exitosamente");
-
-
                 }
             }
             catch (Exception ex)

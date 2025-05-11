@@ -9,6 +9,7 @@ namespace LicitAR.Core.Business.Licitaciones
     public interface ILicitacionManager
     {
         Task<List<Licitacion>> GetAllLicitacionesAsync();
+        Task<List<Licitacion>> GetAllActiveLicitacionesAsync();
         Task<Licitacion?> GetLicitacionByIdAsync(int id);
         Task CreateLicitacionAsync(Licitacion licitacion, int userId);
         Task<bool> UpdateLicitacionAsync(Licitacion licitacion, int userId);
@@ -25,6 +26,11 @@ namespace LicitAR.Core.Business.Licitaciones
         }
 
         public async Task<List<Licitacion>> GetAllLicitacionesAsync()
+        {
+            return await _dbContext.Licitaciones.ToListAsync();
+        }
+
+        public async Task<List<Licitacion>> GetAllActiveLicitacionesAsync()
         {
             return await _dbContext.Licitaciones.Where(x=> x.Audit.FechaBaja == null).ToListAsync();
         }
