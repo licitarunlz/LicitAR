@@ -36,7 +36,7 @@ namespace LicitAR.Core.Business.Licitaciones
                                     .Include(p => p.Provincia)
                                     .Include(p => p.Localidad)
                                     .Include(p => p.TipoPersona)
-                                    .Where(x => x.Audit.FechaBaja == null);
+                                    .Where(x => x.Audit.FechaBaja == null).ToList();
         }
         public async Task<Persona?> GetPersonaByIdAsync(int idPersona)
         {

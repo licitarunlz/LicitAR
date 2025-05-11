@@ -10,6 +10,7 @@ using LicitAR.Web.Helpers.Authorization;
 
 namespace LicitAR.Web.Controllers
 {
+
     public class PersonaController : Controller
     {
         private readonly IPersonaManager _personaManager;
@@ -25,9 +26,37 @@ namespace LicitAR.Web.Controllers
 
         // GET: Persona
         [AuthorizeClaim("Persona.Ver")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
-            var personas = await _personaManager.GetAllPersonasAsync();
+            var personasList = await _personaManager.GetAllPersonasAsync();
+             
+            var query = personasList.AsQueryable();
+
+            if (!string.IsNullOrEmpty(cuit))
+            {
+                query = query.Where(l => l.Cuit.Contains(cuit));
+            }
+
+            if (!string.IsNullOrEmpty(razonSocial))
+            {
+                query = query.Where(l => l.RazonSocial.Contains(razonSocial));
+            }
+ 
+
+            var totalItems = query.Count();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var personas = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+
+
+
             List<PersonaModel> listPersonaModel = new List<PersonaModel>();
 
             foreach (var persona in personas)
