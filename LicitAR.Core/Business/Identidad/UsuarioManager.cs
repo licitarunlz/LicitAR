@@ -18,16 +18,19 @@ namespace LicitAR.Core.Business.Identidad
 {
     public interface IUsuarioManager
     {
-        Task<IEnumerable<UsuarioModel>> GetAllUsersAsync();
-        Task<UsuarioModel> GetUserAsync(int userId);
-        Task<LicitArUser> GetUserByEmailAsync(string email);
+        Task<IEnumerable<LicitArUser>> GetAllUsersAsync();
+        Task<LicitArUser?> GetUserAsync(int userId);
+        Task<LicitArUser?> GetUserByEmailAsync(string email);
         Task<IList<string>> GetRolesAsync(LicitArUser user);
         Task<IList<Claim>> GetRoleClaimsAsync(string role);
-
-        Task<bool> UpdateUserAsync(UsuarioModel model, int userId);
+        Task<IEnumerable<LicitArUser>> GetUsersInRoleAsync(string roleId);
+        Task UpdateUsersInRoleAsync(string roleId, IEnumerable<string> toAdd, IEnumerable<string> toRemove);
+        Task<bool> UpdateUserAsync(LicitArUser user);
         Task<bool> ToggleUserEnabledAsync(int userId, bool enabled);
-        Task<bool> ConfirmEmailAsync(string Token, string Email);
+        Task<bool> ConfirmEmailAsync(string token, string email);
         bool IsEmailConfirmed(LicitArUser user);
+        Task<UsuarioModel?> GetUsuarioModelAsync(int userId);
+        Task<IEnumerable<UsuarioModel>> GetAllUsuarioModelsAsync();
     }
 
     public class UsuarioManager : IUsuarioManager
@@ -43,88 +46,91 @@ namespace LicitAR.Core.Business.Identidad
             _logger = logger;
         }
 
-        public async Task<UsuarioModel?> GetUserAsync(int userId)
+        public async Task<LicitArUser?> GetUserAsync(int userId)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
-            if (user == null)
-                return null;
-
-            return new UsuarioModel
-            {
-                IdUsuario = user.IdUsuario,
-                Nombre = user.Nombre,
-                Apellido = user.Apellido,
-                Email = user.Email ?? "",
-                FechaNacimiento = user.FechaNacimiento,
-                Cuit = user.Cuit
-            };
-
+            return await _userManager.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
         }
 
-        public async Task<IEnumerable<UsuarioModel>> GetAllUsersAsync()
+        public async Task<IEnumerable<LicitArUser>> GetAllUsersAsync()
         {
-            var users = await _userManager.Users.ToListAsync();
-            return users.Select(user => new UsuarioModel
-            {
-                IdUsuario = user.IdUsuario,
-                Nombre = user.Nombre,
-                Apellido = user.Apellido,
-                Email = user.Email ?? "",
-                FechaNacimiento = user.FechaNacimiento,
-                Cuit = user.Cuit,
-                Enabled = user.Enabled
-            });
+            return await _userManager.Users.ToListAsync();
         }
-        public async Task<bool> UpdateUserAsync(UsuarioModel model, int userId)
+
+        public async Task<IEnumerable<LicitArUser>> GetUsersInRoleAsync(string roleId)
         {
-            _logger.LogInformation("Starting UpdateUserAsync for user ID: {userId}", userId);
+            var userIds = await _dbContext.UserRoles
+                .Where(ur => ur.RoleId == roleId)
+                .Select(ur => ur.UserId)
+                .ToListAsync();
+
+            return await _dbContext.Users
+                .Where(u => userIds.Contains(u.Id))
+                .ToListAsync();
+        }
+
+        public async Task UpdateUsersInRoleAsync(string roleId, IEnumerable<string> toAdd, IEnumerable<string> toRemove)
+        {
+            foreach (var userId in toAdd)
+            {
+                if (!await _dbContext.UserRoles.AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId))
+                {
+                    _dbContext.UserRoles.Add(new IdentityUserRole<string>
+                    {
+                        UserId = userId,
+                        RoleId = roleId
+                    });
+                }
+            }
+
+            foreach (var userId in toRemove)
+            {
+                var userRole = await _dbContext.UserRoles
+                    .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
+
+                if (userRole != null)
+                {
+                    _dbContext.UserRoles.Remove(userRole);
+                }
+            }
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> UpdateUserAsync(LicitArUser user)
+        {
+            _logger.LogInformation("Starting UpdateUserAsync for user ID: {userId}", user.IdUsuario);
 
             try
             {
-                // Buscar el usuario por su ID
-                _logger.LogInformation("Fetching user with ID: {userId}", userId);
-                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
-                if (user == null)
+                var existingUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.IdUsuario == user.IdUsuario);
+                if (existingUser == null)
                 {
-                    _logger.LogWarning("User with ID {userId} not found.", userId);
+                    _logger.LogWarning("User with ID {userId} not found.", user.IdUsuario);
                     return false;
                 }
 
-                // Log current user data
-                _logger.LogInformation("Current user data: {@User}", user);
+                // Update fields
+                existingUser.Nombre = user.Nombre;
+                existingUser.Apellido = user.Apellido;
+                existingUser.Email = user.Email;
+                existingUser.FechaNacimiento = user.FechaNacimiento;
+                existingUser.Cuit = user.Cuit;
+                existingUser.Enabled = user.Enabled;
 
-                // Actualizar solo los campos editables
-                _logger.LogInformation("Updating user properties for user ID: {userId}",userId);
-                user.Nombre = model.Nombre;
-                user.Apellido = model.Apellido;
-                user.Email = model.Email;
-                user.FechaNacimiento = model.FechaNacimiento;
-                user.Cuit = model.Cuit;
+                existingUser.Audit = AuditHelper.SetModificationData(existingUser.Audit, user.IdUsuario);
 
-                user.Audit = AuditHelper.SetModificationData(user.Audit, userId);
-
-                // Marcar solo los campos modificados
-                _logger.LogInformation("Marking modified properties for user ID: {userId}", userId);
-                _dbContext.Entry(user).Property(u => u.Nombre).IsModified = true;
-                _dbContext.Entry(user).Property(u => u.Apellido).IsModified = true;
-                _dbContext.Entry(user).Property(u => u.Email).IsModified = true;
-                _dbContext.Entry(user).Property(u => u.FechaNacimiento).IsModified = true;
-                _dbContext.Entry(user).Property(u => u.Cuit).IsModified = true;
-
-                // Guardar los cambios
-                _logger.LogInformation("Saving changes for user ID: {userId}", userId);
+                _dbContext.Entry(existingUser).State = EntityState.Modified;
                 await _dbContext.SaveChangesAsync();
 
-                _logger.LogInformation("Successfully updated user ID: {userid}", userId);
+                _logger.LogInformation("Successfully updated user ID: {userId}", user.IdUsuario);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception occurred while updating user ID: {userid}", userId);
+                _logger.LogError(ex, "Exception occurred while updating user ID: {userId}", user.IdUsuario);
                 return false;
             }
         }
-
 
         public async Task<bool> ToggleUserEnabledAsync(int userId, bool enabled)
         {
@@ -132,8 +138,6 @@ namespace LicitAR.Core.Business.Identidad
 
             try
             {
-                // Buscar el usuario por su ID
-                _logger.LogInformation("Fetching user with ID: {userId}");
                 var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.IdUsuario == userId);
                 if (user == null)
                 {
@@ -141,18 +145,10 @@ namespace LicitAR.Core.Business.Identidad
                     return false;
                 }
 
-                // Log current user state
-                _logger.LogInformation("Current user state: {@User}", user);
-
-                // Actualizar el estado de habilitación
-                _logger.LogInformation("Updating Enabled property for user ID: {userId} to {enabled}", userId, enabled);
                 user.Enabled = enabled;
 
-                // Marcar la propiedad como modificada
                 _dbContext.Entry(user).Property(u => u.Enabled).IsModified = true;
 
-                // Guardar los cambios
-                _logger.LogInformation("Saving changes for user ID: {userId}");
                 await _dbContext.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully updated Enabled property for user ID: {userId}");
@@ -165,7 +161,7 @@ namespace LicitAR.Core.Business.Identidad
             }
         }
 
-        public async Task<LicitArUser> GetUserByEmailAsync(string email)
+        public async Task<LicitArUser?> GetUserByEmailAsync(string email)
         {
             return await _userManager.FindByEmailAsync(email);
         }
@@ -189,38 +185,53 @@ namespace LicitAR.Core.Business.Identidad
                 .Select(rc => new Claim(rc.ClaimType, rc.ClaimValue))
                 .ToListAsync();
 
-            /* Log role claims for debugging
-            foreach (var claim in roleClaims)
-            {
-                _logger.LogInformation($"Role claim for role {role}: {claim.Type} = {claim.Value}");
-            }*/
-
             return roleClaims;
         }
-
-    
 
         public bool IsEmailConfirmed(LicitArUser user)
         {
             return user.EmailConfirmed;
-
-
         }
-        public async Task<bool> ConfirmEmailAsync(string Token,  string Email)
+
+        public async Task<bool> ConfirmEmailAsync(string token, string email)
         {
-            LicitArUser? user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == Email); // await _userManager.FindByEmailAsync(Email);
+            LicitArUser? user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
 
             if (user == null)
                 return false;
 
-            var result = await _userManager.ConfirmEmailAsync(user, Token);
+            var result = await _userManager.ConfirmEmailAsync(user, token);
 
-           /* if (result.Succeeded) 
-                await _dbContext.SaveChangesAsync();
-           */
             return result.Succeeded;
         }
-     }
+
+        public async Task<UsuarioModel?> GetUsuarioModelAsync(int userId)
+        {
+            var user = await GetUserAsync(userId);
+            return user == null ? null : MapToUsuarioModel(user);
+        }
+
+        public async Task<IEnumerable<UsuarioModel>> GetAllUsuarioModelsAsync()
+        {
+            var users = await GetAllUsersAsync();
+            return users.Select(MapToUsuarioModel);
+        }
+
+        private UsuarioModel MapToUsuarioModel(LicitArUser user)
+        {
+            return new UsuarioModel
+            {
+                IdUsuario = user.IdUsuario,
+                Nombre = user.Nombre,
+                Apellido = user.Apellido,
+                Email = user.Email,
+                FechaNacimiento = user.FechaNacimiento,
+                Cuit = user.Cuit,
+                Enabled = user.Enabled,
+                EmailConfirmed = user.EmailConfirmed
+            };
+        }
+    }
 }
 
 

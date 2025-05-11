@@ -3,10 +3,20 @@
 @{
     ViewData["Title"] = "Roles";
     var query = Context.Request.Query;
+    var successMessage = TempData["SuccessMessage"] as string; // Consume TempData
+    TempData.Remove("SuccessMessage"); // Clear TempData
 }
 
 <div class="card">
     <div class="card-body">
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bx bx-check-circle"></i> @successMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
         <form method="get" asp-action="Roles">
             <div class="row mb-3">
                 <div class="col-md-4">
@@ -58,7 +68,7 @@
                         </td>
                         <td>@role.Name</td>
                         <td>
-                            <a class="text-primary me-2" asp-action="AssociateUsers" asp-route-id="@role.Id" title="Asociar usuarios al Rol">
+                            <a class="text-primary me-2" asp-action="AssignUsersToRole" asp-route-roleId="@role.Id" title="Asociar usuarios al Rol">
                                 <i class="bx bx-group"></i>
                             </a>
                             <a class="text-danger me-2" asp-action="DisableRole" asp-route-id="@role.Id" title="Deshabilitar Rol">

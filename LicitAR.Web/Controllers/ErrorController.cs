@@ -28,5 +28,11 @@ namespace LicitAR.Web.Controllers
         {
             return View();
         }
+
+        public IActionResult Generic()
+        {
+            ViewBag.ErrorMessage = TempData["ErrorMessage"] ?? "Ocurrió un error inesperado.";
+            return View();
+        }
     }
 }

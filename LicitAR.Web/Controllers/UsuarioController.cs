@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace LicitAR.Web.Controllers;
 
+
 public class UsuarioController : Controller
 {
     private readonly ILogger<UsuarioController> _logger;
@@ -36,7 +37,7 @@ public class UsuarioController : Controller
     [AuthorizeClaim("Usuarios.Ver")] 
     public async Task<IActionResult> Index(string? nombre, string? apellido, string? email, string? cuit, bool? habilitado, int page = 1, int pageSize = 10)
     {
-        var users = await _usuarioManager.GetAllUsersAsync();
+        var users = await _usuarioManager.GetAllUsuarioModelsAsync();
 
         if (!string.IsNullOrEmpty(nombre))
         {
@@ -87,6 +88,96 @@ public class UsuarioController : Controller
         }
 
         return View(roles);
+    }
+
+    [Authorize]
+    [AuthorizeClaim("Roles.Editar")]
+    public async Task<IActionResult> AssignUsersToRole(string roleId)
+    {
+        var role = await _rolManager.GetRoleByIdAsync(roleId);
+        if (role == null)
+        {
+            return View("NotFound");
+        }
+
+        var allUsers = await _usuarioManager.GetAllUsersAsync();
+        var assignedUsers = await _usuarioManager.GetUsersInRoleAsync(roleId);
+
+        var model = new AssignUsersToRoleViewModel
+        {
+            RoleId = roleId,
+            RoleName = role.Name,
+            AvailableUsers = allUsers.ExceptBy(assignedUsers.Select(u => u.Id), u => u.Id).ToList(),
+            AssignedUsers = assignedUsers.ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [Authorize]
+    [AuthorizeClaim("Roles.Editar")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AssignUsersToRole(AssignUsersToRoleViewModel model)
+    {
+        _logger.LogInformation("AssignUsersToRole POST called for RoleId: {RoleId}, RoleName: {RoleName}", model.RoleId, model.RoleName);
+
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("ModelState is invalid: {@ModelState}", ModelState);
+            return View(model);
+        }
+
+        try
+        {
+            // Retrieve all users and validate SelectedToAdd and SelectedToRemove
+            var allUsers = await _usuarioManager.GetAllUsersAsync();
+            var validUserIds = allUsers.Select(u => u.Id).ToHashSet();
+            var invalidUserIds = model.SelectedToAdd?.Where(id => !validUserIds.Contains(id)).ToList();
+
+            if (invalidUserIds != null && invalidUserIds.Any())
+            {
+                _logger.LogWarning("Invalid UserIds detected in SelectedToAdd: {InvalidUserIds}", string.Join(", ", invalidUserIds));
+                ModelState.AddModelError("", "Algunos usuarios seleccionados no son válidos.");
+                return View(model);
+            }
+
+            // Get the current assigned users before the update
+            var currentAssignedUsers = await _usuarioManager.GetUsersInRoleAsync(model.RoleId);
+
+            // Perform the update
+            await _usuarioManager.UpdateUsersInRoleAsync(model.RoleId, model.SelectedToAdd, model.SelectedToRemove);
+
+            // Get the updated assigned users after the update
+            var updatedAssignedUsers = await _usuarioManager.GetUsersInRoleAsync(model.RoleId);
+
+            // Determine the changes
+            var addedUsers = updatedAssignedUsers.Where(u => !currentAssignedUsers.Any(cu => cu.Id == u.Id)).ToList();
+            var removedUsers = currentAssignedUsers.Where(cu => !updatedAssignedUsers.Any(u => u.Id == cu.Id)).ToList();
+
+            // Construct the success message
+            var messageParts = new List<string>();
+            if (addedUsers.Any())
+            {
+                var addedEmails = string.Join(", ", addedUsers.Select(u => u.Email));
+                messageParts.Add($"Se incorporaron los siguientes usuarios: {addedEmails}.");
+            }
+            if (removedUsers.Any())
+            {
+                var removedEmails = string.Join(", ", removedUsers.Select(u => u.Email));
+                messageParts.Add($"Se eliminaron los siguientes usuarios: {removedEmails}.");
+            }
+
+            TempData["SuccessMessage"] = $"El rol \"{model.RoleName}\" ha sido actualizado. {string.Join(" ", messageParts)}";
+
+            return RedirectToAction("Roles");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while assigning users to role. RoleId: {RoleId}, RoleName: {RoleName}", model.RoleId, model.RoleName);
+            TempData["ErrorMessage"] = "Ocurrió un error al asignar usuarios al rol.";
+            return RedirectToAction("Generic", "Error");
+        }
     }
 
     [AllowAnonymous]
@@ -177,14 +268,18 @@ public class UsuarioController : Controller
     [HttpPost]
     public async Task<IActionResult> ConfirmarUsuario(string token, string email, string password)
     {
+        var user = await _usuarioManager.GetUsuarioModelAsync(IdentityHelper.GetUserLicitARId(User));
+        if (user == null)
+        {
+            return View("NotFound");
+        }
+
         var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
         if (result.Succeeded)
         {
             string decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
 
             var confirmarUsuario = await _usuarioManager.ConfirmEmailAsync(decodedToken, email);
-
-
 
             if (confirmarUsuario)
             {
@@ -193,7 +288,7 @@ public class UsuarioController : Controller
         }
 
         ModelState.AddModelError("", "Login incorrecto");
-        return View();
+        return View(user);
     }
 
 
@@ -283,7 +378,7 @@ public class UsuarioController : Controller
             try
             {
                 int idUsuario = IdentityHelper.GetUserLicitARId(User);
-                var user = await _usuarioManager.GetUserAsync(idUsuario);
+                var user = await _usuarioManager.GetUsuarioModelAsync(idUsuario);
                 if (user == null)
                 {
                     return View("NotFound");
@@ -292,7 +387,7 @@ public class UsuarioController : Controller
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in MyProfile: {ex.Message}");
+                _logger.LogError(ex, "Error in MyProfile");
                 throw;
             }
         }
@@ -303,24 +398,9 @@ public class UsuarioController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken] // Ensure Anti-Forgery Token validation
     [Authorize]
-    public IActionResult UploadPhoto()
-    {
-        // Placeholder logic for file upload
-        return RedirectToAction("MyProfile");
-    }
-
-    [HttpPost]
-    [Authorize]
-    public IActionResult ResetPhoto()
-    {
-        // Placeholder logic for resetting photo
-        return RedirectToAction("MyProfile");
-    }
-
-    [HttpPost]
-    [Authorize]
-    [AuthorizeClaim("Perfil.Editar")] 
+    [AuthorizeClaim("Perfil.Editar")]
     public async Task<IActionResult> EditMyProfile(UsuarioModel model)
     {
         if (!ModelState.IsValid)
@@ -329,28 +409,102 @@ public class UsuarioController : Controller
             return View("MyProfile", model);
         }
 
-        int IdUsuario = IdentityHelper.GetUserLicitARId(User);
-        _logger.LogInformation("Updating user with ID: {IdUsuario}", IdUsuario);
+        _logger.LogInformation("Updating user with ID: {IdUsuario}", model.IdUsuario);
 
         try
         {
-            var result = await _usuarioManager.UpdateUserAsync(model, IdUsuario);
+            var user = await _usuarioManager.GetUserAsync(model.IdUsuario);
+            if (user == null)
+            {
+                _logger.LogWarning("User with ID {IdUsuario} not found.", model.IdUsuario);
+                return View("NotFound");
+            }
+
+            // Map UsuarioModel to LicitArUser
+            user.Nombre = model.Nombre;
+            user.Apellido = model.Apellido;
+            user.Email = model.Email;
+            user.FechaNacimiento = model.FechaNacimiento;
+            user.Cuit = model.Cuit;
+
+            var result = await _usuarioManager.UpdateUserAsync(user);
             if (!result)
             {
-                _logger.LogError("Failed to update user with ID: {IdUsuario}", IdUsuario);
+                _logger.LogError("Failed to update user with ID: {IdUsuario}", model.IdUsuario);
                 ModelState.AddModelError("", "Error al actualizar el usuario.");
                 return View("MyProfile", model);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception occurred while updating user with ID: {IdUsuario}", IdUsuario);
+            _logger.LogError(ex, "Exception occurred while updating user with ID: {IdUsuario}", model.IdUsuario);
             ModelState.AddModelError("", "Ocurrió un error inesperado al actualizar el perfil.");
             return View("MyProfile", model);
         }
 
         TempData["SuccessMessage"] = "Perfil actualizado correctamente.";
         return RedirectToAction("MyProfile");
+    }
+
+    [HttpGet]
+    [AuthorizeClaim("Usuarios.Editar")]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var user = await _usuarioManager.GetUsuarioModelAsync(id);
+        if (user == null)
+        {
+            return View("NotFound");
+        }
+
+        return View(user);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken] // Ensure AntiForgeryToken validation is enabled
+    [Authorize]
+    [AuthorizeClaim("Usuarios.Editar")]
+    public async Task<IActionResult> Edit(UsuarioModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        _logger.LogInformation("Updating user with ID: {IdUsuario}", model.IdUsuario);
+
+        try
+        {
+            var user = await _usuarioManager.GetUserAsync(model.IdUsuario);
+            if (user == null)
+            {
+                _logger.LogWarning("User with ID {IdUsuario} not found.", model.IdUsuario);
+                return View("NotFound");
+            }
+
+            // Map UsuarioModel to LicitArUser
+            user.Nombre = model.Nombre;
+            user.Apellido = model.Apellido;
+            user.Email = model.Email;
+            user.FechaNacimiento = model.FechaNacimiento;
+            user.Cuit = model.Cuit;
+
+            var result = await _usuarioManager.UpdateUserAsync(user);
+            if (!result)
+            {
+                _logger.LogError("Failed to update user with ID: {IdUsuario}", model.IdUsuario);
+                ModelState.AddModelError("", "Error al actualizar el usuario.");
+                return View(model);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while updating user with ID: {IdUsuario}", model.IdUsuario);
+            ModelState.AddModelError("", "Ocurrió un error inesperado al actualizar el usuario.");
+            return View(model);
+        }
+
+        TempData["SuccessMessage"] = "Usuario actualizado correctamente.";
+        return RedirectToAction("Index");
     }
 
     public IActionResult GoogleLogin()
@@ -371,38 +525,6 @@ public class UsuarioController : Controller
     {
         await _signInManager.SignOutAsync();
         return RedirectToAction("Index", "Home");
-    }
-
-    [Authorize]
-    [AuthorizeClaim("Usuarios.Editar")] 
-    public async Task<IActionResult> Edit(int id)
-    {
-        var user = await _usuarioManager.GetUserAsync(id);
-        if (user == null)
-        {
-            return View("NotFound");
-        }
-
-        return View(user);
-    }
-
-    [HttpPost]
-    [AuthorizeClaim("Usuarios.Editar")]
-    public async Task<IActionResult> Edit(UsuarioModel model)
-    {
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
-        int IdUsuario = IdentityHelper.GetUserLicitARId(User);
-        var result = await _usuarioManager.UpdateUserAsync(model, IdUsuario);
-        if (!result)
-        {
-            ModelState.AddModelError("", "Error al actualizar el usuario.");
-            return View(model);
-        }
-
-        return RedirectToAction("Index");
     }
 
     [HttpPost]

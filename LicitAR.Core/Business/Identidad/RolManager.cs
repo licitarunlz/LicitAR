@@ -1,11 +1,11 @@
-﻿
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace LicitAR.Core.Business.Identidad
 {
     public interface IRolManager
     {
         Task<IEnumerable<IdentityRole>> GetAllRolesAsync();
+        Task<IdentityRole?> GetRoleByIdAsync(string roleId);
     }
 
     public class RolManager : IRolManager
@@ -20,6 +20,11 @@ namespace LicitAR.Core.Business.Identidad
         public async Task<IEnumerable<IdentityRole>> GetAllRolesAsync()
         {
             return await Task.FromResult(_roleManager.Roles);
+        }
+
+        public async Task<IdentityRole?> GetRoleByIdAsync(string roleId)
+        {
+            return await _roleManager.FindByIdAsync(roleId);
         }
     }
 }
