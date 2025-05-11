@@ -129,6 +129,13 @@ namespace LicitAR.Web.Controllers
             {
                 return NotFound();
             }
+            var tiposPersonas = _context.TiposPersona
+                 .Select(x => new SelectListItem
+                 {
+                     Value = x.IdTipoPersona.ToString(),
+                     Text = x.Descripcion.ToString()
+                 }).ToList();
+
             var items = _context.Provincias
                    .Select(x => new SelectListItem
                    {
@@ -136,10 +143,18 @@ namespace LicitAR.Web.Controllers
                        Text = x.Descripcion
                    })
                    .ToList();
-            var itemsLocalidades = _context.Localidades.ToList();
+            var itemsLocalidades = _context.Localidades
+                                            .Where(x=> x.IdProvincia == persona.IdProvincia)
+                                            .Select(x => new SelectListItem
+                                            {
+                                                Value = x.IdLocalidad.ToString(),
+                                                Text = x.Descripcion
+                                            }).ToList();
 
             ViewBag.ComboProvincias = items;
             ViewBag.ComboLocalidades = itemsLocalidades;
+            ViewBag.ComboTiposPersona = tiposPersonas;
+
 
             var personaModel = new PersonaModel();
             personaModel.SetPersonaData(persona);
@@ -212,13 +227,9 @@ namespace LicitAR.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var persona = await _context.Personas.FindAsync(id);
-            if (persona != null)
-            {
-                _context.Personas.Remove(persona);
-            }
+            int idUser = IdentityHelper.GetUserLicitARId(User);
+            var result = await _personaManager.BajaLogicaAsync(id, idUser);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
