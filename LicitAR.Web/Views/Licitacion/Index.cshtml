@@ -79,7 +79,11 @@
                         <td>@item.Descripcion</td>
                         <td>@item.FechaPublicacion.ToShortDateString()</td>
                         <td>@item.FechaCierre.ToShortDateString()</td>
-                        <td>@(item.EstadoLicitacion?.Descripcion?.ToString() ?? "N/A")</td>
+                        <td>
+                            <span class="badge bg-label-secondary">
+                                @(item.EstadoLicitacion?.Descripcion?.ToString() ?? "N/A")
+                            </span>
+                        </td>
                         <td>@item.IdCategoriaLicitacion</td>
                     </tr>
                 }
