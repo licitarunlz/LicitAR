@@ -36,6 +36,7 @@ namespace LicitAR.Core.Data
             modelBuilder.Entity<EntidadLicitante>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<EntidadLicitanteUsuario>().OwnsOne(e => e.Audit);
             modelBuilder.Entity<Persona>().OwnsOne(p => p.Audit);
+            modelBuilder.Entity<PersonaUsuario>().OwnsOne(e => e.Audit);
             modelBuilder.Entity<Localidad>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<Provincia>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<Rubro>().OwnsOne(p => p.Audit);
@@ -80,7 +81,20 @@ namespace LicitAR.Core.Data
                 .HasOne(p => p.TipoPersona)
                 .WithMany()
                 .HasForeignKey(p => p.IdTipoPersona);
-             
+
+            // Relaciones
+            modelBuilder.Entity<PersonaUsuario>()
+                .HasKey(eu => new { eu.IdPersona, eu.IdUsuario });
+
+            modelBuilder.Entity<PersonaUsuario>()
+                .HasOne(eu => eu.Persona)
+                .WithMany(e => e.Usuarios)
+                .HasForeignKey(eu => eu.IdPersona);
+
+            modelBuilder.Entity<PersonaUsuario>()
+                .HasOne(eu => eu.Usuario)
+                .WithMany(u => u.Personas)
+                .HasForeignKey(eu => eu.IdUsuario);
 
             // Ignorar escritura de IdUsuario después del insert
             modelBuilder.Entity<LicitArUser>()
