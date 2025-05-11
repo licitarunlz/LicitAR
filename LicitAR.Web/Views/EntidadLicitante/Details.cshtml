@@ -84,7 +84,11 @@
     <button type="submit" class="btn btn-primary mt-2">Asociar</button>
 </form>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdEntidadLicitante" class="btn btn-primary">Editar</a>
-    <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+<div class="text-start mt-8">
+    <a asp-action="Edit" asp-route-id="@Model?.IdEntidadLicitante" class="btn btn-primary">
+        <i class="bx bx-edit"></i> Editar
+    </a>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bx bx-arrow-back"></i> Volver al Listado
+    </a>
 </div>

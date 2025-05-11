@@ -11,7 +11,7 @@
         <form method="get" asp-action="Index">
             <div class="row mb-3">
                 <div class="col-md-3">
-                    <input type="text" name="cuit" class="form-control" placeholder="CUIT" value="@query["cuit"]" />
+                    <input type="text" name="cuit" class="form-control" placeholder="CUIT" value="@query["cuit"]" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                 </div>
                 <div class="col-md-6">
                     <input type="text" name="razonSocial" class="form-control" placeholder="Razón Social" value="@query["razonSocial"]" />
@@ -37,6 +37,7 @@
                     <th></th>
                     <th>
                         @Html.DisplayNameFor(model => model.Cuit)
+                        
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.RazonSocial)
@@ -76,7 +77,14 @@
                             </div>
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Cuit)
+                            @if (!string.IsNullOrEmpty(item.Cuit) && item.Cuit.Length == 11) 
+                            { 
+                                @($"{item.Cuit.Substring(0, 2)}-{item.Cuit.Substring(2, 8)}-{item.Cuit.Substring(10, 1)}") 
+                            } 
+                            else 
+                            { 
+                                @item.Cuit 
+                            }
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.RazonSocial)
