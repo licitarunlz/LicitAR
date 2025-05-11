@@ -92,8 +92,9 @@ namespace LicitAR.Web.Controllers
             if (ModelState.IsValid)
             {
                 var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
-                Licitacion licitacion = licitacionModel.GetLicitacion(audit);
-              
+                var estadoLicitacion = await _licitacionManager.GetEstadoLicitacionByIdAsync(licitacionModel.IdEstadoLicitacion);
+
+                Licitacion licitacion = licitacionModel.GetLicitacion(audit, estadoLicitacion);
                 await _licitacionManager.CreateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
                 return RedirectToAction(nameof(Index));
             }
@@ -132,7 +133,10 @@ namespace LicitAR.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var licitacion = licitacionModel.GetLicitacion(AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User)));
+                var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
+                var estadoLicitacion = await _licitacionManager.GetEstadoLicitacionByIdAsync(licitacionModel.IdEstadoLicitacion);
+
+                var licitacion = licitacionModel.GetLicitacion(audit, estadoLicitacion);
                 licitacion.IdLicitacion = licitacionModel.IdLicitacion;
 
                 var result = await _licitacionManager.UpdateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
@@ -198,6 +202,14 @@ namespace LicitAR.Web.Controllers
             };
 
             return View(oferentes);
+        }
+
+        // GET: Licitacion/GetByEstado/5
+        [AuthorizeClaim("Licitaciones.Ver")]
+        public async Task<IActionResult> GetByEstado(int idEstadoLicitacion)
+        {
+            var licitaciones = await _licitacionManager.GetLicitacionesByEstadoAsync(idEstadoLicitacion);
+            return View(licitaciones);
         }
     }
 }

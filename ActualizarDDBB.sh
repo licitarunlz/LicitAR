@@ -9,8 +9,8 @@
 # Obtener timestamp AAAAMMDDhhmmss
 timestamp=$(date +"%Y%m%d%H%M%S")
 
-# Nombre base para la migración (puedes cambiarlo)
-migrationName="AutoMigration_LicitARIdentity"
+# Nombre base para la migración
+migrationName="AutoMigration_LicitAR"
 
 # Ruta relativa del proyecto donde está el DbContext
 project="LicitAR.Core"
@@ -19,23 +19,14 @@ project="LicitAR.Core"
 startup="LicitAR.Web"
 
 # Directorio donde se guardan las migraciones
-outputDir="Migrations/Identidad"
+outputDir="Migrations/DbContext"
 
-echo "=== Generando migraciones para todos los DbContexts ==="
+echo "=== Generando migración para LicitARDbContext ==="
 
-dotnet ef migrations add AutoMigration_LicitARIdentity_$timestamp --context LicitARIdentityDbContext --output-dir Migrations/Identidad --project $project --startup-project $startup
+dotnet ef migrations add ${migrationName}_${timestamp} --context LicitARDbContext --output-dir ${outputDir} --project ${project} --startup-project ${startup}
 
-dotnet ef migrations add AutoMigration_Licitaciones_$timestamp --context LicitacionesDbContext --output-dir Migrations/Licitaciones --project $project --startup-project $startup
+echo "=== Aplicando migración ==="
 
-dotnet ef migrations add AutoMigration_Actores_$timestamp --context ActoresDbContext --output-dir Migrations/Actores --project $project --startup-project $startup
-
-dotnet ef migrations add AutoMigration_Parametros_$timestamp --context ParametrosDbContext --output-dir Migrations/Parametros --project $project --startup-project $startup
-
-echo "=== Aplicando migraciones ==="
-
-dotnet ef database update --context LicitARIdentityDbContext --project $project --startup-project $startup
-dotnet ef database update --context LicitacionesDbContext --project $project --startup-project $startup
-dotnet ef database update --context ActoresDbContext --project $project --startup-project $startup
-dotnet ef database update --context ParametrosDbContext --project $project --startup-project $startup
+dotnet ef database update --context LicitARDbContext --project ${project} --startup-project ${startup}
 
 echo "=== Listo! ==="

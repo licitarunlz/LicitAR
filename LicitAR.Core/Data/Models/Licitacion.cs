@@ -1,13 +1,10 @@
 ﻿using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Utils;
+using LicitAR.Core.Data.Models.Parametros;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace LicitAR.Core.Data.Models
 {
@@ -49,6 +46,9 @@ namespace LicitAR.Core.Data.Models
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         [Display(Name = "Estado")]
         public required int IdEstadoLicitacion { get; set; }
+
+        [ForeignKey("IdEstadoLicitacion")]
+        public required EstadoLicitacion EstadoLicitacion { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         [Display(Name = "Categoría Licitación")]
