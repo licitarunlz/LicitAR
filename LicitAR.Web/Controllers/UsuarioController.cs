@@ -77,9 +77,15 @@ public class UsuarioController : Controller
 
     [Authorize]
     [AuthorizeClaim("Roles.Ver")]
-    public async Task<IActionResult> Roles()
+    public async Task<IActionResult> Roles(string? nombre)
     {
         var roles = await _rolManager.GetAllRolesAsync();
+
+        if (!string.IsNullOrEmpty(nombre))
+        {
+            roles = roles.Where(r => r.Name.Contains(nombre, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
         return View(roles);
     }
 
