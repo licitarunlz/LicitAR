@@ -54,6 +54,9 @@ namespace LicitAR.Core.Data.Models
         [Display(Name = "Categoría Licitación")]
         public required int IdCategoriaLicitacion { get; set; }
 
+        [ForeignKey("IdCategoriaLicitacion")]
+        public required CategoriaLicitacion CategoriaLicitacion { get; set; }
+
         public required AuditTable Audit { get; set; }
     }
 }

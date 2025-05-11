@@ -49,11 +49,15 @@ namespace LicitAR.Web.Models
             public int IdCategoriaLicitacion { get; set; }
 
 
-        public Licitacion GetLicitacion(AuditTable audit, EstadoLicitacion estadoLicitacion)
+        public Licitacion GetLicitacion(AuditTable audit, EstadoLicitacion estadoLicitacion, CategoriaLicitacion categoriaLicitacion)
         {
             if (estadoLicitacion == null)
             {
                 throw new InvalidOperationException($"EstadoLicitacion with ID {this.IdEstadoLicitacion} not found.");
+            }
+            if (categoriaLicitacion == null)
+            {
+                throw new InvalidOperationException($"CategoriaLicitacion with ID {this.IdCategoriaLicitacion} not found.");
             }
 
             return new Licitacion
@@ -67,7 +71,8 @@ namespace LicitAR.Web.Models
                 IdEntidadLicitante = this.IdEntidadLicitante,
                 IdEstadoLicitacion = this.IdEstadoLicitacion,
                 Titulo = this.Titulo,
-                EstadoLicitacion = estadoLicitacion // Pass the provided EstadoLicitacion object
+                EstadoLicitacion = estadoLicitacion,
+                CategoriaLicitacion = categoriaLicitacion // Pass the provided CategoriaLicitacion object
             };
         }
 

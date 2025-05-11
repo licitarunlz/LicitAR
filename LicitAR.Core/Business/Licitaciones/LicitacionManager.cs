@@ -17,6 +17,8 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<bool> DeleteLicitacionAsync(int id, int idUsuario);
         Task<List<Licitacion>> GetLicitacionesByEstadoAsync(int idEstadoLicitacion);
         Task<EstadoLicitacion?> GetEstadoLicitacionByIdAsync(int idEstadoLicitacion);
+        Task<CategoriaLicitacion?> GetCategoriaLicitacionByIdAsync(int idCategoriaLicitacion);
+        Task<List<CategoriaLicitacion>> GetAllCategoriasAsync();
     }
 
     public class LicitacionManager : ILicitacionManager
@@ -31,7 +33,8 @@ namespace LicitAR.Core.Business.Licitaciones
         public async Task<List<Licitacion>> GetAllLicitacionesAsync()
         {
             return await _dbContext.Licitaciones
-                .Include(l => l.EstadoLicitacion) // Incluir la relación con EstadoLicitacion
+                .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
+                .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
                 .ToListAsync();
         }
 
@@ -43,7 +46,8 @@ namespace LicitAR.Core.Business.Licitaciones
         public async Task<Licitacion?> GetLicitacionByIdAsync(int id)
         {
             return await _dbContext.Licitaciones
-                .Include(l => l.EstadoLicitacion) // Incluir la relación con EstadoLicitacion
+                .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
+                .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
                 .FirstOrDefaultAsync(l => l.IdLicitacion == id);
         }
 
@@ -140,6 +144,17 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             return await _dbContext.EstadosLicitacion
                 .FirstOrDefaultAsync(e => e.IdEstadoLicitacion == idEstadoLicitacion);
+        }
+
+        public async Task<CategoriaLicitacion?> GetCategoriaLicitacionByIdAsync(int idCategoriaLicitacion)
+        {
+            return await _dbContext.CategoriasLicitacion
+                .FirstOrDefaultAsync(c => c.IdCategoriaLicitacion == idCategoriaLicitacion);
+        }
+
+        public async Task<List<CategoriaLicitacion>> GetAllCategoriasAsync()
+        {
+            return await _dbContext.CategoriasLicitacion.ToListAsync();
         }
     }
 }
