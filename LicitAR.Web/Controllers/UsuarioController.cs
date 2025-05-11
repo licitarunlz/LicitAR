@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using LicitAR.Core.Data.Models;
-using LicitAR.Web.Business.Identidad.Usuario;
 using LicitAR.Core.Business.Identidad;
+using LicitAR.Core.Data.Models.Identidad;
+using LicitAR.Web.Business.Identidad.Usuario;
 using LicitAR.Web.Helpers;
 using LicitAR.Web.Helpers.Authorization;
 using LicitAR.Web.Models.Usuario;
 using System.Text;
 using Microsoft.AspNetCore.WebUtilities;
-using LicitAR.Core.Data.Models.Identidad;
 
 namespace LicitAR.Web.Controllers;
 
@@ -52,7 +52,11 @@ public class UsuarioController : Controller
         }
         if (!string.IsNullOrEmpty(cuit))
         {
-            users = users.Where(u => u.CuitFormateado.Contains(cuit, StringComparison.OrdinalIgnoreCase)).ToList();
+            cuit = new string(cuit.Where(char.IsDigit).ToArray()); // Remove non-numeric characters
+            if (cuit.Length <= 11)
+            {
+                users = users.Where(u => u.Cuit.Contains(cuit)).ToList();
+            }
         }
         if (habilitado.HasValue)
         {

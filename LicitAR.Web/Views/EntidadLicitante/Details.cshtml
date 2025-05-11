@@ -1,4 +1,5 @@
 ﻿@model LicitAR.Core.Data.Models.EntidadLicitante
+@using LicitAR.Core.Data.Models
 
 @{
     ViewData["Title"] = "Detalle de la Entidad Licitante";
@@ -43,6 +44,45 @@
         </div>
     </div>
 </div>
+
+<h4>Usuarios Asociados</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var usuario in Model.Usuarios)
+        {
+            <tr> <!-- Added missing opening <tr> tag -->
+                <td>@usuario?.Usuario?.Nombre</td>
+                <td>@usuario.Usuario.Email</td>
+                <td>
+                    <form asp-action="DesasociarUsuario" method="post">
+                        <input type="hidden" name="idEntidadLicitante" value="@Model.IdEntidadLicitante" />
+                        <input type="hidden" name="idUsuario" value="@usuario.IdUsuario" />
+                        <button type="submit" class="btn btn-danger">Desasociar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>Asociar Nuevo Usuario</h4>
+<form asp-action="AsociarUsuario" method="post">
+    <input type="hidden" name="idEntidadLicitante" value="@Model.IdEntidadLicitante" />
+    <select name="idUsuario" class="form-control">
+        @foreach (var user in ViewBag.UsuariosDisponibles)
+        {
+            <option value="@user.Id">@user.Nombre (@user.Email)</option>
+        }
+    </select>
+    <button type="submit" class="btn btn-primary mt-2">Asociar</button>
+</form>
 
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.IdEntidadLicitante" class="btn btn-primary">Editar</a>

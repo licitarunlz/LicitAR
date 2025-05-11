@@ -3,43 +3,49 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LicitAR.Core.Data;
 using LicitAR.Core.Data.Models;
-using LicitAR.Web.Models;
 using LicitAR.Core.Utils;
-using LicitAR.Web.Helpers;
 using LicitAR.Core.Business.Licitaciones;
+using LicitAR.Core.Business.Identidad;
+using LicitAR.Web.Models;
+using LicitAR.Web.Helpers;
 using LicitAR.Web.Helpers.Authorization;
 
 namespace LicitAR.Web.Controllers
 {
     public class EntidadLicitanteController : Controller
     {
-        private readonly ActoresDbContext _context;
+        private readonly LicitARDbContext _context;
         private readonly IEntidadLicitanteManager _entidadLicitanteManager;
-        private readonly ParametrosDbContext _parametrosDbContext;
         private IMessageManager _messageManager;
+        private readonly IUsuarioManager _usuarioManager;
 
-        public EntidadLicitanteController(ActoresDbContext context, ParametrosDbContext parametrosDbContext, IEntidadLicitanteManager entidadLicitanteManager, IMessageManager message)
+        public EntidadLicitanteController(LicitARDbContext context, IEntidadLicitanteManager entidadLicitanteManager, IMessageManager message, IUsuarioManager usuarioManager)
         {
             _context = context;
             _entidadLicitanteManager = entidadLicitanteManager;
-            _parametrosDbContext = parametrosDbContext;
             _messageManager = message;
+            _usuarioManager = usuarioManager;
         }
 
         // GET: EntidadLicitante
         [AuthorizeClaim("EntidadLicitante.Ver")]
-        public IActionResult Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
-            var query = _context.EntidadesLicitantes.AsQueryable();
+            var entidadesLicitantesList = await _entidadLicitanteManager.GetAllActiveEntidadesLicitantesAsync();
+            var query = entidadesLicitantesList.AsQueryable();
 
             if (!string.IsNullOrEmpty(cuit))
             {
-                query = query.Where(e => e.Cuit.Contains(cuit));
+                cuit = new string(cuit.Where(char.IsDigit).ToArray()); // Remove non-numeric characters
+                if (cuit.Length <= 11)
+                {
+                    query = query.Where(e => e.Cuit.Contains(cuit));
+                }
             }
 
             if (!string.IsNullOrEmpty(razonSocial))
             {
-                query = query.Where(e => e.RazonSocial.Contains(razonSocial));
+                query = query.Where(e => EF.Functions.Like(e.RazonSocial.ToLower(), $"%{razonSocial.ToLower()}%"));
             }
 
             var totalItems = query.Count();
@@ -79,18 +85,17 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("EntidadLicitante.Crear")]
         public IActionResult Create()
         {
-            var items = _parametrosDbContext.Provincias
+            var items = _context.Provincias
                     .Select(x => new SelectListItem
                     {
                         Value = x.IdProvincia.ToString(),
                         Text = x.Descripcion
                     })
                     .ToList();
-            var itemsLocalidades = _parametrosDbContext.Localidades.ToList();
-                  
+            var itemsLocalidades = _context.Localidades.ToList();
+
             ViewBag.ComboProvincias = items;
             ViewBag.ComboLocalidades = itemsLocalidades;
-
 
             return View();
         }
@@ -191,8 +196,7 @@ namespace LicitAR.Web.Controllers
                 return NotFound();
             }
 
-            var entidadLicitante = await _context.EntidadesLicitantes
-                .FirstOrDefaultAsync(m => m.IdEntidadLicitante == id);
+            var entidadLicitante = await _entidadLicitanteManager.GetEntidadLicitanteByIdAsync(id.Value);
             if (entidadLicitante == null)
             {
                 return NotFound();
@@ -208,7 +212,7 @@ namespace LicitAR.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
 
-            _messageManager = await _entidadLicitanteManager.BajaLogicaAsync(id, IdentityHelper.GetUserLicitARId(User));
+            _messageManager = await _entidadLicitanteManager.DeleteEntidadLicitanteAsync(id, IdentityHelper.GetUserLicitARId(User));
 
             ViewBag.messages = _messageManager.messages;
 
@@ -216,6 +220,65 @@ namespace LicitAR.Web.Controllers
                 return View(id);
             else
                 return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [AuthorizeClaim("EntidadLicitante.AsociarUsuario")]
+        public async Task<IActionResult> AsociarUsuario(int idEntidadLicitante, string idUsuario)
+        {
+            _messageManager = await _entidadLicitanteManager.AsociarUsuarioAsync(idEntidadLicitante, idUsuario, IdentityHelper.GetUserLicitARId(User));
+            ViewBag.Messages = _messageManager.messages;
+
+            return RedirectToAction(nameof(Details), new { id = idEntidadLicitante });
+        }
+
+        [HttpPost]
+        [AuthorizeClaim("EntidadLicitante.DesasociarUsuario")]
+        public async Task<IActionResult> DesasociarUsuario(int idEntidadLicitante, string idUsuario)
+        {
+            _messageManager = await _entidadLicitanteManager.DesasociarUsuarioAsync(idEntidadLicitante, idUsuario, IdentityHelper.GetUserLicitARId(User));
+            ViewBag.Messages = _messageManager.messages;
+
+            return RedirectToAction(nameof(Details), new { id = idEntidadLicitante });
+        }
+
+        [HttpGet]
+        [AuthorizeClaim("EntidadLicitante.AsociarUsuario")]
+        public async Task<IActionResult> AsociarUsuario(int idEntidadLicitante)
+        {
+            var entidadLicitante = await _entidadLicitanteManager.GetEntidadLicitanteByIdAsync(idEntidadLicitante);
+            if (entidadLicitante == null)
+            {
+                return NotFound();
+            }
+
+            var usuarios = await _usuarioManager.GetAllUsersAsync();
+            ViewBag.UsuariosDisponibles = usuarios.Select(u => new SelectListItem
+            {
+                Value = u.IdUsuario.ToString(),
+                Text = $"{u.Nombre} {u.Apellido} ({u.Email})"
+            }).ToList();
+
+            ViewBag.EntidadLicitante = entidadLicitante;
+            return View();
+        }
+
+        [HttpPost]
+        [AuthorizeClaim("EntidadLicitante.AsociarUsuario")]
+        public async Task<IActionResult> AsociarUsuario(int idEntidadLicitante, List<string> selectedUsuarios)
+        {
+            if (selectedUsuarios == null || !selectedUsuarios.Any())
+            {
+                ModelState.AddModelError("", "Debe seleccionar al menos un usuario.");
+                return await AsociarUsuario(idEntidadLicitante);
+            }
+
+            foreach (var idUsuario in selectedUsuarios)
+            {
+                await _entidadLicitanteManager.AsociarUsuarioAsync(idEntidadLicitante, idUsuario, IdentityHelper.GetUserLicitARId(User));
+            }
+
+            return RedirectToAction(nameof(Details), new { id = idEntidadLicitante });
         }
 
         private bool EntidadLicitanteExists(int id)

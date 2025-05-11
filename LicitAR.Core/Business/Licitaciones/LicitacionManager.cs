@@ -9,6 +9,7 @@ namespace LicitAR.Core.Business.Licitaciones
     public interface ILicitacionManager
     {
         Task<List<Licitacion>> GetAllLicitacionesAsync();
+        Task<List<Licitacion>> GetAllActiveLicitacionesAsync();
         Task<Licitacion?> GetLicitacionByIdAsync(int id);
         Task CreateLicitacionAsync(Licitacion licitacion, int userId);
         Task<bool> UpdateLicitacionAsync(Licitacion licitacion, int userId);
@@ -17,21 +18,26 @@ namespace LicitAR.Core.Business.Licitaciones
 
     public class LicitacionManager : ILicitacionManager
     {
-        private readonly LicitacionesDbContext _context;
+        private readonly LicitARDbContext _dbContext;
 
-        public LicitacionManager(LicitacionesDbContext context)
+        public LicitacionManager(LicitARDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
 
         public async Task<List<Licitacion>> GetAllLicitacionesAsync()
         {
-            return await _context.Licitaciones.Where(x=> x.Audit.FechaBaja == null).ToListAsync();
+            return await _dbContext.Licitaciones.ToListAsync();
+        }
+
+        public async Task<List<Licitacion>> GetAllActiveLicitacionesAsync()
+        {
+            return await _dbContext.Licitaciones.Where(x=> x.Audit.FechaBaja == null).ToListAsync();
         }
 
         public async Task<Licitacion?> GetLicitacionByIdAsync(int id)
         {
-            return await _context.Licitaciones.FirstOrDefaultAsync(l => l.IdLicitacion == id);
+            return await _dbContext.Licitaciones.FirstOrDefaultAsync(l => l.IdLicitacion == id);
         }
 
         public async Task CreateLicitacionAsync(Licitacion licitacion, int userId)
@@ -41,8 +47,8 @@ namespace LicitAR.Core.Business.Licitaciones
                 licitacion.CodigoLicitacion = await this.ObtenerProximoCodigoAsync();
                 licitacion.IdEstadoLicitacion = 1; //arranca en Borrador
                 licitacion.Audit = AuditHelper.GetCreationData(userId);
-                _context.Licitaciones.Add(licitacion);
-                await _context.SaveChangesAsync();
+                _dbContext.Licitaciones.Add(licitacion);
+                await _dbContext.SaveChangesAsync();
             }
             catch
             {
@@ -54,7 +60,7 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             try
             {
-                var licitacionFromDdbb = await _context.Licitaciones.FirstOrDefaultAsync(x => x.IdLicitacion == licitacion.IdLicitacion);
+                var licitacionFromDdbb = await _dbContext.Licitaciones.FirstOrDefaultAsync(x => x.IdLicitacion == licitacion.IdLicitacion);
                 if (licitacionFromDdbb == null)
                     return false;
 
@@ -73,35 +79,35 @@ namespace LicitAR.Core.Business.Licitaciones
                 _context.Entry(licitacionFromDdbb).Property(u => u.FechaPublicacion).IsModified = true;
                 _context.Entry(licitacionFromDdbb).Property(u => u.FechaCierre).IsModified = true;
                 */
-                _context.Licitaciones.Update(licitacionFromDdbb);
+                _dbContext.Licitaciones.Update(licitacionFromDdbb);
             
-                await _context.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
                 return true;
             }
             catch (DbUpdateConcurrencyException)
             {
-                return _context.Licitaciones.Any(e => e.IdLicitacion == licitacion.IdLicitacion);
+                return _dbContext.Licitaciones.Any(e => e.IdLicitacion == licitacion.IdLicitacion);
             }
         }
 
         public async Task<bool> DeleteLicitacionAsync(int id, int idUsuario)
         {
-            var licitacion = await _context.Licitaciones.FindAsync(id);
+            var licitacion = await _dbContext.Licitaciones.FindAsync(id);
             if (licitacion == null)
             {
                 return false;
             }
             licitacion.Audit = AuditHelper.SetDeletionData(licitacion.Audit, idUsuario);
 
-            _context.Licitaciones.Update(licitacion);
-            await _context.SaveChangesAsync();
+            _dbContext.Licitaciones.Update(licitacion);
+            await _dbContext.SaveChangesAsync();
             return true;
         }
 
 
         public async Task<string> ObtenerProximoCodigoAsync()
         {
-            var connection = _context.Database.GetDbConnection();
+            var connection = _dbContext.Database.GetDbConnection();
             if (connection.State != ConnectionState.Open)
                 await connection.OpenAsync();
 
@@ -111,7 +117,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 command.CommandType = CommandType.StoredProcedure;
 
                 var result = await command.ExecuteScalarAsync();
-                // No cierres la conexión manualmente
+                // No cierres la conexiï¿½n manualmente
                 return result?.ToString();
             }
         }
