@@ -35,12 +35,16 @@ namespace LicitAR.Web.Controllers
 
             if (!string.IsNullOrEmpty(cuit))
             {
-                query = query.Where(e => e.Cuit.Contains(cuit));
+                cuit = new string(cuit.Where(char.IsDigit).ToArray()); // Remove non-numeric characters
+                if (cuit.Length <= 11)
+                {
+                    query = query.Where(e => e.Cuit.Contains(cuit));
+                }
             }
 
             if (!string.IsNullOrEmpty(razonSocial))
             {
-                query = query.Where(e => e.RazonSocial.Contains(razonSocial));
+                query = query.Where(e => EF.Functions.Like(e.RazonSocial.ToLower(), $"%{razonSocial.ToLower()}%"));
             }
 
             var totalItems = query.Count();

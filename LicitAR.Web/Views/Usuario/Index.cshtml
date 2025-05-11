@@ -30,10 +30,13 @@
                 <div class="col-md-2">
                     <select name="habilitado" class="form-select" asp-items="habilitadoOptions"></select>
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
+                <div class="col-md-2 d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary w-100 me-2">
                         <i class="bx bx-filter-alt"></i> Filtrar
                     </button>
+                    <a asp-action="Index" class="btn btn-warning" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>
+                    </a>
                 </div>
             </div>
         </form>

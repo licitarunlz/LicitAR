@@ -9,7 +9,7 @@
     <div class="card-body">
         <form method="get" asp-action="Index">
             <div class="row mb-3">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input type="text" name="codigoLicitacion" class="form-control" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
                 </div>
                 <div class="col-md-3">
@@ -21,11 +21,14 @@
                 <div class="col-md-2">
                     <input type="date" name="fechaCierre" class="form-control" placeholder="Fecha Cierre" value="@query["fechaCierre"]" />
                 </div>
-                <div class="col-md-2 d-flex justify-content-between">
+                <div class="col-md-3 d-flex justify-content-between">
                     <button type="submit" class="btn btn-primary w-100 me-2">
                         <i class="bx bx-filter-alt"></i> Filtrar
                     </button>
-                    <a asp-action="Create" class="btn btn-success" title="Agregar nueva Licitación">
+                    <a asp-action="Index" class="btn btn-warning" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>
+                    </a>
+                    <a asp-action="Create" class="btn btn-success ms-2" title="Agregar nueva Licitación">
                         <i class="bx bx-message-square-add"></i>
                     </a>
                 </div>
