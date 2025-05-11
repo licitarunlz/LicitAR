@@ -33,17 +33,17 @@ namespace LicitAR.Core.Business.Licitaciones
         public async Task<IEnumerable<Persona>> GetAllPersonasAsync()
         {
             return this._dbContext.Personas
-    .Include(p => p.Provincia)
-    .Include(p => p.Localidad)
-    .Include(p => p.TipoPersona)
-    .Where(x => x.Audit.FechaBaja == null);
+                                    .Include(p => p.Provincia)
+                                    .Include(p => p.Localidad)
+                                    .Include(p => p.TipoPersona)
+                                    .Where(x => x.Audit.FechaBaja == null).ToList();
         }
         public async Task<Persona?> GetPersonaByIdAsync(int idPersona)
         {
             return await this._dbContext.Personas
-    .Include(p => p.Provincia)
-    .Include(p => p.Localidad)
-    .Include(p => p.TipoPersona).FirstOrDefaultAsync(x => x.IdPersona == idPersona);
+                                .Include(p => p.Provincia)
+                                .Include(p => p.Localidad)
+                                .Include(p => p.TipoPersona).FirstOrDefaultAsync(x => x.IdPersona == idPersona);
         }
         public async Task<IMessageManager> AgregarAsync(Persona persona, int idUser)
         {
@@ -77,6 +77,7 @@ namespace LicitAR.Core.Business.Licitaciones
                     entidadFromDdbb.Email = persona.Email;
                     entidadFromDdbb.Telefono = persona.Telefono;
                     entidadFromDdbb.Cuit = persona.Cuit;
+                    entidadFromDdbb.IdTipoPersona = persona.IdTipoPersona;
                     entidadFromDdbb.RazonSocial = persona.RazonSocial;
                     entidadFromDdbb.IdLocalidad = persona.IdLocalidad;
                     entidadFromDdbb.IdProvincia = persona.IdProvincia;

@@ -107,10 +107,15 @@
                             </div>
 
                         </div>
-                        <div class="text-end mt-8">
-                            <a asp-action="Index" class="btn btn-secondary ">Volver a la Lista</a>
-                            <input type="submit" value="Crear" class="btn btn-primary" />
+                        <div class="text-start mt-8">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bx bx-plus-circle"></i> Crear <!-- Icon for Create -->
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bx bx-arrow-back"></i> Volver a la Lista <!-- Icon for Back -->
+                            </a>
                         </div>
+                    </div>
                 </form>
             </div>
         </div>

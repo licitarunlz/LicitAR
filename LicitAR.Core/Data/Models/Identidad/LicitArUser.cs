@@ -36,5 +36,6 @@ namespace LicitAR.Core.Data.Models.Identidad
         public bool Enabled { get; set; } = true; // Por defecto, habilitado
 
         public ICollection<EntidadLicitanteUsuario> EntidadesLicitantes { get; set; }
+        public ICollection<PersonaUsuario> Personas { get; set; }
     }
 }

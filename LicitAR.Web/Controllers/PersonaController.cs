@@ -10,6 +10,7 @@ using LicitAR.Web.Helpers.Authorization;
 
 namespace LicitAR.Web.Controllers
 {
+
     public class PersonaController : Controller
     {
         private readonly IPersonaManager _personaManager;
@@ -25,9 +26,41 @@ namespace LicitAR.Web.Controllers
 
         // GET: Persona
         [AuthorizeClaim("Persona.Ver")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
-            var personas = await _personaManager.GetAllPersonasAsync();
+            var personasList = await _personaManager.GetAllPersonasAsync();
+             
+            var query = personasList.AsQueryable();
+
+            if (!string.IsNullOrEmpty(cuit))
+            {
+                cuit = new string(cuit.Where(char.IsDigit).ToArray()); // Remove non-numeric characters
+                if (cuit.Length <= 11)
+                {
+                    query = query.Where(l => l.Cuit.Contains(cuit));
+                }
+            }
+
+            if (!string.IsNullOrEmpty(razonSocial))
+            {
+                query = query.Where(l => l.RazonSocial.Contains(razonSocial));
+            }
+ 
+
+            var totalItems = query.Count();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var personas = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+
+
+
             List<PersonaModel> listPersonaModel = new List<PersonaModel>();
 
             foreach (var persona in personas)
@@ -129,6 +162,13 @@ namespace LicitAR.Web.Controllers
             {
                 return NotFound();
             }
+            var tiposPersonas = _context.TiposPersona
+                 .Select(x => new SelectListItem
+                 {
+                     Value = x.IdTipoPersona.ToString(),
+                     Text = x.Descripcion.ToString()
+                 }).ToList();
+
             var items = _context.Provincias
                    .Select(x => new SelectListItem
                    {
@@ -136,10 +176,18 @@ namespace LicitAR.Web.Controllers
                        Text = x.Descripcion
                    })
                    .ToList();
-            var itemsLocalidades = _context.Localidades.ToList();
+            var itemsLocalidades = _context.Localidades
+                                            .Where(x=> x.IdProvincia == persona.IdProvincia)
+                                            .Select(x => new SelectListItem
+                                            {
+                                                Value = x.IdLocalidad.ToString(),
+                                                Text = x.Descripcion
+                                            }).ToList();
 
             ViewBag.ComboProvincias = items;
             ViewBag.ComboLocalidades = itemsLocalidades;
+            ViewBag.ComboTiposPersona = tiposPersonas;
+
 
             var personaModel = new PersonaModel();
             personaModel.SetPersonaData(persona);
@@ -212,13 +260,9 @@ namespace LicitAR.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var persona = await _context.Personas.FindAsync(id);
-            if (persona != null)
-            {
-                _context.Personas.Remove(persona);
-            }
+            int idUser = IdentityHelper.GetUserLicitARId(User);
+            var result = await _personaManager.BajaLogicaAsync(id, idUser);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
