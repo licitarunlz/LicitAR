@@ -29,9 +29,10 @@ namespace LicitAR.Web.Controllers
 
         // GET: EntidadLicitante
         [AuthorizeClaim("EntidadLicitante.Ver")]
-        public IActionResult Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
-            var query = _context.EntidadesLicitantes.AsQueryable();
+            var entidadesLicitantesList = await _entidadLicitanteManager.GetAllActiveEntidadesLicitantesAsync();
+            var query = entidadesLicitantesList.AsQueryable();
 
             if (!string.IsNullOrEmpty(cuit))
             {
@@ -195,8 +196,7 @@ namespace LicitAR.Web.Controllers
                 return NotFound();
             }
 
-            var entidadLicitante = await _context.EntidadesLicitantes
-                .FirstOrDefaultAsync(m => m.IdEntidadLicitante == id);
+            var entidadLicitante = await _entidadLicitanteManager.GetEntidadLicitanteByIdAsync(id.Value);
             if (entidadLicitante == null)
             {
                 return NotFound();
@@ -212,7 +212,7 @@ namespace LicitAR.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
 
-            _messageManager = await _entidadLicitanteManager.BajaLogicaAsync(id, IdentityHelper.GetUserLicitARId(User));
+            _messageManager = await _entidadLicitanteManager.DeleteEntidadLicitanteAsync(id, IdentityHelper.GetUserLicitARId(User));
 
             ViewBag.messages = _messageManager.messages;
 
