@@ -38,13 +38,17 @@ namespace LicitAR.Core.Data.Models
         [MaxLength(30, ErrorMessage = ErrorMessages.MAXLENGTH)]
         public string? Telefono { get; set; }
          
-
         public Provincia Provincia { get; set; }
+
         public Localidad Localidad { get; set; }
+
         public TipoPersona TipoPersona { get; set; }
+
+        public bool Enabled { get; set; } = true; // Por defecto, habilitado
+
         public ICollection<PersonaUsuario> Usuarios { get; set; }
+
         public required AuditTable Audit { get; set; }
-        
 
     }
 

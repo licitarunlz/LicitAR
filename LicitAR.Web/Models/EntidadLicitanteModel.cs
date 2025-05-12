@@ -1,5 +1,6 @@
 ﻿using LicitAR.Core.Data.Models;
 using LicitAR.Core.Data.Models.Helpers;
+using LicitAR.Core.Data.Models.Parametros;
 using LicitAR.Core.Utils;
 using LicitAR.Web.Helpers;
 using Microsoft.EntityFrameworkCore;
@@ -29,9 +30,17 @@ namespace LicitAR.Web.Models
         public string? Localidad { get; set; }
 
 
-
-        public EntidadLicitante GetEntidadLicitante(AuditTable audit)
+        public EntidadLicitante GetEntidadLicitante(AuditTable audit, Provincia provincia, Localidad localidad)
         {
+            if (provincia == null)
+            {
+                throw new InvalidOperationException($"Provincia with ID {this.IdProvincia} not found.");
+            }
+            if (localidad == null)
+            {
+                throw new InvalidOperationException($"Localidad with ID {this.IdLocalidad} not found.");
+            }
+
             return new EntidadLicitante
             {
                 Cuit = this.Cuit,
@@ -44,7 +53,9 @@ namespace LicitAR.Web.Models
                 DireccionNumero = this.DireccionNumero,
                 DireccionPiso = this.DireccionPiso,
                 IdLocalidad = this.IdLocalidad,
-                IdProvincia = this.IdProvincia
+                IdProvincia = this.IdProvincia,
+                Provincia = provincia,
+                Localidad = localidad
             };
         }
 
@@ -61,7 +72,6 @@ namespace LicitAR.Web.Models
             this.DireccionPiso = entidadLicitante.DireccionPiso;
             this.IdLocalidad = entidadLicitante.IdLocalidad;
             this.IdProvincia = entidadLicitante.IdProvincia;
-
         }
     }
 

@@ -57,6 +57,8 @@ namespace LicitAR.Core.Data.Models
         [ForeignKey("IdCategoriaLicitacion")]
         public required CategoriaLicitacion CategoriaLicitacion { get; set; }
 
+        public bool Enabled { get; set; } = true; // Por defecto, habilitado
+
         public required AuditTable Audit { get; set; }
     }
 }

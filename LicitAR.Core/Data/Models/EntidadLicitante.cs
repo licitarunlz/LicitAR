@@ -1,5 +1,6 @@
 ﻿using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Utils;
+using LicitAR.Core.Data.Models.Parametros;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,22 @@ namespace LicitAR.Core.Data.Models
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         [MaxLength(200, ErrorMessage = ErrorMessages.MAXLENGTH)]
         public required string RazonSocial { get; set; }
+
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        [Display(Name = "Provincia")]
+        public required int IdProvincia { get; set; }
+
+        [ForeignKey("IdProvincia")]
+        public required Provincia Provincia { get; set; }
+
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        [Display(Name = "Localidad")]
+        public required int IdLocalidad { get; set; }
+
+        [ForeignKey("IdLocalidad")]
+        public required Localidad Localidad { get; set; }
+
+        public bool Enabled { get; set; } = true; // Por defecto, habilitado
 
         [NotMapped]
         public required AuditTable Audit { get; set; }

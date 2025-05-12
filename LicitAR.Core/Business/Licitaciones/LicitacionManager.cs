@@ -108,6 +108,7 @@ namespace LicitAR.Core.Business.Licitaciones
             {
                 return false;
             }
+            licitacion.Enabled = false;
             licitacion.Audit = AuditHelper.SetDeletionData(licitacion.Audit, idUsuario);
 
             _dbContext.Licitaciones.Update(licitacion);

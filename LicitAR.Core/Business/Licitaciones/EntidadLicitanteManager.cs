@@ -1,51 +1,69 @@
 ﻿using LicitAR.Core.Data;
 using LicitAR.Core.Data.Models;
+using LicitAR.Core.Data.Models.Parametros;
 using LicitAR.Core.Utils;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LicitAR.Core.Business.Licitaciones
 {
     public interface IEntidadLicitanteManager
     {
+        Task<EntidadLicitante?> GetEntidadLicitanteByIdAsync(int idEntidadLicitante);
+        Task<List<EntidadLicitante>> GetAllEntidadesLicitantesAsync();
+        Task<List<EntidadLicitante>> GetAllActiveEntidadesLicitantesAsync();
+        Task<Provincia?> GetProvinciaByIdAsync(int idProvincia);
+        Task<Localidad?> GetLocalidadByIdAsync(int idLocalidad);
         Task<IMessageManager> AgregarAsync(EntidadLicitante entidadLicitante, int idUser);
-        Task<IMessageManager> DeleteEntidadLicitanteAsync(int idEntidadLicitante, int idUser);
-        Task<IEnumerable<EntidadLicitante>> GetAllEntidadesLicitantesAsync();
-         Task<IEnumerable<EntidadLicitante>> GetAllActiveEntidadesLicitantesAsync();
-
-        Task<EntidadLicitante> GetEntidadLicitanteByIdAsync(int idEntidadLicitante);
         Task<IMessageManager> ModificarAsync(EntidadLicitante entidadLicitante, int idEntidadLicitante, int idUser);
+        Task<IMessageManager> DeleteEntidadLicitanteAsync(int idEntidadLicitante, int idUser);
         Task<IMessageManager> AsociarUsuarioAsync(int idEntidadLicitante, string idUsuario, int idUser);
         Task<IMessageManager> DesasociarUsuarioAsync(int idEntidadLicitante, string idUsuario, int idUser);
     }
 
     public class EntidadLicitanteManager : IEntidadLicitanteManager
     {
-        private IMessageManager _messageManager;
         private readonly LicitARDbContext _dbContext;
+        private readonly IMessageManager _messageManager;
 
-        public EntidadLicitanteManager(IMessageManager messageManager, LicitARDbContext dbContext)
+        public EntidadLicitanteManager(LicitARDbContext dbContext, IMessageManager messageManager)
         {
-            this._messageManager = messageManager;
-            this._dbContext = dbContext;
+            _dbContext = dbContext;
+            _messageManager = messageManager;
         }
 
-        public async Task<IEnumerable<EntidadLicitante>> GetAllEntidadesLicitantesAsync()
-        {
-            return this._dbContext.EntidadesLicitantes;
-        }
-
-        public async Task<IEnumerable<EntidadLicitante>> GetAllActiveEntidadesLicitantesAsync()
-        {
-            return this._dbContext.EntidadesLicitantes.Where(x => x.Audit.FechaBaja == null);
-        }
         public async Task<EntidadLicitante?> GetEntidadLicitanteByIdAsync(int idEntidadLicitante)
         {
-            return await this._dbContext.EntidadesLicitantes.FirstOrDefaultAsync(x => x.IdEntidadLicitante == idEntidadLicitante);
+            return await _dbContext.EntidadesLicitantes
+                .Include(e => e.Provincia)
+                .Include(e => e.Localidad)
+                .FirstOrDefaultAsync(e => e.IdEntidadLicitante == idEntidadLicitante);
+        }
+
+        public async Task<List<EntidadLicitante>> GetAllEntidadesLicitantesAsync()
+        {
+            return await _dbContext.EntidadesLicitantes
+                .Include(e => e.Provincia)
+                .Include(e => e.Localidad)
+                .ToListAsync();
+        }
+
+        public async Task<List<EntidadLicitante>> GetAllActiveEntidadesLicitantesAsync()
+        {
+            return await _dbContext.EntidadesLicitantes
+                .Where(e => e.Audit.FechaBaja == null)
+                .Include(e => e.Provincia)
+                .Include(e => e.Localidad)
+                .ToListAsync();
+        }
+
+        public async Task<Provincia?> GetProvinciaByIdAsync(int idProvincia)
+        {
+            return await _dbContext.Provincias.FirstOrDefaultAsync(p => p.IdProvincia == idProvincia);
+        }
+
+        public async Task<Localidad?> GetLocalidadByIdAsync(int idLocalidad)
+        {
+            return await _dbContext.Localidades.FirstOrDefaultAsync(l => l.IdLocalidad == idLocalidad);
         }
 
         public async Task<IMessageManager> AgregarAsync(EntidadLicitante entidadLicitante, int idUser)
@@ -55,82 +73,68 @@ namespace LicitAR.Core.Business.Licitaciones
                 entidadLicitante.Audit = AuditHelper.GetCreationData(idUser);
                 _dbContext.EntidadesLicitantes.Add(entidadLicitante);
                 await _dbContext.SaveChangesAsync();
-
-                _messageManager.OkMessage("Entidad Licitante agregada exitosamente!");
+                _messageManager.OkMessage("Entidad Licitante agregada exitosamente.");
             }
             catch (Exception ex)
             {
-                _messageManager.ClearMessages();
-                _messageManager.ErrorMessage("Error al intentar actualizar la base de datos " + ex.ToString());
+                _messageManager.ErrorMessage($"Error al agregar la Entidad Licitante: {ex.Message}");
             }
-
             return _messageManager;
         }
+
         public async Task<IMessageManager> ModificarAsync(EntidadLicitante entidadLicitante, int idEntidadLicitante, int idUser)
         {
             try
             {
-                var entidadFromDdbb = await _dbContext.EntidadesLicitantes.FirstOrDefaultAsync(x => x.IdEntidadLicitante == idEntidadLicitante);
-                if (entidadFromDdbb == null)
+                var entidadFromDb = await _dbContext.EntidadesLicitantes.FirstOrDefaultAsync(e => e.IdEntidadLicitante == idEntidadLicitante);
+                if (entidadFromDb == null)
                 {
-                    _messageManager.ErrorMessage("Entidad Licitante no encontrada");
+                    _messageManager.ErrorMessage("Entidad Licitante no encontrada.");
+                    return _messageManager;
                 }
-                else
-                {
-                    entidadFromDdbb.Cuit = entidadLicitante.Cuit;
-                    entidadFromDdbb.RazonSocial = entidadLicitante.RazonSocial;
-                    entidadFromDdbb.IdLocalidad = entidadLicitante.IdLocalidad;
-                    entidadFromDdbb.IdProvincia = entidadLicitante.IdProvincia;
-                    entidadFromDdbb.DireccionBarrio = entidadLicitante.DireccionBarrio;
-                    entidadFromDdbb.DireccionCalle = entidadLicitante.DireccionCalle;
-                    entidadFromDdbb.DireccionNumero = entidadLicitante.DireccionNumero;
-                    entidadFromDdbb.DireccionPiso = entidadLicitante.DireccionPiso;
-                    entidadFromDdbb.DireccionDepto = entidadLicitante.DireccionDepto;
-                    entidadFromDdbb.DireccionCodigoPostal = entidadLicitante.DireccionCodigoPostal;
 
-                    entidadFromDdbb.Audit = AuditHelper.SetModificationData(entidadFromDdbb.Audit, idUser);
+                entidadFromDb.Cuit = entidadLicitante.Cuit;
+                entidadFromDb.RazonSocial = entidadLicitante.RazonSocial;
+                entidadFromDb.IdProvincia = entidadLicitante.IdProvincia;
+                entidadFromDb.IdLocalidad = entidadLicitante.IdLocalidad;
+                entidadFromDb.DireccionBarrio = entidadLicitante.DireccionBarrio;
+                entidadFromDb.DireccionCalle = entidadLicitante.DireccionCalle;
+                entidadFromDb.DireccionNumero = entidadLicitante.DireccionNumero;
+                entidadFromDb.DireccionPiso = entidadLicitante.DireccionPiso;
+                entidadFromDb.DireccionDepto = entidadLicitante.DireccionDepto;
+                entidadFromDb.DireccionCodigoPostal = entidadLicitante.DireccionCodigoPostal;
+                entidadFromDb.Audit = AuditHelper.SetModificationData(entidadFromDb.Audit, idUser);
 
-                    _dbContext.EntidadesLicitantes.Update(entidadFromDdbb);
-
-                    await _dbContext.SaveChangesAsync();
-
-                    _messageManager.OkMessage("Entidad Licitante modificada exitosamente");
-
-
-                }
+                _dbContext.EntidadesLicitantes.Update(entidadFromDb);
+                await _dbContext.SaveChangesAsync();
+                _messageManager.OkMessage("Entidad Licitante modificada exitosamente.");
             }
             catch (Exception ex)
             {
-                _messageManager.ClearMessages();
-                _messageManager.ErrorMessage("Excepcion al modificar la entidad licitante: Ex - " + ex.ToString());
+                _messageManager.ErrorMessage($"Error al modificar la Entidad Licitante: {ex.Message}");
             }
             return _messageManager;
-
-
         }
+
         public async Task<IMessageManager> DeleteEntidadLicitanteAsync(int idEntidadLicitante, int idUser)
         {
             try
             {
-                var entidadLicitante = await _dbContext.EntidadesLicitantes.FirstOrDefaultAsync(x => x.IdEntidadLicitante == idEntidadLicitante);
-                if (entidadLicitante == null)
+                var entidadFromDb = await _dbContext.EntidadesLicitantes.FirstOrDefaultAsync(e => e.IdEntidadLicitante == idEntidadLicitante);
+                if (entidadFromDb == null)
                 {
-                    _messageManager.ErrorMessage("Entidad Licitante no encontrada");
+                    _messageManager.ErrorMessage("Entidad Licitante no encontrada.");
+                    return _messageManager;
                 }
-                else
-                {
-                    entidadLicitante.Audit = AuditHelper.SetDeletionData(entidadLicitante.Audit, idUser);
-
-                    _dbContext.EntidadesLicitantes.Update(entidadLicitante);
-                    await _dbContext.SaveChangesAsync();
-                    _messageManager.OkMessage("Entidad Licitante eliminada exitosamente");
-                }
+                entidadFromDb.Enabled = false;
+                entidadFromDb.Audit = AuditHelper.SetDeletionData(entidadFromDb.Audit, idUser);
+                _dbContext.EntidadesLicitantes.Update(entidadFromDb);
+                await _dbContext.SaveChangesAsync();
+                _messageManager.OkMessage("Entidad Licitante eliminada exitosamente.");
             }
             catch (Exception ex)
             {
-                _messageManager.ClearMessages();
-                _messageManager.ErrorMessage("Excepcion al eliminar la entidad licitante: Ex - " + ex.ToString());
-
+                _messageManager.ErrorMessage($"Error al eliminar la Entidad Licitante: {ex.Message}");
             }
             return _messageManager;
         }
@@ -146,16 +150,14 @@ namespace LicitAR.Core.Business.Licitaciones
                     Audit = AuditHelper.GetCreationData(idUser)
                 };
 
-                _dbContext.Add(association);
+                _dbContext.EntidadLicitanteUsuarios.Add(association);
                 await _dbContext.SaveChangesAsync();
-
                 _messageManager.OkMessage("Usuario asociado exitosamente.");
             }
             catch (Exception ex)
             {
-                _messageManager.ErrorMessage("Error al asociar usuario: " + ex.Message);
+                _messageManager.ErrorMessage($"Error al asociar usuario: {ex.Message}");
             }
-
             return _messageManager;
         }
 
@@ -163,26 +165,23 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             try
             {
-                var association = await _dbContext.Set<EntidadLicitanteUsuario>()
+                var association = await _dbContext.EntidadLicitanteUsuarios
                     .FirstOrDefaultAsync(eu => eu.IdEntidadLicitante == idEntidadLicitante && eu.IdUsuario == idUsuario);
 
-                if (association != null)
-                {
-                    _dbContext.Remove(association);
-                    await _dbContext.SaveChangesAsync();
-
-                    _messageManager.OkMessage("Usuario desasociado exitosamente.");
-                }
-                else
+                if (association == null)
                 {
                     _messageManager.ErrorMessage("Asociación no encontrada.");
+                    return _messageManager;
                 }
+
+                _dbContext.EntidadLicitanteUsuarios.Remove(association);
+                await _dbContext.SaveChangesAsync();
+                _messageManager.OkMessage("Usuario desasociado exitosamente.");
             }
             catch (Exception ex)
             {
-                _messageManager.ErrorMessage("Error al desasociar usuario: " + ex.Message);
+                _messageManager.ErrorMessage($"Error al desasociar usuario: {ex.Message}");
             }
-
             return _messageManager;
         }
     }
