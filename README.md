@@ -27,7 +27,7 @@ El sistema cubre los siguientes procesos relacionados con las licitaciones:
 1. **Clonar el repositorio**
 
    ```bash
-   git clone https://github.com/tuusuario/licitAR.git
+   git clone https://github.com/licitarunlz/licitAR.git
    cd licitAR
    ```
 2. **Restaurar las dependencias del proyecto**
@@ -39,11 +39,11 @@ El sistema cubre los siguientes procesos relacionados con las licitaciones:
    ```
 3. **Configurar la base de datos**
 
-   Asegúrate de tener un servidor de base de datos SQL Server disponible y realiza la configuración de la conexión en el archivo appsettings.json.
+  El proyecto utiliza una base de datos alojada en Azure, empleada exclusivamente durante el desarrollo. Si deseas ejecutarlo localmente, no tendrás acceso a esa base, por lo que deberás contar con un servidor SQL Server disponible y configurar la cadena de conexión en el archivo appsettings.json.
 
 4. **Ejecutar la migración de la base de datos**
 
-   Si aún no has creado las migraciones en la base de datos, ejecuta:
+   Si aún no has creado las migraciones en la base de datos (base nueva), ejecuta:
 
    ```bash
    dotnet ef migrations add InitialCreate
@@ -55,6 +55,7 @@ El sistema cubre los siguientes procesos relacionados con las licitaciones:
    Ejecuta el siguiente comando para iniciar el servidor localmente:
 
    ```bash
+   dotnet build
    dotnet run
    ```
 

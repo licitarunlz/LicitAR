@@ -27,6 +27,18 @@ jobs:
         with:
           dotnet-version: '9.x'
 
+      - name: Reemplazar secretos en appsettings.json
+        shell: pwsh
+        run: |
+          $configFile = "LicitAR.Web/appsettings.json"
+
+          # Reemplazo SMTP password
+          (Get-Content $configFile) -replace '"Password":\s*".*?"', '"Password": "${{ secrets.SMTP_PASSWORD }}"' | Set-Content $configFile
+
+          # Reemplazo connection string completo
+          (Get-Content $configFile) -replace '"DefaultConnection":\s*".*?"', '"DefaultConnection": "${{ secrets.CONNSTRING_CREDENTIAL }}"' | Set-Content $configFile
+
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
