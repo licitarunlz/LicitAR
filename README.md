@@ -2,6 +2,8 @@
 
 **LicitAR** es un sistema web desarrollado para gestionar el proceso completo de licitaciones en Argentina. Este proyecto fue creado como parte de la materia **Práctica Profesional Supervisada** de la **Universidad Nacional de Lomas de Zamora (UNLZ)**. El objetivo es proporcionar una plataforma eficiente y fácil de usar para administrar licitaciones, ofertas, postulaciones y pliegos, integrando la participación de diferentes entidades involucradas en el proceso licitatorio.
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=licitarunlz_LicitAR&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=licitarunlz_LicitAR)
+
 ## 🔧 **Tecnologías utilizadas**
 
 Este proyecto está basado en **.NET Core MVC 9** y utiliza las siguientes tecnologías:
