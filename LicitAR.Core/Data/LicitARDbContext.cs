@@ -18,6 +18,7 @@ namespace LicitAR.Core.Data
         public DbSet<EntidadLicitante> EntidadesLicitantes { get; set; }
         public DbSet<EntidadLicitanteUsuario> EntidadLicitanteUsuarios { get; set; }
         public DbSet<Persona> Personas { get; set; }
+        public DbSet<PersonaUsuario> PersonaUsuarios { get; set; }
         public DbSet<Localidad> Localidades { get; set; }
         public DbSet<Provincia> Provincias { get; set; }
         public DbSet<Provincia> Rubros { get; set; }

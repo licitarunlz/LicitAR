@@ -55,4 +55,14 @@ namespace LicitAR.Web.Business.Identidad.Usuario
         public required string ConfirmaPassword { get; set; }
 
     }
+
+
+    public class ConfirmarUsuarioModel
+    {
+        public string token { get; set; }
+        
+        public string email { get; set; }
+
+        public string password { get; set; }
+    }
 }

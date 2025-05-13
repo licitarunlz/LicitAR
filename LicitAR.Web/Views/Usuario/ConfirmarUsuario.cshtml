@@ -1,4 +1,7 @@
-﻿@{
+﻿@using LicitAR.Web.Business.Identidad.Usuario
+@model ConfirmarUsuarioModel
+
+@{
 
     Layout = "_BlankLayout";
     ViewData["Title"] = "Confirmar Usuario";
@@ -31,7 +34,7 @@
                     <h4 class="mb-1">Confirmar Usuario </h4>
 
 
-                    <form id="formAuthentication" class="mb-6" asp-action="ConfirmarUsuario" method&="post">
+                    <form id="formAuthentication" class="mb-6" asp-action="ConfirmarUsuario" method="post">
                         <input type="hidden" id="token" name="token" value="@token" />
 
                         <div class="mb-6">
