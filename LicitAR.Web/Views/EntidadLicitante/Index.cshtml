@@ -72,6 +72,7 @@
                         <th>
                             @Html.DisplayNameFor(model => model.DireccionCodigoPostal)
                         </th>
+                        <th>Activo</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -113,10 +114,10 @@
                                 @Html.DisplayFor(modelItem => item.RazonSocial)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.IdProvincia)
+                                @item.Provincia.Descripcion
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.IdLocalidad)
+                                @item.Localidad.Descripcion
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.DireccionBarrio)
@@ -135,6 +136,16 @@
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.DireccionCodigoPostal)
+                            </td>
+                            <td>
+                                @if (item.Enabled)
+                                {
+                                    <span class="badge bg-label-success">Sí</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-label-danger">No</span>
+                                }
                             </td>
                         </tr>
                     }

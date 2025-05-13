@@ -10,15 +10,17 @@ public partial class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        
+        builder.Configuration
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
 
         builder.Services.AddContextRegistrations(builder.Configuration);
-
         builder.Services.AddIdentityRegistrations(builder.Configuration);
-
         builder.Services.AddAppBusinessRegistrations(builder.Configuration);
-
         builder.Services.AddServicesRegistrations(builder.Configuration);
-
         builder.Services.AddFileStorageRegistrations(builder.Configuration);
 
         // Add services to the container.

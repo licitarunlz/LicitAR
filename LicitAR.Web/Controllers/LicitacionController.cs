@@ -19,9 +19,12 @@ namespace LicitAR.Web.Controllers
 
         // GET: Licitacion
         [AuthorizeClaim("Licitaciones.Ver")]
-        public async Task<IActionResult> Index(string codigoLicitacion, string titulo, DateTime? fechaPublicacion, DateTime? fechaCierre, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string codigoLicitacion, string titulo, DateTime? fechaPublicacion, DateTime? fechaCierre, int? idCategoriaLicitacion, int page = 1, int pageSize = 10)
         {
             var licitacionesList = await _licitacionManager.GetAllLicitacionesAsync();
+            var categorias = await _licitacionManager.GetAllCategoriasAsync();
+            ViewBag.CategoriasLicitacion = categorias;
+
             var query = licitacionesList.AsQueryable();
 
             if (!string.IsNullOrEmpty(codigoLicitacion))
@@ -42,6 +45,11 @@ namespace LicitAR.Web.Controllers
             if (fechaCierre.HasValue)
             {
                 query = query.Where(l => l.FechaCierre.Date == fechaCierre.Value.Date);
+            }
+
+            if (idCategoriaLicitacion.HasValue)
+            {
+                query = query.Where(l => l.IdCategoriaLicitacion == idCategoriaLicitacion.Value);
             }
 
             var totalItems = query.Count();
@@ -92,8 +100,10 @@ namespace LicitAR.Web.Controllers
             if (ModelState.IsValid)
             {
                 var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
-                Licitacion licitacion = licitacionModel.GetLicitacion(audit);
-              
+                var estadoLicitacion = await _licitacionManager.GetEstadoLicitacionByIdAsync(licitacionModel.IdEstadoLicitacion);
+                var categoriaLicitacion = await _licitacionManager.GetCategoriaLicitacionByIdAsync(licitacionModel.IdCategoriaLicitacion);
+
+                Licitacion licitacion = licitacionModel.GetLicitacion(audit, estadoLicitacion, categoriaLicitacion);
                 await _licitacionManager.CreateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
                 return RedirectToAction(nameof(Index));
             }
@@ -132,7 +142,11 @@ namespace LicitAR.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var licitacion = licitacionModel.GetLicitacion(AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User)));
+                var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
+                var estadoLicitacion = await _licitacionManager.GetEstadoLicitacionByIdAsync(licitacionModel.IdEstadoLicitacion);
+                var categoriaLicitacion = await _licitacionManager.GetCategoriaLicitacionByIdAsync(licitacionModel.IdCategoriaLicitacion);
+
+                var licitacion = licitacionModel.GetLicitacion(audit, estadoLicitacion, categoriaLicitacion);
                 licitacion.IdLicitacion = licitacionModel.IdLicitacion;
 
                 var result = await _licitacionManager.UpdateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
@@ -198,6 +212,14 @@ namespace LicitAR.Web.Controllers
             };
 
             return View(oferentes);
+        }
+
+        // GET: Licitacion/GetByEstado/5
+        [AuthorizeClaim("Licitaciones.Ver")]
+        public async Task<IActionResult> GetByEstado(int idEstadoLicitacion)
+        {
+            var licitaciones = await _licitacionManager.GetLicitacionesByEstadoAsync(idEstadoLicitacion);
+            return View(licitaciones);
         }
     }
 }

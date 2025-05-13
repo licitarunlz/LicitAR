@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using LicitAR.Core.Data.Models.Helpers;
 
 namespace LicitAR.Core.Business.Licitaciones
 {
@@ -17,6 +18,10 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<IEnumerable<Persona>> GetAllPersonasAsync();
         Task<Persona?> GetPersonaByIdAsync(int idPersona);
         Task<IMessageManager> ModificarAsync(Persona persona, int idPersona, int idUser);
+
+        Task<IMessageManager> AsociarUsuarioAsync(Persona persona, string user,  int idUser);
+
+        Task<PersonaUsuario> GetPersonaAsociadaAsync(string user);
     }
 
     public class PersonaManager : IPersonaManager
@@ -136,6 +141,54 @@ namespace LicitAR.Core.Business.Licitaciones
 
             }
             return _messageManager;
+        }
+
+        public async Task<IMessageManager> AsociarUsuarioAsync(Persona persona, string user, int idUser)
+        {
+
+            try
+            {
+                AuditTable audit = AuditHelper.GetCreationData(idUser);
+                PersonaUsuario vinculacion = new PersonaUsuario 
+                { 
+                    Audit = audit 
+                };
+
+                vinculacion.IdPersona = persona.IdPersona;
+                vinculacion.IdUsuario = user;
+
+                _dbContext.PersonaUsuarios.Add(vinculacion);
+
+                await _dbContext.SaveChangesAsync();
+
+
+                _messageManager.OkMessage("Persona vinculada exitosamente");
+                _messageManager.addedData = vinculacion;
+
+            }
+            catch (Exception ex)
+            {
+                _messageManager.ClearMessages();
+                _messageManager.ErrorMessage("Excepcion al vincular al usuario con la persona: Ex - " + ex.ToString());
+
+            }
+            return _messageManager;
+        }
+
+        public async Task<PersonaUsuario> GetPersonaAsociadaAsync(string user)
+        {
+            try
+            {
+                PersonaUsuario? vinculacion = await _dbContext.PersonaUsuarios.FirstOrDefaultAsync(x => x.IdUsuario == user);
+
+                return vinculacion;
+
+            }
+            catch
+            {
+                throw;
+            }
+
         }
 
     }

@@ -1,6 +1,7 @@
 using LicitAR.Core.Data;
 using LicitAR.Core.Data.Models;
 using LicitAR.Core.Utils;
+using LicitAR.Core.Data.Models.Parametros;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
@@ -14,6 +15,10 @@ namespace LicitAR.Core.Business.Licitaciones
         Task CreateLicitacionAsync(Licitacion licitacion, int userId);
         Task<bool> UpdateLicitacionAsync(Licitacion licitacion, int userId);
         Task<bool> DeleteLicitacionAsync(int id, int idUsuario);
+        Task<List<Licitacion>> GetLicitacionesByEstadoAsync(int idEstadoLicitacion);
+        Task<EstadoLicitacion?> GetEstadoLicitacionByIdAsync(int idEstadoLicitacion);
+        Task<CategoriaLicitacion?> GetCategoriaLicitacionByIdAsync(int idCategoriaLicitacion);
+        Task<List<CategoriaLicitacion>> GetAllCategoriasAsync();
     }
 
     public class LicitacionManager : ILicitacionManager
@@ -27,7 +32,10 @@ namespace LicitAR.Core.Business.Licitaciones
 
         public async Task<List<Licitacion>> GetAllLicitacionesAsync()
         {
-            return await _dbContext.Licitaciones.ToListAsync();
+            return await _dbContext.Licitaciones
+                .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
+                .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
+                .ToListAsync();
         }
 
         public async Task<List<Licitacion>> GetAllActiveLicitacionesAsync()
@@ -37,7 +45,10 @@ namespace LicitAR.Core.Business.Licitaciones
 
         public async Task<Licitacion?> GetLicitacionByIdAsync(int id)
         {
-            return await _dbContext.Licitaciones.FirstOrDefaultAsync(l => l.IdLicitacion == id);
+            return await _dbContext.Licitaciones
+                .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
+                .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
+                .FirstOrDefaultAsync(l => l.IdLicitacion == id);
         }
 
         public async Task CreateLicitacionAsync(Licitacion licitacion, int userId)
@@ -45,7 +56,7 @@ namespace LicitAR.Core.Business.Licitaciones
             try
             {
                 licitacion.CodigoLicitacion = await this.ObtenerProximoCodigoAsync();
-                licitacion.IdEstadoLicitacion = 1; //arranca en Borrador
+                licitacion.IdEstadoLicitacion = 1; // Default state: Planificación
                 licitacion.Audit = AuditHelper.GetCreationData(userId);
                 _dbContext.Licitaciones.Add(licitacion);
                 await _dbContext.SaveChangesAsync();
@@ -97,13 +108,13 @@ namespace LicitAR.Core.Business.Licitaciones
             {
                 return false;
             }
+            licitacion.Enabled = false;
             licitacion.Audit = AuditHelper.SetDeletionData(licitacion.Audit, idUsuario);
 
             _dbContext.Licitaciones.Update(licitacion);
             await _dbContext.SaveChangesAsync();
             return true;
         }
-
 
         public async Task<string> ObtenerProximoCodigoAsync()
         {
@@ -120,6 +131,31 @@ namespace LicitAR.Core.Business.Licitaciones
                 // No cierres la conexi�n manualmente
                 return result?.ToString();
             }
+        }
+
+        public async Task<List<Licitacion>> GetLicitacionesByEstadoAsync(int idEstadoLicitacion)
+        {
+            return await _dbContext.Licitaciones
+                .Include(l => l.EstadoLicitacion) // Incluir la relación con EstadoLicitacion
+                .Where(l => l.IdEstadoLicitacion == idEstadoLicitacion)
+                .ToListAsync();
+        }
+
+        public async Task<EstadoLicitacion?> GetEstadoLicitacionByIdAsync(int idEstadoLicitacion)
+        {
+            return await _dbContext.EstadosLicitacion
+                .FirstOrDefaultAsync(e => e.IdEstadoLicitacion == idEstadoLicitacion);
+        }
+
+        public async Task<CategoriaLicitacion?> GetCategoriaLicitacionByIdAsync(int idCategoriaLicitacion)
+        {
+            return await _dbContext.CategoriasLicitacion
+                .FirstOrDefaultAsync(c => c.IdCategoriaLicitacion == idCategoriaLicitacion);
+        }
+
+        public async Task<List<CategoriaLicitacion>> GetAllCategoriasAsync()
+        {
+            return await _dbContext.CategoriasLicitacion.ToListAsync();
         }
     }
 }

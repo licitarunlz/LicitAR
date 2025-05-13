@@ -13,6 +13,7 @@
             </div>
             <div class="card-body">
                 <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken() <!-- Ensure AntiForgeryToken is included -->
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <input type="hidden" asp-for="IdUsuario" />

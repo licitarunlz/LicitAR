@@ -31,7 +31,11 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("EntidadLicitante.Ver")]
         public async Task<IActionResult> Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
-            var entidadesLicitantesList = await _entidadLicitanteManager.GetAllActiveEntidadesLicitantesAsync();
+            var entidadesLicitantesList = await _context.EntidadesLicitantes
+                .Include(e => e.Provincia) // Include Provincia
+                .Include(e => e.Localidad) // Include Localidad
+                .ToListAsync();
+
             var query = entidadesLicitantesList.AsQueryable();
 
             if (!string.IsNullOrEmpty(cuit))
@@ -111,7 +115,10 @@ namespace LicitAR.Web.Controllers
             if (ModelState.IsValid)
             {
                 var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
-                EntidadLicitante entidadLicitante = entidadLicitanteModel.GetEntidadLicitante(audit);
+                var provincia = await _entidadLicitanteManager.GetProvinciaByIdAsync(entidadLicitanteModel.IdProvincia);
+                var localidad = await _entidadLicitanteManager.GetLocalidadByIdAsync(entidadLicitanteModel.IdLocalidad);
+
+                EntidadLicitante entidadLicitante = entidadLicitanteModel.GetEntidadLicitante(audit, provincia, localidad);
 
                 this._messageManager = await _entidadLicitanteManager.AgregarAsync(entidadLicitante, IdentityHelper.GetUserLicitARId(User));
 
@@ -120,8 +127,8 @@ namespace LicitAR.Web.Controllers
                 if (!_messageManager.HasErrors)
                 {
                     return RedirectToAction(nameof(Index));
-
-                }else
+                }
+                else
                 {
                     return View(entidadLicitanteModel);
                 }
@@ -154,9 +161,9 @@ namespace LicitAR.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("EntidadLicitante.Editar")]
-        public async Task<IActionResult> Edit(int id, EntidadLicitanteModel entidadLicitante)
+        public async Task<IActionResult> Edit(int id, EntidadLicitanteModel entidadLicitanteModel)
         {
-            if (id != entidadLicitante.IdEntidadLicitante)
+            if (id != entidadLicitanteModel.IdEntidadLicitante)
             {
                 return NotFound();
             }
@@ -165,14 +172,18 @@ namespace LicitAR.Web.Controllers
             {
                 try
                 {
-                    var entidad = entidadLicitante.GetEntidadLicitante(AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User)));
-                    entidad.IdEntidadLicitante = entidadLicitante.IdEntidadLicitante;
+                    var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
+                    var provincia = await _entidadLicitanteManager.GetProvinciaByIdAsync(entidadLicitanteModel.IdProvincia);
+                    var localidad = await _entidadLicitanteManager.GetLocalidadByIdAsync(entidadLicitanteModel.IdLocalidad);
 
-                    _messageManager = await _entidadLicitanteManager.ModificarAsync(entidad, id, IdentityHelper.GetUserLicitARId(User));
+                    var entidadLicitante = entidadLicitanteModel.GetEntidadLicitante(audit, provincia, localidad);
+                    entidadLicitante.IdEntidadLicitante = entidadLicitanteModel.IdEntidadLicitante;
+
+                    _messageManager = await _entidadLicitanteManager.ModificarAsync(entidadLicitante, id, IdentityHelper.GetUserLicitARId(User));
                 }
                 catch (Exception ex)
                 {
-                    _messageManager.ErrorMessage("Excepcion al intentar modificar una licitaciòn: Ex - " + ex.ToString());
+                    _messageManager.ErrorMessage("Excepción al intentar modificar una entidad licitante: Ex - " + ex.ToString());
                 }
                 finally
                 {
@@ -180,11 +191,11 @@ namespace LicitAR.Web.Controllers
                 }
 
                 if (_messageManager.HasErrors)
-                    return View(entidadLicitante);
-                else 
+                    return View(entidadLicitanteModel);
+                else
                     return RedirectToAction(nameof(Index));
             }
-            return View(entidadLicitante);
+            return View(entidadLicitanteModel);
         }
 
         // GET: EntidadLicitante/Delete/5

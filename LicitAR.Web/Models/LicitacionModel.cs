@@ -1,6 +1,8 @@
 ﻿using LicitAR.Core.Data.Models;
 using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Utils;
+using LicitAR.Core.Data.Models.Parametros;
+using LicitAR.Core.Data; // Ensure you have access to the DbContext or service
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -25,7 +27,6 @@ namespace LicitAR.Web.Models
             [Display(Name = "Título")]
             public string Titulo { get; set; }
 
-
             [Required(ErrorMessage = ErrorMessages.REQUIRED)]
             [MaxLength(2000, ErrorMessage = ErrorMessages.MAXLENGTH)]
             [Display(Name = "Descripción")]
@@ -48,8 +49,17 @@ namespace LicitAR.Web.Models
             public int IdCategoriaLicitacion { get; set; }
 
 
-        public Licitacion GetLicitacion(AuditTable audit)
+        public Licitacion GetLicitacion(AuditTable audit, EstadoLicitacion estadoLicitacion, CategoriaLicitacion categoriaLicitacion)
         {
+            if (estadoLicitacion == null)
+            {
+                throw new InvalidOperationException($"EstadoLicitacion with ID {this.IdEstadoLicitacion} not found.");
+            }
+            if (categoriaLicitacion == null)
+            {
+                throw new InvalidOperationException($"CategoriaLicitacion with ID {this.IdCategoriaLicitacion} not found.");
+            }
+
             return new Licitacion
             {
                 CodigoLicitacion = this.CodigoLicitacion,
@@ -60,7 +70,9 @@ namespace LicitAR.Web.Models
                 IdCategoriaLicitacion = this.IdCategoriaLicitacion,
                 IdEntidadLicitante = this.IdEntidadLicitante,
                 IdEstadoLicitacion = this.IdEstadoLicitacion,
-                Titulo = this.Titulo
+                Titulo = this.Titulo,
+                EstadoLicitacion = estadoLicitacion,
+                CategoriaLicitacion = categoriaLicitacion // Pass the provided CategoriaLicitacion object
             };
         }
 
@@ -77,4 +89,5 @@ namespace LicitAR.Web.Models
         }
 
     }
+
 }

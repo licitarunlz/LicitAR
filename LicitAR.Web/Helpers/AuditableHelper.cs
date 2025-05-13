@@ -37,6 +37,31 @@ namespace LicitAR.Web.Helpers
             else
                 return userId.Value;
         }
+
+
+        public static string GetUserLicitAREmail(ClaimsPrincipal user)
+        {
+            Claim? userEmail = user.Claims.FirstOrDefault(x => x.Type.ToLower() == ClaimTypes.Email);
+
+            if (userEmail == null)
+            {
+                throw new Exception("Usuario No encontrado");
+            }
+            else
+                return userEmail.Value;
+        }
+
+
+        public static string? GetUserLicitARClaim(ClaimsPrincipal user, string claim)
+        {
+            Claim? userClaim = user.Claims.FirstOrDefault(x => x.Type.ToLower() == claim);
+
+            if (userClaim == null)
+                return null;
+            else
+                return userClaim.Value;
+        }
+
     }
     public static class AuditableHelper
     {

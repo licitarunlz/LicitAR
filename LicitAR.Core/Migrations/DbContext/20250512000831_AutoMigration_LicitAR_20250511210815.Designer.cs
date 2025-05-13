@@ -4,6 +4,7 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LicitAR.Core.Migrations.DbContext
 {
     [DbContext(typeof(LicitARDbContext))]
-    partial class LicitARDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250512000831_AutoMigration_LicitAR_20250511210815")]
+    partial class AutoMigration_LicitAR_20250511210815
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,9 +62,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
-
                     b.Property<int>("IdLocalidad")
                         .HasColumnType("int");
 
@@ -74,10 +74,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .HasColumnType("nvarchar(200)");
 
                     b.HasKey("IdEntidadLicitante");
-
-                    b.HasIndex("IdLocalidad");
-
-                    b.HasIndex("IdProvincia");
 
                     b.ToTable("EntidadesLicitantes");
                 });
@@ -208,9 +204,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("FechaCierre")
                         .HasColumnType("datetime2");
 
@@ -253,9 +246,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
-
                     b.HasKey("IdCategoriaLicitacion");
 
                     b.ToTable("CategoriasLicitacion");
@@ -274,9 +264,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
-
                     b.HasKey("IdEstadoLicitacion");
 
                     b.ToTable("EstadosLicitacion");
@@ -292,11 +279,8 @@ namespace LicitAR.Core.Migrations.DbContext
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int>("IdProvincia")
                         .HasColumnType("int");
@@ -342,9 +326,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
-
                     b.HasKey("IdProvincia");
 
                     b.ToTable("Provincias");
@@ -362,9 +343,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
 
                     b.HasKey("IdRubro");
 
@@ -384,9 +362,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
-
                     b.HasKey("IdTipoContacto");
 
                     b.ToTable("TiposContacto");
@@ -404,9 +379,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
 
                     b.HasKey("IdTipoPersona");
 
@@ -455,9 +427,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
-
                     b.Property<int>("IdLocalidad")
                         .HasColumnType("int");
 
@@ -501,7 +470,7 @@ namespace LicitAR.Core.Migrations.DbContext
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("PersonaUsuarios");
+                    b.ToTable("PersonaUsuario");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -639,18 +608,6 @@ namespace LicitAR.Core.Migrations.DbContext
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.EntidadLicitante", b =>
                 {
-                    b.HasOne("LicitAR.Core.Data.Models.Parametros.Localidad", "Localidad")
-                        .WithMany()
-                        .HasForeignKey("IdLocalidad")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LicitAR.Core.Data.Models.Parametros.Provincia", "Provincia")
-                        .WithMany()
-                        .HasForeignKey("IdProvincia")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
                         {
                             b1.Property<int>("EntidadLicitanteIdEntidadLicitante")
@@ -684,10 +641,6 @@ namespace LicitAR.Core.Migrations.DbContext
 
                     b.Navigation("Audit")
                         .IsRequired();
-
-                    b.Navigation("Localidad");
-
-                    b.Navigation("Provincia");
                 });
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.EntidadLicitanteUsuario", b =>
@@ -1235,7 +1188,7 @@ namespace LicitAR.Core.Migrations.DbContext
 
                             b1.HasKey("PersonaUsuarioIdPersona", "PersonaUsuarioIdUsuario");
 
-                            b1.ToTable("PersonaUsuarios");
+                            b1.ToTable("PersonaUsuario");
 
                             b1.WithOwner()
                                 .HasForeignKey("PersonaUsuarioIdPersona", "PersonaUsuarioIdUsuario");

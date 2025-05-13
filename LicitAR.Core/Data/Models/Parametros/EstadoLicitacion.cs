@@ -21,6 +21,8 @@ namespace LicitAR.Core.Data.Models.Parametros
         [MaxLength(20, ErrorMessage = ErrorMessages.MAXLENGTH)]
         public required string Descripcion { get; set; }
 
+        public bool Enabled { get; set; } = true; // Por defecto, habilitado
+
         public required AuditTable Audit { get; set; }
     }
 }

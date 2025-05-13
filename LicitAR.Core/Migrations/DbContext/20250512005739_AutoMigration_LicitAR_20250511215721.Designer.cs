@@ -4,6 +4,7 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LicitAR.Core.Migrations.DbContext
 {
     [DbContext(typeof(LicitARDbContext))]
-    partial class LicitARDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250512005739_AutoMigration_LicitAR_20250511215721")]
+    partial class AutoMigration_LicitAR_20250511215721
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -501,7 +504,7 @@ namespace LicitAR.Core.Migrations.DbContext
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("PersonaUsuarios");
+                    b.ToTable("PersonaUsuario");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -1235,7 +1238,7 @@ namespace LicitAR.Core.Migrations.DbContext
 
                             b1.HasKey("PersonaUsuarioIdPersona", "PersonaUsuarioIdUsuario");
 
-                            b1.ToTable("PersonaUsuarios");
+                            b1.ToTable("PersonaUsuario");
 
                             b1.WithOwner()
                                 .HasForeignKey("PersonaUsuarioIdPersona", "PersonaUsuarioIdUsuario");
