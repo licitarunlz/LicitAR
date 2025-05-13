@@ -54,4 +54,4 @@ TestResult.xml
 nunit-*.xml
 
 # Configuration files no more on the repo
-# appsettings.Development.json
+appsettings.Development.json
