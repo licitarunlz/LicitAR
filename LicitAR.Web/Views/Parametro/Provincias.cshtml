@@ -1,0 +1,106 @@
+@model IEnumerable<LicitAR.Core.Data.Models.Parametros.Provincia>
+
+@{
+    ViewData["Title"] = "Provincias";
+    var query = Context.Request.Query;
+}
+
+<div class="card">
+    <div class="card-body">
+        <form method="get" asp-action="Provincias">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <input type="text" name="descripcion" class="form-control form-control-sm" placeholder="Descripción" value="@query["descripcion"]" />
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                        <i class="bx bx-filter-alt"></i> Filtrar
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <a asp-action="Provincias" class="btn btn-warning btn-sm w-100" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i> Resetear
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Descripción</th>
+                    <th>Activo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IdProvincia</td>
+                        <td>@item.Descripcion</td>
+                        <td>
+                            @if (item.Enabled)
+                            {
+                                <span class="badge bg-label-success">Sí</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-label-danger">No</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex justify-content-center">
+        <nav>
+            <ul class="pagination pagination-rounded mb-0">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Provincias" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-pageSize="10">&laquo;</a>
+                    </li>
+                }
+                @if (ViewBag.StartPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Provincias" asp-route-page="1" asp-route-pageSize="10">1</a>
+                    </li>
+                    @if (ViewBag.StartPage > 2)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    }
+                }
+                @for (int i = ViewBag.StartPage; i <= ViewBag.EndPage; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Provincias" asp-route-page="@i" asp-route-pageSize="10">@i</a>
+                    </li>
+                }
+                @if (ViewBag.EndPage < ViewBag.TotalPages)
+                {
+                    @if (ViewBag.EndPage < ViewBag.TotalPages - 1)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Provincias" asp-route-page="@(ViewBag.TotalPages)" asp-route-pageSize="10">@ViewBag.TotalPages</a>
+                    </li>
+                }
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Provincias" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-pageSize="10">&raquo;</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

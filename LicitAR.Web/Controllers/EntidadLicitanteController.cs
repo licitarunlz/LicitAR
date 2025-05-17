@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using LicitAR.Core.Data;
 using LicitAR.Core.Data.Models;
 using LicitAR.Core.Utils;
@@ -18,47 +19,69 @@ namespace LicitAR.Web.Controllers
         private readonly IEntidadLicitanteManager _entidadLicitanteManager;
         private IMessageManager _messageManager;
         private readonly IUsuarioManager _usuarioManager;
+        private readonly ILogger<EntidadLicitanteController> _logger;
 
-        public EntidadLicitanteController(LicitARDbContext context, IEntidadLicitanteManager entidadLicitanteManager, IMessageManager message, IUsuarioManager usuarioManager)
+        public EntidadLicitanteController(LicitARDbContext context, IEntidadLicitanteManager entidadLicitanteManager, IMessageManager message, IUsuarioManager usuarioManager, ILogger<EntidadLicitanteController> logger)
         {
             _context = context;
             _entidadLicitanteManager = entidadLicitanteManager;
             _messageManager = message;
             _usuarioManager = usuarioManager;
+            _logger = logger;
         }
 
         // GET: EntidadLicitante
         [AuthorizeClaim("EntidadLicitante.Ver")]
         public async Task<IActionResult> Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
-            var entidadesLicitantesList = await _context.EntidadesLicitantes
+            _logger.LogInformation("Index action called with filters: cuit={Cuit}, razonSocial={RazonSocial}, page={Page}, pageSize={PageSize}", cuit, razonSocial, page, pageSize);
+
+            var query = _context.EntidadesLicitantes
                 .Include(e => e.Provincia) // Include Provincia
                 .Include(e => e.Localidad) // Include Localidad
-                .ToListAsync();
-
-            var query = entidadesLicitantesList.AsQueryable();
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(cuit))
             {
                 cuit = new string(cuit.Where(char.IsDigit).ToArray()); // Remove non-numeric characters
-                if (cuit.Length <= 11)
+                if (cuit.Length > 11)
+                {
+                    //ModelState.AddModelError("cuit", "El CUIT no puede tener más de 11 caracteres.");
+                    _logger.LogWarning("CUIT filter is invalid: {Cuit}", cuit);
+                }
+                else
                 {
                     query = query.Where(e => e.Cuit.Contains(cuit));
+                    _logger.LogInformation("CUIT filter applied: {Cuit}", cuit);
                 }
             }
 
             if (!string.IsNullOrEmpty(razonSocial))
             {
-                query = query.Where(e => EF.Functions.Like(e.RazonSocial.ToLower(), $"%{razonSocial.ToLower()}%"));
+                var razonSocialLower = razonSocial.ToLower();
+                query = query.Where(l => l.RazonSocial.ToLower().Contains(razonSocialLower));
+                _logger.LogInformation("RazonSocial filter applied: {RazonSocial}", razonSocial);
             }
 
-            var totalItems = query.Count();
+            /* if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("ModelState is invalid. Errors: {Errors}", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = 1;
+                return View(new List<EntidadLicitante>());
+            } */
+
+            var totalItems = await query.CountAsync();
+            _logger.LogInformation("Total items after filters: {TotalItems}", totalItems);
+
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-            var items = query
+            var items = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
+
+            _logger.LogInformation("Items retrieved for current page: {ItemCount}", items.Count);
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;

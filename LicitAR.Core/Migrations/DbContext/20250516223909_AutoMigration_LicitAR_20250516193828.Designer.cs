@@ -4,6 +4,7 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LicitAR.Core.Migrations.DbContext
 {
     [DbContext(typeof(LicitARDbContext))]
-    partial class LicitARDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250516223909_AutoMigration_LicitAR_20250516193828")]
+    partial class AutoMigration_LicitAR_20250516193828
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,41 +241,6 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.HasIndex("IdEstadoLicitacion");
 
                     b.ToTable("Licitaciones");
-                });
-
-            modelBuilder.Entity("LicitAR.Core.Data.Models.LicitacionDetalle", b =>
-                {
-                    b.Property<int>("IdLicitacionDetalle")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdLicitacionDetalle"));
-
-                    b.Property<int>("Cantidad")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("IdLicitacion")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Item")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("NroItem")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("PrecioEstimadoUnitario")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("IdLicitacionDetalle");
-
-                    b.HasIndex("IdLicitacion");
-
-                    b.ToTable("LicitacionesDetalle");
                 });
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.CategoriaLicitacion", b =>
@@ -873,51 +841,6 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.Navigation("EstadoLicitacion");
                 });
 
-            modelBuilder.Entity("LicitAR.Core.Data.Models.LicitacionDetalle", b =>
-                {
-                    b.HasOne("LicitAR.Core.Data.Models.Licitacion", "Licitacion")
-                        .WithMany("Items")
-                        .HasForeignKey("IdLicitacion")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
-                        {
-                            b1.Property<int>("LicitacionDetalleIdLicitacionDetalle")
-                                .HasColumnType("int");
-
-                            b1.Property<DateTime>("FechaAlta")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<DateTime?>("FechaBaja")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<DateTime?>("FechaModificacion")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<int>("IdUsuarioAlta")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("IdUsuarioBaja")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("IdUsuarioModificacion")
-                                .HasColumnType("int");
-
-                            b1.HasKey("LicitacionDetalleIdLicitacionDetalle");
-
-                            b1.ToTable("LicitacionesDetalle");
-
-                            b1.WithOwner()
-                                .HasForeignKey("LicitacionDetalleIdLicitacionDetalle");
-                        });
-
-                    b.Navigation("Audit")
-                        .IsRequired();
-
-                    b.Navigation("Licitacion");
-                });
-
             modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.CategoriaLicitacion", b =>
                 {
                     b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
@@ -1400,11 +1323,6 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.Navigation("EntidadesLicitantes");
 
                     b.Navigation("Personas");
-                });
-
-            modelBuilder.Entity("LicitAR.Core.Data.Models.Licitacion", b =>
-                {
-                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.Persona", b =>

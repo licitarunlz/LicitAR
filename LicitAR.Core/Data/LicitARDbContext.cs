@@ -63,7 +63,6 @@ namespace LicitAR.Core.Data
                 entity.OwnsOne(a => a.Audit); // Explicitly configure the Audit property
             });
 
-
             // Relaciones
             modelBuilder.Entity<EntidadLicitanteUsuario>()
                 .HasKey(eu => new { eu.IdEntidadLicitante, eu.IdUsuario });
@@ -92,6 +91,12 @@ namespace LicitAR.Core.Data
                 .HasOne(p => p.TipoPersona)
                 .WithMany()
                 .HasForeignKey(p => p.IdTipoPersona);
+
+            modelBuilder.Entity<Localidad>()
+                .HasOne(l => l.Provincia)
+                .WithMany()
+                .HasForeignKey(l => l.IdProvincia)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading deletes
 
             // Relaciones
             modelBuilder.Entity<PersonaUsuario>()
