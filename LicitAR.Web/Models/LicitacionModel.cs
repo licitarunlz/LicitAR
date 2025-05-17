@@ -5,6 +5,8 @@ using LicitAR.Core.Data.Models.Parametros;
 using LicitAR.Core.Data; // Ensure you have access to the DbContext or service
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using NuGet.Packaging.Licenses;
+using Microsoft.Extensions.Azure;
 
 namespace LicitAR.Web.Models
 {
@@ -63,6 +65,38 @@ namespace LicitAR.Web.Models
                 throw new InvalidOperationException($"CategoriaLicitacion with ID {this.IdCategoriaLicitacion} not found.");
             }
 
+            List<LicitacionDetalle> detalle = new List<LicitacionDetalle>();
+            int nroItem = 0;
+            foreach(var detallin in this.Items)
+            {
+                LicitacionDetalle res = new LicitacionDetalle
+                {
+                    Audit = null,
+                    Cantidad = detallin.Cantidad,
+                    Descripcion = detallin.Descripcion,
+                    IdLicitacion = detallin.IdLicitacion,
+                    IdLicitacionDetalle = detallin.IdLicitacionDetalle,
+                    Item = detallin.Item,
+                    Licitacion = null,
+                    NroItem = detallin.NroItem,
+                    PrecioEstimadoUnitario = detallin.PrecioEstimadoUnitario
+                };
+
+                if(detallin.Eliminado == true)
+                {
+                    res.Audit = AuditHelper.SetDeletionData(AuditHelper.GetCreationData(audit.IdUsuarioAlta), audit.IdUsuarioAlta);
+
+                }else
+                {
+                    res.Audit = AuditHelper.GetCreationData(audit.IdUsuarioAlta);
+                    res.NroItem = nroItem;
+                    nroItem++;
+                }
+
+                detalle.Add(res);
+            }
+
+
             return new Licitacion
             {
                 CodigoLicitacion = this.CodigoLicitacion,
@@ -75,7 +109,8 @@ namespace LicitAR.Web.Models
                 IdEstadoLicitacion = this.IdEstadoLicitacion,
                 Titulo = this.Titulo,
                 EstadoLicitacion = estadoLicitacion,
-                CategoriaLicitacion = categoriaLicitacion // Pass the provided CategoriaLicitacion object
+                CategoriaLicitacion = categoriaLicitacion, // Pass the provided CategoriaLicitacion object
+                Items = detalle
             };
         }
 
@@ -98,8 +133,20 @@ namespace LicitAR.Web.Models
             this.FechaPublicacion = licitacion.FechaPublicacion;
             this.IdCategoriaLicitacion = licitacion.IdCategoriaLicitacion;
             this.IdEntidadLicitante = licitacion.IdEntidadLicitante;
+            this.IdEstadoLicitacion = licitacion.IdEstadoLicitacion;
             this.IdLicitacion = licitacion.IdLicitacion;
             this.Titulo = licitacion.Titulo;
+            this.Items =licitacion.Items.Where(x=> x.Audit.FechaBaja == null).Select(x => new LicitacionDetalleModel
+            {
+                Cantidad = x.Cantidad,
+                Descripcion = x.Descripcion,
+                Eliminado = false,
+                IdLicitacion = x.IdLicitacion,
+                IdLicitacionDetalle = x.IdLicitacionDetalle ,
+                Item = x.Item,
+                NroItem = x.NroItem,
+                PrecioEstimadoUnitario   = x.PrecioEstimadoUnitario
+            }).ToList();
         }
 
 
@@ -127,6 +174,7 @@ namespace LicitAR.Web.Models
 
         [Range(0.01, double.MaxValue)]
         public decimal PrecioEstimadoUnitario { get; set; }
+        public bool Eliminado { get; set; }
 
         public LicitacionDetalle GetLicitacionDetalle(AuditTable audit, Licitacion? licitacion = null)
         {

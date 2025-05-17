@@ -98,8 +98,29 @@ namespace LicitAR.Core.Business.Licitaciones
                 _context.Entry(licitacionFromDdbb).Property(u => u.FechaPublicacion).IsModified = true;
                 _context.Entry(licitacionFromDdbb).Property(u => u.FechaCierre).IsModified = true;
                 */
+
+                /*foreach (var detalle in licitacion.Items)
+                {
+                    if (detalle.Audit.FechaBaja != null)
+                    {
+                        detalle.IdLicitacion = licitacion.IdLicitacion;
+                        //Si es distinto de null, estoy eliminando un registro
+                        continue;
+                    }
+
+                    if (detalle.IdLicitacionDetalle != 0)
+                    {
+                        //estoy editando
+
+                        detalle.IdLicitacion = licitacion.IdLicitacion;
+                        detalle.
+                    }
+                    detalle.Audit = AuditHelper.GetCreationData(userId);
+                }*/
+                licitacionFromDdbb.Items = licitacion.Items;
+
                 _dbContext.Licitaciones.Update(licitacionFromDdbb);
-            
+
                 await _dbContext.SaveChangesAsync();
                 return true;
             }

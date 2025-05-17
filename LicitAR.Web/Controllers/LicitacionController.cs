@@ -80,7 +80,7 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound"); // Updated
             }
-
+            licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             return View(licitacion);
         }
 
@@ -175,6 +175,7 @@ namespace LicitAR.Web.Controllers
                 return View("NotFound"); // Updated
             }
 
+            licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             return View(licitacion);
         }
 
