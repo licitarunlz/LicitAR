@@ -6,7 +6,7 @@
 
 
 <div class="row mb-12 g-6">
-    <div class="col-md-8 col-lg-4">
+    <div class="col-md-12 col-lg-12">
         <div class="card">
             <div class="card-header">
                 Confirmar eliminación de la Licitacion:
@@ -14,16 +14,54 @@
             <div class="card-body">
                 <h5 class="card-title">@Model.Titulo</h5>
                 <p class="card-text">
-                    <strong>Código:</strong> @Model.CodigoLicitacion <br />
-                    <strong>Descripción:</strong> @Model.Descripcion <br />
-                    <strong>Tipo de Licitación:</strong> @(Model.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")<br />
-                    <strong>Publicado:</strong> @Model.FechaPublicacion.ToShortDateString() <br />
-                    <strong>Cierre:</strong> @Model.FechaCierre.ToShortDateString()
+                    <strong>Código:</strong> @Model.CodigoLicitacion <br /><br />
+                    <strong>Descripción:</strong> @Model.Descripcion <br /><br />
+                    <strong>Tipo de Licitación:</strong> @(Model.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")<br /><br />
+                    <strong>Detalles</strong>
+
+                    <div class="mb-3 mt-3">
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td><b>Nro Item</b></td>
+                                    <td><b>Item</b></td>
+                                    <td><b>Descripción</b></td>
+                                    <td><b>Cantidad</b></td>
+                                    <td><b>Precio Unitario Estimado</b></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Items.Count; i++)
+                                {
+                                    var item = Model.Items.ToArray()[i];
+                                    <tr>
+                                        <td>#@(item.NroItem + 1)</td>
+
+                                        <td>@(item.Item)</td>
+
+                                        <td>@(item.Descripcion)</td>
+
+                                        <td>@(item.Cantidad)</td>
+                                        <td>$ @(item.PrecioEstimadoUnitario)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div><br />
+                    <strong>Fecha de Publicación:</strong> @Model.FechaPublicacion.ToShortDateString() <br /><br />
+                    <strong>Fecha de Cierre:</strong> @Model.FechaCierre.ToShortDateString()<br />
                 </p>
                 <form asp-action="Delete">
                     <input type="hidden" asp-for="IdLicitacion" />
-                    <input type="submit" value="Eliminar" class="btn btn-danger" />
-                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+
+                    <div class="text-end mt-8">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bx bx-arrow-back"></i> Volver al Listado
+                        </a>
+
+                        <input type="submit" value="Eliminar" class="btn btn-danger" />
+                    </div>
                 </form>
             </div>
         </div>

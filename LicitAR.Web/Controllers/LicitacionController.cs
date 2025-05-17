@@ -117,17 +117,17 @@ namespace LicitAR.Web.Controllers
         {
             if (id == null)
             {
-                return View("NotFound"); 
+                return View("NotFound");
             }
 
             var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id.Value);
             if (licitacion == null)
             {
-                return View("NotFound"); 
+                return View("NotFound");
             }
             var lic = new LicitacionModel();
             lic.SetLicitacionData(licitacion);
-            return View( lic);
+            return View(lic);
         }
 
         // POST: Licitacion/Edit/5
@@ -194,7 +194,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Licitacion/Oferentes/5
-         [AuthorizeClaim("Oferente.Ver")]
+        [AuthorizeClaim("Oferente.Ver")]
         public async Task<IActionResult> Offerer(int id)
         {
             // Obtener la licitación desde la base de datos

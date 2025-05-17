@@ -51,7 +51,7 @@ namespace LicitAR.Core.Data.Models
         public required EstadoLicitacion EstadoLicitacion { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
-        [Display(Name = "Categoría Licitación")]
+        [Display(Name = "Tipo de Licitación")]
         public required int IdCategoriaLicitacion { get; set; }
 
         [ForeignKey("IdCategoriaLicitacion")]
