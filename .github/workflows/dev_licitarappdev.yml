@@ -13,6 +13,10 @@ on:
       - dev
   workflow_dispatch:
 
+concurrency:
+  group: licitarappdev-dev
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: windows-latest
