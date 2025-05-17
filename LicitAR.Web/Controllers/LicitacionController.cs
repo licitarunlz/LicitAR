@@ -34,7 +34,7 @@ namespace LicitAR.Web.Controllers
 
             if (!string.IsNullOrEmpty(titulo))
             {
-                query = query.Where(l => l.Titulo.Contains(titulo));
+                query = query.Where(l => l.Titulo.Contains(titulo, StringComparison.OrdinalIgnoreCase));
             }
 
             if (fechaPublicacion.HasValue)

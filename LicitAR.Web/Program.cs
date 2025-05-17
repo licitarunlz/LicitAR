@@ -23,6 +23,7 @@ public partial class Program
         builder.Services.AddServicesRegistrations(builder.Configuration);
         builder.Services.AddFileStorageRegistrations(builder.Configuration);
 
+
         // Add services to the container.
         builder.Services.AddControllersWithViews(options =>
         {
