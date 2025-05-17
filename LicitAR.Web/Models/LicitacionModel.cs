@@ -92,8 +92,8 @@ namespace LicitAR.Web.Models
                     res.NroItem = nroItem;
                     nroItem++;
                 }
-
-                detalle.Add(res);
+                if (res.Item != null)
+                    detalle.Add(res);
             }
 
 
