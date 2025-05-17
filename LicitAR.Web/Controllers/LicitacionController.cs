@@ -104,6 +104,7 @@ namespace LicitAR.Web.Controllers
                 var categoriaLicitacion = await _licitacionManager.GetCategoriaLicitacionByIdAsync(licitacionModel.IdCategoriaLicitacion);
 
                 Licitacion licitacion = licitacionModel.GetLicitacion(audit, estadoLicitacion, categoriaLicitacion);
+                licitacion.Items = licitacionModel.GetLicitacionDetalles(audit);
                 await _licitacionManager.CreateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
                 return RedirectToAction(nameof(Index));
             }

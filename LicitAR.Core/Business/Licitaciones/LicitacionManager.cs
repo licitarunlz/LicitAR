@@ -48,6 +48,7 @@ namespace LicitAR.Core.Business.Licitaciones
             return await _dbContext.Licitaciones
                 .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
                 .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
+                .Include(d => d.Items)  // Include Los items
                 .FirstOrDefaultAsync(l => l.IdLicitacion == id);
         }
 
@@ -59,7 +60,14 @@ namespace LicitAR.Core.Business.Licitaciones
                 licitacion.IdEstadoLicitacion = 1; // Default state: Planificación
                 licitacion.Audit = AuditHelper.GetCreationData(userId);
                 _dbContext.Licitaciones.Add(licitacion);
+                foreach (var detalle in licitacion.Items)
+                {
+                    detalle.IdLicitacion = licitacion.IdLicitacion;
+                    detalle.Audit = AuditHelper.GetCreationData(userId);
+                }
+
                 await _dbContext.SaveChangesAsync();
+                
             }
             catch
             {

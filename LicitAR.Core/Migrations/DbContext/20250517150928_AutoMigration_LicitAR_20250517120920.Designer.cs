@@ -4,6 +4,7 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LicitAR.Core.Migrations.DbContext
 {
     [DbContext(typeof(LicitARDbContext))]
-    partial class LicitARDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250517150928_AutoMigration_LicitAR_20250517120920")]
+    partial class AutoMigration_LicitAR_20250517120920
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -261,9 +264,6 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.Property<string>("Item")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("NroItem")
-                        .HasColumnType("int");
 
                     b.Property<decimal>("PrecioEstimadoUnitario")
                         .HasColumnType("decimal(18,2)");

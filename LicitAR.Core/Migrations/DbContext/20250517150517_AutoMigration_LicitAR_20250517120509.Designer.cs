@@ -4,6 +4,7 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LicitAR.Core.Migrations.DbContext
 {
     [DbContext(typeof(LicitARDbContext))]
-    partial class LicitARDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250517150517_AutoMigration_LicitAR_20250517120509")]
+    partial class AutoMigration_LicitAR_20250517120509
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,9 +265,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NroItem")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("PrecioEstimadoUnitario")
                         .HasColumnType("decimal(18,2)");
 
@@ -272,7 +272,7 @@ namespace LicitAR.Core.Migrations.DbContext
 
                     b.HasIndex("IdLicitacion");
 
-                    b.ToTable("LicitacionesDetalle");
+                    b.ToTable("ItemsLicitacion");
                 });
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.CategoriaLicitacion", b =>
@@ -904,7 +904,7 @@ namespace LicitAR.Core.Migrations.DbContext
 
                             b1.HasKey("LicitacionDetalleIdLicitacionDetalle");
 
-                            b1.ToTable("LicitacionesDetalle");
+                            b1.ToTable("ItemsLicitacion");
 
                             b1.WithOwner()
                                 .HasForeignKey("LicitacionDetalleIdLicitacionDetalle");

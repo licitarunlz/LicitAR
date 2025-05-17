@@ -58,6 +58,8 @@ namespace LicitAR.Core.Data.Models
         public required CategoriaLicitacion CategoriaLicitacion { get; set; }
 
         public bool Enabled { get; set; } = true; // Por defecto, habilitado
+                                                  // Navegación hacia los ítems (detalle)
+        public virtual ICollection<LicitacionDetalle> Items { get; set; } = new List<LicitacionDetalle>();
 
         public required AuditTable Audit { get; set; }
     }
