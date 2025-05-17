@@ -1,5 +1,6 @@
 ﻿using LicitAR.Core.Business.Identidad;
 using LicitAR.Core.Business.Licitaciones;
+using LicitAR.Core.Business.Parametros;
 using LicitAR.Core.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ namespace LicitAR.Core.DI
             services.AddScoped<IRegistroManager, RegistroManager>();
             services.AddScoped<IUsuarioManager, UsuarioManager>();
             services.AddScoped<IRolManager, RolManager>();
+            services.AddScoped<IParametrosManager, ParametrosManager>();
 
             return services;
         }

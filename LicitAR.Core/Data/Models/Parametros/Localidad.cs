@@ -1,6 +1,7 @@
 ﻿using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Utils;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LicitAR.Core.Data.Models.Parametros
 {
@@ -16,6 +17,9 @@ namespace LicitAR.Core.Data.Models.Parametros
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         public int IdProvincia { get; set; }
+
+        [ForeignKey("IdProvincia")]
+        public Provincia Provincia { get; set; } = null!;
 
         public bool Enabled { get; set; } = true; // Por defecto, habilitado
 

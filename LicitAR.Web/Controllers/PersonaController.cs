@@ -55,7 +55,7 @@ namespace LicitAR.Web.Controllers
 
             if (!string.IsNullOrEmpty(razonSocial))
             {
-                query = query.Where(l => l.RazonSocial.Contains(razonSocial));
+                query = query.Where(l => l.RazonSocial.Contains(razonSocial, StringComparison.OrdinalIgnoreCase));
             }
  
 
@@ -69,9 +69,6 @@ namespace LicitAR.Web.Controllers
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
-
-
-
 
             List<PersonaModel> listPersonaModel = new List<PersonaModel>();
 

@@ -1,9 +1,8 @@
-# SH SH SH BASH
-# SH SH SH BASH
-# SH SH SH BASH
-# SH SH SH BASH
-# SH SH SH BASH
-
+#    ▗▖  ▗▖▗▄▄▄▖ ▗▄▄▖▗▄▄▖  ▗▄▖▗▄▄▄▖▗▄▄▄▖ ▗▄▖ ▗▖  ▗▖ ▗▄▄▖
+#    ▐▛▚▞▜▌  █  ▐▌   ▐▌ ▐▌▐▌ ▐▌ █    █  ▐▌ ▐▌▐▛▚▖▐▌▐▌   
+#    ▐▌  ▐▌  █  ▐▌▝▜▌▐▛▀▚▖▐▛▀▜▌ █    █  ▐▌ ▐▌▐▌ ▝▜▌ ▝▀▚▖
+#    ▐▌  ▐▌▗▄█▄▖▝▚▄▞▘▐▌ ▐▌▐▌ ▐▌ █  ▗▄█▄▖▝▚▄▞▘▐▌  ▐▌▗▄▄▞▘
+                                                  
 #!/bin/bash
 
 # Obtener timestamp AAAAMMDDhhmmss
@@ -23,10 +22,19 @@ outputDir="Migrations/DbContext"
 
 echo "=== Generando migración para LicitARDbContext ==="
 
-dotnet ef migrations add ${migrationName}_${timestamp} --context LicitARDbContext --output-dir ${outputDir} --project ${project} --startup-project ${startup}
+dotnet ef migrations add ${migrationName}_${timestamp} \
+  --context LicitARDbContext \
+  --output-dir ${outputDir} \
+  --project ${project} \
+  --startup-project ${startup} \
+  || { echo "❌ Falló la generación de la migración"; exit 1; }
 
 echo "=== Aplicando migración ==="
 
-dotnet ef database update --context LicitARDbContext --project ${project} --startup-project ${startup}
+dotnet ef database update \
+  --context LicitARDbContext \
+  --project ${project} \
+  --startup-project ${startup} \
+  || { echo "❌ Falló la aplicación de la migración"; exit 1; }
 
-echo "=== Listo! ==="
+echo "✅ Listo!"

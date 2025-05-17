@@ -18,7 +18,10 @@
             <form method="get" asp-action="Index">
                 <div class="row mb-3">
                     <div class="col-md-3">
-                        <input type="text" name="cuit" class="form-control" placeholder="CUIT" value="@query["cuit"]" />
+                        <input type="text" name="cuit" class="form-control" 
+                               placeholder="CUIT" value="@query["cuit"]" 
+                               maxlength="11" pattern="\d*" 
+                               title="Solo se permiten números (máximo 11 caracteres)" />
                     </div>
                     <div class="col-md-3">
                         <input type="text" name="razonSocial" class="form-control" placeholder="Razón Social" value="@query["razonSocial"]" />
