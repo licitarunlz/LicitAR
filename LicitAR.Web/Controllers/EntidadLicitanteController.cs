@@ -99,11 +99,18 @@ namespace LicitAR.Web.Controllers
             }
 
             var entidadLicitante = await _context.EntidadesLicitantes
+                .Include(e => e.Provincia)
+                .Include(e => e.Localidad)
                 .FirstOrDefaultAsync(m => m.IdEntidadLicitante == id);
+
             if (entidadLicitante == null)
             {
                 return NotFound();
             }
+
+            // Get associated users if there's a relationship to display
+            //var associatedUsers = await _usuarioManager.GetUsuariosByEntidadLicitanteIdAsync(id.Value);
+            //ViewBag.AssociatedUsers = associatedUsers;
 
             return View(entidadLicitante);
         }
@@ -173,6 +180,24 @@ namespace LicitAR.Web.Controllers
             {
                 return NotFound();
             }
+
+            // Cargar provincias y localidades para los combos
+            ViewBag.ComboProvincias = _context.Provincias
+                .Select(x => new SelectListItem
+                {
+                    Value = x.IdProvincia.ToString(),
+                    Text = x.Descripcion
+                })
+                .ToList();
+
+            ViewBag.ComboLocalidades = _context.Localidades
+                .Select(x => new SelectListItem
+                {
+                    Value = x.IdLocalidad.ToString(),
+                    Text = x.Descripcion
+                })
+                .ToList();
+
             EntidadLicitanteModel ent = new EntidadLicitanteModel();
             ent.SetEntidadLicitanteData(entidadLicitante);
             return View(ent);
@@ -313,6 +338,16 @@ namespace LicitAR.Web.Controllers
             }
 
             return RedirectToAction(nameof(Details), new { id = idEntidadLicitante });
+        }
+
+        [HttpGet]
+        public JsonResult GetLocalidadesByProvincia(int idProvincia)
+        {
+            var localidades = _context.Localidades
+                .Where(l => l.IdProvincia == idProvincia)
+                .Select(l => new { l.IdLocalidad, l.Descripcion })
+                .ToList();
+            return Json(localidades);
         }
 
         private bool EntidadLicitanteExists(int id)
