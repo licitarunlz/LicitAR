@@ -80,7 +80,7 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound"); // Updated
             }
-
+            licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             return View(licitacion);
         }
 
@@ -104,6 +104,7 @@ namespace LicitAR.Web.Controllers
                 var categoriaLicitacion = await _licitacionManager.GetCategoriaLicitacionByIdAsync(licitacionModel.IdCategoriaLicitacion);
 
                 Licitacion licitacion = licitacionModel.GetLicitacion(audit, estadoLicitacion, categoriaLicitacion);
+                licitacion.Items = licitacionModel.GetLicitacionDetalles(audit);
                 await _licitacionManager.CreateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
                 return RedirectToAction(nameof(Index));
             }
@@ -116,17 +117,17 @@ namespace LicitAR.Web.Controllers
         {
             if (id == null)
             {
-                return View("NotFound"); 
+                return View("NotFound");
             }
 
             var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id.Value);
             if (licitacion == null)
             {
-                return View("NotFound"); 
+                return View("NotFound");
             }
             var lic = new LicitacionModel();
             lic.SetLicitacionData(licitacion);
-            return View( lic);
+            return View(lic);
         }
 
         // POST: Licitacion/Edit/5
@@ -174,6 +175,7 @@ namespace LicitAR.Web.Controllers
                 return View("NotFound"); // Updated
             }
 
+            licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             return View(licitacion);
         }
 
@@ -193,7 +195,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Licitacion/Oferentes/5
-         [AuthorizeClaim("Oferente.Ver")]
+        [AuthorizeClaim("Oferente.Ver")]
         public async Task<IActionResult> Offerer(int id)
         {
             // Obtener la licitación desde la base de datos

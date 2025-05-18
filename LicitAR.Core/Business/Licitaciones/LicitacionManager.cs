@@ -48,6 +48,7 @@ namespace LicitAR.Core.Business.Licitaciones
             return await _dbContext.Licitaciones
                 .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
                 .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
+                .Include(d => d.Items)  // Include Los items
                 .FirstOrDefaultAsync(l => l.IdLicitacion == id);
         }
 
@@ -59,7 +60,14 @@ namespace LicitAR.Core.Business.Licitaciones
                 licitacion.IdEstadoLicitacion = 1; // Default state: Planificación
                 licitacion.Audit = AuditHelper.GetCreationData(userId);
                 _dbContext.Licitaciones.Add(licitacion);
+                foreach (var detalle in licitacion.Items)
+                {
+                    detalle.IdLicitacion = licitacion.IdLicitacion;
+                    detalle.Audit = AuditHelper.GetCreationData(userId);
+                }
+
                 await _dbContext.SaveChangesAsync();
+                
             }
             catch
             {
@@ -90,8 +98,29 @@ namespace LicitAR.Core.Business.Licitaciones
                 _context.Entry(licitacionFromDdbb).Property(u => u.FechaPublicacion).IsModified = true;
                 _context.Entry(licitacionFromDdbb).Property(u => u.FechaCierre).IsModified = true;
                 */
+
+                /*foreach (var detalle in licitacion.Items)
+                {
+                    if (detalle.Audit.FechaBaja != null)
+                    {
+                        detalle.IdLicitacion = licitacion.IdLicitacion;
+                        //Si es distinto de null, estoy eliminando un registro
+                        continue;
+                    }
+
+                    if (detalle.IdLicitacionDetalle != 0)
+                    {
+                        //estoy editando
+
+                        detalle.IdLicitacion = licitacion.IdLicitacion;
+                        detalle.
+                    }
+                    detalle.Audit = AuditHelper.GetCreationData(userId);
+                }*/
+                licitacionFromDdbb.Items = licitacion.Items;
+
                 _dbContext.Licitaciones.Update(licitacionFromDdbb);
-            
+
                 await _dbContext.SaveChangesAsync();
                 return true;
             }

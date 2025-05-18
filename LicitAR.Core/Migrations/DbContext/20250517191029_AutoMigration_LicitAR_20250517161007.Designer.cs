@@ -4,6 +4,7 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LicitAR.Core.Migrations.DbContext
 {
     [DbContext(typeof(LicitARDbContext))]
-    partial class LicitARDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250517191029_AutoMigration_LicitAR_20250517161007")]
+    partial class AutoMigration_LicitAR_20250517161007
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -337,8 +340,6 @@ namespace LicitAR.Core.Migrations.DbContext
                         .HasColumnType("int");
 
                     b.HasKey("IdLocalidad");
-
-                    b.HasIndex("IdProvincia");
 
                     b.ToTable("Localidades");
                 });
@@ -994,12 +995,6 @@ namespace LicitAR.Core.Migrations.DbContext
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.Localidad", b =>
                 {
-                    b.HasOne("LicitAR.Core.Data.Models.Parametros.Provincia", "Provincia")
-                        .WithMany()
-                        .HasForeignKey("IdProvincia")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
                         {
                             b1.Property<int>("LocalidadIdLocalidad")
@@ -1033,8 +1028,6 @@ namespace LicitAR.Core.Migrations.DbContext
 
                     b.Navigation("Audit")
                         .IsRequired();
-
-                    b.Navigation("Provincia");
                 });
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.Parametria", b =>

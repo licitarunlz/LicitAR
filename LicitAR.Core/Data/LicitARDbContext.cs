@@ -4,6 +4,7 @@ using LicitAR.Core.Data.Models.Parametros;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LicitAR.Core.Data
 {
@@ -28,6 +29,7 @@ namespace LicitAR.Core.Data
         public DbSet<EstadoLicitacion> EstadosLicitacion { get; set; }
         public DbSet<CategoriaLicitacion> CategoriasLicitacion { get; set; }
         public DbSet<Licitacion> Licitaciones { get; set; }
+        public DbSet<LicitacionDetalle> LicitacionesDetalle { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +49,14 @@ namespace LicitAR.Core.Data
             modelBuilder.Entity<EstadoLicitacion>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<CategoriaLicitacion>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<Licitacion>().OwnsOne(p => p.Audit);
+
+            modelBuilder.Entity<Licitacion>()
+                        .HasMany(l => l.Items)
+                        .WithOne(i => i.Licitacion)
+                        .HasForeignKey(i => i.IdLicitacion)
+                        .OnDelete(DeleteBehavior.Cascade); // Borra ítems si se borra la licitación
+
+            modelBuilder.Entity<LicitacionDetalle>().OwnsOne(p => p.Audit);
 
             modelBuilder.Entity<LicitArUser>(entity =>
             {

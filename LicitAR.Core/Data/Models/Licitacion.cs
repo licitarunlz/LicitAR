@@ -51,13 +51,15 @@ namespace LicitAR.Core.Data.Models
         public required EstadoLicitacion EstadoLicitacion { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
-        [Display(Name = "Categoría Licitación")]
+        [Display(Name = "Tipo de Licitación")]
         public required int IdCategoriaLicitacion { get; set; }
 
         [ForeignKey("IdCategoriaLicitacion")]
         public required CategoriaLicitacion CategoriaLicitacion { get; set; }
 
         public bool Enabled { get; set; } = true; // Por defecto, habilitado
+                                                  // Navegación hacia los ítems (detalle)
+        public virtual ICollection<LicitacionDetalle> Items { get; set; } = new List<LicitacionDetalle>();
 
         public required AuditTable Audit { get; set; }
     }

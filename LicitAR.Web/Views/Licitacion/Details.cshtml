@@ -12,29 +12,64 @@
             </div>
             <div class="card-body">
                 <dl class="row"> 
-                    
+
                     <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Descripcion)</b></dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.Descripcion)</dd>
-                    
+
+
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.IdCategoriaLicitacion)</b></dt>
+                    <dd class="col-sm-9">@Html.Raw(Model.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")</dd>
+
+                    <dt class="col-sm-3"><b>Detalle</b></dt>
+                    <dd class="col-sm-9"></dd>
+                    <div class="mb-3 mt-3">
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td><b>NRO ITEM</b></td>
+                                <td><b>ITEM</b></td>
+                                <td><b>DESCRIPCIÓN</b></td>
+                                <td><b>CANTIDAD</b></td>
+                                <td><b>PRECIO UNITARIO ESTIMADO</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Items.Count; i++)
+                            {
+                                var item = Model.Items.ToArray()[i];
+                                <tr>
+                                    <td>#@(item.NroItem + 1)</td>
+
+                                    <td>@(item.Item)</td>
+
+                                    <td>@(item.Descripcion)</td>
+
+                                    <td>@(item.Cantidad)</td>
+                                    <td>$ @(item.PrecioEstimadoUnitario)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    </div>
+
+
                     <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.FechaPublicacion)</b></dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.FechaPublicacion)</dd>
                     
                     <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.FechaCierre)</b></dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.FechaCierre)</dd>
-                   
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.IdCategoriaLicitacion)</b></dt>
-                    <dd class="col-sm-9">@Html.Raw(Model.IdCategoriaLicitacion==1?"Privada":"Pública")</dd>
                 </dl>
             </div>
         </div>
     </div>
 </div>
 
-<div class="text-start mt-8">
-    <a asp-action="Edit" asp-route-id="@Model?.IdLicitacion" class="btn btn-primary">
-        <i class="bx bx-edit"></i> Editar
-    </a>
+<div class="text-end mt-8">
     <a asp-action="Index" class="btn btn-secondary">
         <i class="bx bx-arrow-back"></i> Volver al Listado
+    </a>
+    <a asp-action="Edit" asp-route-id="@Model?.IdLicitacion" class="btn btn-primary">
+        <i class="bx bx-edit"></i> Editar
     </a>
 </div>
