@@ -19,11 +19,13 @@ namespace LicitAR.Web.Controllers
 
         // GET: Licitacion
         [AuthorizeClaim("Licitaciones.Ver")]
-        public async Task<IActionResult> Index(string codigoLicitacion, string titulo, DateTime? fechaPublicacion, DateTime? fechaCierre, int? idCategoriaLicitacion, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string codigoLicitacion, string titulo, DateTime? fechaPublicacion, DateTime? fechaCierre, int? idCategoriaLicitacion, int? idEstadoLicitacion, int page = 1, int pageSize = 10)
         {
             var licitacionesList = await _licitacionManager.GetAllLicitacionesAsync();
-            var categorias = await _licitacionManager.GetAllCategoriasAsync();
+            var categorias = await _licitacionManager.GetAllCategoriasLicitacionAsync();
+            var estados = await _licitacionManager.GetAllEstadosLicitacionAsync(); // NUEVO
             ViewBag.CategoriasLicitacion = categorias;
+            ViewBag.EstadosLicitacion = estados; // NUEVO
 
             var query = licitacionesList.AsQueryable();
 
@@ -50,6 +52,11 @@ namespace LicitAR.Web.Controllers
             if (idCategoriaLicitacion.HasValue)
             {
                 query = query.Where(l => l.IdCategoriaLicitacion == idCategoriaLicitacion.Value);
+            }
+
+            if (idEstadoLicitacion.HasValue) // NUEVO
+            {
+                query = query.Where(l => l.IdEstadoLicitacion == idEstadoLicitacion.Value);
             }
 
             var totalItems = query.Count();

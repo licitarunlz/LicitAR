@@ -4,6 +4,7 @@
     ViewData["Title"] = "Licitaciones";
     var query = Context.Request.Query;
     var categorias = ViewBag.CategoriasLicitacion as IEnumerable<LicitAR.Core.Data.Models.Parametros.CategoriaLicitacion>;
+    var estados = ViewBag.EstadosLicitacion as IEnumerable<LicitAR.Core.Data.Models.Parametros.EstadoLicitacion>;
 }
 
 <div class="card">
@@ -30,6 +31,21 @@
                     </select>
                 </div>
                 <div class="col-md-2">
+                    <select name="idEstadoLicitacion" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        @if (estados != null)
+                        {
+                            foreach (var estado in estados)
+                            {
+                                bool isSelected = query["idEstadoLicitacion"] == estado.IdEstadoLicitacion.ToString();
+                                <option value="@estado.IdEstadoLicitacion" selected="@(isSelected ? "selected" : null)">
+                                    @estado.Descripcion
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-1">
                     <input type="date" name="fechaPublicacion" class="form-control form-control-sm" placeholder="Fecha Publicación" value="@query["fechaPublicacion"]" />
                 </div>
                 <div class="col-md-2">
