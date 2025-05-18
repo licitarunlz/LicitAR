@@ -54,7 +54,7 @@ namespace LicitAR.Web.Helpers
 
         public static string? GetUserLicitARClaim(ClaimsPrincipal user, string claim)
         {
-            Claim? userClaim = user.Claims.FirstOrDefault(x => x.Type.ToLower() == claim);
+            Claim? userClaim = user.Claims.FirstOrDefault(x => x.Type.ToLower() == claim.ToLower());
 
             if (userClaim == null)
                 return null;

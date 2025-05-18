@@ -235,7 +235,7 @@ public class UsuarioController : Controller
 
                 Console.WriteLine("User signed in successfully.");
 
-                if (vinculacion == null)
+                if (vinculacion == null && roleDescription.ToUpper() == "PROVEEDOR")
                     return RedirectToAction("CreatePersonaUsuario", "Persona");
 
                 return RedirectToAction("Index", "Home");

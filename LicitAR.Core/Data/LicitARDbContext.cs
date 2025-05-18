@@ -30,6 +30,9 @@ namespace LicitAR.Core.Data
         public DbSet<CategoriaLicitacion> CategoriasLicitacion { get; set; }
         public DbSet<Licitacion> Licitaciones { get; set; }
         public DbSet<LicitacionDetalle> LicitacionesDetalle { get; set; }
+        public DbSet<EstadoOferta> EstadosOferta { get; set; }
+        public DbSet<Oferta> Ofertas { get; set; }
+        public DbSet<OfertaDetalle> OfertasDetalle { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +50,7 @@ namespace LicitAR.Core.Data
             modelBuilder.Entity<TipoPersona>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<Parametria>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<EstadoLicitacion>().OwnsOne(p => p.Audit);
+            modelBuilder.Entity<EstadoOferta>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<CategoriaLicitacion>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<Licitacion>().OwnsOne(p => p.Audit);
 
@@ -57,6 +61,33 @@ namespace LicitAR.Core.Data
                         .OnDelete(DeleteBehavior.Cascade); // Borra ítems si se borra la licitación
 
             modelBuilder.Entity<LicitacionDetalle>().OwnsOne(p => p.Audit);
+
+            modelBuilder.Entity<Oferta>().OwnsOne(p => p.Audit);
+
+
+            modelBuilder.Entity<Oferta>()
+                .HasOne(p => p.EstadoOferta)
+                .WithMany()
+                .HasForeignKey(p => p.IdEstadoOferta);
+
+
+            modelBuilder.Entity<Oferta>()
+                .HasOne(p => p.Licitacion)
+                .WithMany()
+                .HasForeignKey(p => p.IdLicitacion);
+
+            modelBuilder.Entity<Oferta>()
+                        .HasMany(l => l.Items)
+                        .WithOne(i => i.Oferta)
+                        .HasForeignKey(i => i.IdOferta)
+                        .OnDelete(DeleteBehavior.Cascade); // Borra ítems si se borra la licitación
+
+            modelBuilder.Entity<OfertaDetalle>().OwnsOne(p => p.Audit);
+
+            modelBuilder.Entity<OfertaDetalle>()
+                .HasOne(p => p.LicitacionDetalle)
+                .WithMany()
+                .HasForeignKey(p => p.IdLicitacionDetalle);
 
             modelBuilder.Entity<LicitArUser>(entity =>
             {
