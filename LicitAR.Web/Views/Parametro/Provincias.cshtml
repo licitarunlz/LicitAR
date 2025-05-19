@@ -29,7 +29,6 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Descripción</th>
                     <th>Activo</th>
                 </tr>
@@ -38,7 +37,6 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.IdProvincia</td>
                         <td>@item.Descripcion</td>
                         <td>
                             @if (item.Enabled)

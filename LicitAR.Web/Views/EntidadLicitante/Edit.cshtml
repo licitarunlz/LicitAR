@@ -40,12 +40,16 @@
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label asp-for="IdProvincia" class="form-label"></label>
-                                <input asp-for="IdProvincia" class="form-control" />
+                                <select asp-for="IdProvincia" class="form-control" asp-items="ViewBag.ComboProvincias" id="provincia-select">
+                                    <option value="">Seleccione una provincia</option>
+                                </select>
                                 <span asp-validation-for="IdProvincia" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label asp-for="IdLocalidad" class="form-label"></label>
-                                <input asp-for="IdLocalidad" class="form-control" />
+                                <select asp-for="IdLocalidad" class="form-control" asp-items="ViewBag.ComboLocalidades" id="localidad-select">
+                                    <option value="">Seleccione una localidad</option>
+                                </select>
                                 <span asp-validation-for="IdLocalidad" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
@@ -104,6 +108,44 @@
                 } else {
                     e.target.value = value;
                 }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const provinciaSelect = document.getElementById('provincia-select');
+            const localidadSelect = document.getElementById('localidad-select');
+            const selectedLocalidad = '@Model.IdLocalidad';
+
+            provinciaSelect.addEventListener('change', function () {
+                const provinciaId = this.value;
+                localidadSelect.innerHTML = '<option value="">Cargando...</option>';
+                if (provinciaId) {
+                    fetch('/EntidadLicitante/GetLocalidadesByProvincia?idProvincia=' + provinciaId)
+                        .then(response => response.json())
+                        .then(data => {
+                            let options = '<option value="">Seleccione una localidad</option>';
+                            data.forEach(function (loc) {
+                                options += `<option value="${loc.idLocalidad}">${loc.descripcion}</option>`;
+                            });
+                            localidadSelect.innerHTML = options;
+                        });
+                } else {
+                    localidadSelect.innerHTML = '<option value="">Seleccione una localidad</option>';
+                }
+            });
+
+            // Si hay una provincia y localidad seleccionadas al cargar la página, selecciona la localidad correspondiente
+            if (provinciaSelect.value && selectedLocalidad) {
+                fetch('/EntidadLicitante/GetLocalidadesByProvincia?idProvincia=' + provinciaSelect.value)
+                    .then(response => response.json())
+                    .then(data => {
+                        let options = '<option value="">Seleccione una localidad</option>';
+                        data.forEach(function (loc) {
+                            const selected = loc.idLocalidad == selectedLocalidad ? 'selected' : '';
+                            options += `<option value="${loc.idLocalidad}" ${selected}>${loc.descripcion}</option>`;
+                        });
+                        localidadSelect.innerHTML = options;
+                    });
             }
         });
     </script>

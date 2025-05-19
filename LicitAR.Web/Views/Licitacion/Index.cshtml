@@ -4,6 +4,7 @@
     ViewData["Title"] = "Licitaciones";
     var query = Context.Request.Query;
     var categorias = ViewBag.CategoriasLicitacion as IEnumerable<LicitAR.Core.Data.Models.Parametros.CategoriaLicitacion>;
+    var estados = ViewBag.EstadosLicitacion as IEnumerable<LicitAR.Core.Data.Models.Parametros.EstadoLicitacion>;
 }
 
 <div class="card">
@@ -14,10 +15,10 @@
                 <div class="col-md-2">
                     <input type="text" name="codigoLicitacion" class="form-control form-control-sm" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input type="text" name="titulo" class="form-control form-control-sm" placeholder="Título" value="@query["titulo"]" />
                 </div>
-                <div class="col-md-2">
+                <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
                     <select name="idCategoriaLicitacion" class="form-select form-select-sm">
                         <option value="">Todas</option>
                         @foreach (var categoria in categorias)
@@ -29,10 +30,25 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
+                    <select name="idEstadoLicitacion" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        @if (estados != null)
+                        {
+                            foreach (var estado in estados)
+                            {
+                                bool isSelected = query["idEstadoLicitacion"] == estado.IdEstadoLicitacion.ToString();
+                                <option value="@estado.IdEstadoLicitacion" selected="@(isSelected ? "selected" : null)">
+                                    @estado.Descripcion
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
                     <input type="date" name="fechaPublicacion" class="form-control form-control-sm" placeholder="Fecha Publicación" value="@query["fechaPublicacion"]" />
                 </div>
-                <div class="col-md-2">
+                <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
                     <input type="date" name="fechaCierre" class="form-control form-control-sm" placeholder="Fecha Cierre" value="@query["fechaCierre"]" />
                 </div>
             </div>
