@@ -83,11 +83,12 @@ namespace LicitAR.Core.Data
                         .OnDelete(DeleteBehavior.Cascade); // Borra ítems si se borra la licitación
 
             modelBuilder.Entity<OfertaDetalle>().OwnsOne(p => p.Audit);
-
+            
             modelBuilder.Entity<OfertaDetalle>()
                 .HasOne(p => p.LicitacionDetalle)
-                .WithMany()
-                .HasForeignKey(p => p.IdLicitacionDetalle);
+                .WithMany(ld => ld.OfertasDetalle)
+                .HasForeignKey(p => p.IdLicitacionDetalle)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<LicitArUser>(entity =>
             {

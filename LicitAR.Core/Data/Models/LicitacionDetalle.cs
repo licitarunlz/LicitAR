@@ -34,6 +34,8 @@ namespace LicitAR.Core.Data.Models
  
         // Navegación hacia la cabecera
         public virtual Licitacion Licitacion { get; set; }
+        public ICollection<OfertaDetalle> OfertasDetalle { get; set; } = new List<OfertaDetalle>();
+
         public required AuditTable Audit { get; set; }
 
     }

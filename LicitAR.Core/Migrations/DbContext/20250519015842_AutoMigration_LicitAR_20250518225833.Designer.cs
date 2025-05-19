@@ -4,6 +4,7 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LicitAR.Core.Migrations.DbContext
 {
     [DbContext(typeof(LicitARDbContext))]
-    partial class LicitARDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250519015842_AutoMigration_LicitAR_20250518225833")]
+    partial class AutoMigration_LicitAR_20250518225833
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -330,6 +333,8 @@ namespace LicitAR.Core.Migrations.DbContext
                         .HasColumnType("int");
 
                     b.HasKey("IdOfertaDetalle");
+
+                    b.HasIndex("IdLicitacionDetalle");
 
                     b.HasIndex("IdOferta");
 
@@ -1065,13 +1070,19 @@ namespace LicitAR.Core.Migrations.DbContext
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.OfertaDetalle", b =>
                 {
+                    b.HasOne("LicitAR.Core.Data.Models.LicitacionDetalle", "LicitacionDetalle")
+                        .WithMany()
+                        .HasForeignKey("IdLicitacionDetalle")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("LicitAR.Core.Data.Models.Oferta", "Oferta")
                         .WithMany("Items")
                         .HasForeignKey("IdOferta")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LicitAR.Core.Data.Models.LicitacionDetalle", "LicitacionDetalle")
+                    b.HasOne("LicitAR.Core.Data.Models.LicitacionDetalle", null)
                         .WithMany("OfertasDetalle")
                         .HasForeignKey("LicitacionDetalleIdLicitacionDetalle");
 
