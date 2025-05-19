@@ -17,6 +17,7 @@ namespace LicitAR.Core.DI
             services.AddScoped<IMessageManager, MessageManager>();
             
             services.AddScoped<ILicitacionManager, LicitacionManager>();
+            services.AddScoped<IOfertaManager, OfertaManager>();
             services.AddScoped<IEntidadLicitanteManager, EntidadLicitanteManager>();
             services.AddScoped<IPersonaManager,PersonaManager>();
             services.AddScoped<IRegistroManager, RegistroManager>();

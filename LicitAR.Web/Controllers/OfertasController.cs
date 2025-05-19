@@ -13,17 +13,20 @@ using System.Net.WebSockets;
 using LicitAR.Web.Helpers.Authorization;
 using LicitAR.Web.Helpers;
 using Microsoft.AspNetCore.Identity;
+using LicitAR.Core.Utils;
 
 namespace LicitAR.Web.Controllers
 {
     public class OfertasController : Controller
     {
         private readonly ILicitacionManager _licitacionManager;
+        private readonly IOfertaManager _ofertaManager;
         private readonly LicitARDbContext _context;
 
-        public OfertasController(LicitARDbContext context, ILicitacionManager licitacionManager)
+        public OfertasController(LicitARDbContext context, ILicitacionManager licitacionManager, IOfertaManager ofertaManager)
         {
             _licitacionManager = licitacionManager;
+            _ofertaManager = ofertaManager;
             _context = context;
         }
 
@@ -144,30 +147,33 @@ namespace LicitAR.Web.Controllers
             {
                 FechaOferta = DateTime.Now,
                 IdEstadoOferta = 1,
-                Licitacion = licitacion,
                 IdLicitacion = idlicitacion.Value,
                 IdPersona = int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona"))
             };
+            ViewBag.licitacion = licitacion;
             return View(oferta);
         }
 
         // POST: Ofertas/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost("/Proveedor/Licitaciones/Postularse")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdOferta,IdLicitacion,IdPersona,FechaOferta,IdEstadoOferta")] Oferta oferta)
+        public async Task<IActionResult> Create(OfertaModel ofertaModel)
         {
+
             if (ModelState.IsValid)
             {
-                _context.Add(oferta);
-                await _context.SaveChangesAsync();
+                var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
+               
+                Oferta oferta = ofertaModel.GetOferta(audit);
+                oferta.Items = ofertaModel.GetOfertaDetalles(audit);
+                await _ofertaManager.CreateOfertaAsync(oferta, IdentityHelper.GetUserLicitARId(User));
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdEstadoOferta"] = new SelectList(_context.EstadosOferta, "IdEstadoOferta", "Descripcion", oferta.IdEstadoOferta);
-            ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion", oferta.IdLicitacion);
-            ViewData["IdPersona"] = new SelectList(_context.Personas, "IdPersona", "Cuit", oferta.IdPersona);
-            return View(oferta);
+            return View(ofertaModel);
+
+
         }
 
         // GET: Ofertas/Edit/5
