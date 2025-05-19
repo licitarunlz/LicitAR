@@ -20,6 +20,7 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<CategoriaLicitacion?> GetCategoriaLicitacionByIdAsync(int idCategoriaLicitacion);
         Task<List<CategoriaLicitacion>> GetAllCategoriasLicitacionAsync();
         Task<List<EstadoLicitacion>> GetAllEstadosLicitacionAsync();
+        Task<List<CategoriaLicitacion>> GetAllCategoriasAsync();
     }
 
     public class LicitacionManager : ILicitacionManager
@@ -191,6 +192,11 @@ namespace LicitAR.Core.Business.Licitaciones
         public async Task<List<EstadoLicitacion>> GetAllEstadosLicitacionAsync()
         {
             return await _dbContext.EstadosLicitacion.ToListAsync();
+        }
+
+        public async Task<List<CategoriaLicitacion>> GetAllCategoriasAsync()
+        {
+            return await GetAllCategoriasLicitacionAsync();
         }
     }
 }
