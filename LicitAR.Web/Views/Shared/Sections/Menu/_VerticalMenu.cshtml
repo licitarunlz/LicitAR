@@ -231,7 +231,7 @@
               </a>
             </li>
           }
-          @if (user.HasClaim("permission", "Roles.Ver_NO_ACTIVO"))
+          @if (user.HasClaim("permission", "Roles.Ver"))
           {
             <li class='menu-item'>
               <a asp-action="Roles" asp-controller="Usuario" class="menu-link">

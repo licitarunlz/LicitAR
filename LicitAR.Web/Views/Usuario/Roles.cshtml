@@ -40,7 +40,6 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th></th>
                     <th>Nombre</th>
                     <th>ACCIONES</th>
                 </tr>
@@ -49,23 +48,6 @@
                 @foreach (var role in Model)
                 {
                     <tr>
-                        <td>
-                            <div class="dropdown">
-                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" asp-action="EditRole" asp-route-id="@role.Id">
-                                        <i class="bx bx-edit-alt me-1"></i> Editar
-                                    </a>
-                                    <form asp-action="DeleteRole" asp-route-id="@role.Id" method="post" style="display:inline;">
-                                        <button type="submit" class="dropdown-item">
-                                            <i class="bx bx-trash me-1"></i> Eliminar
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </td>
                         <td>@role.Name</td>
                         <td>
                             <a class="text-primary me-2" asp-action="AssignUsersToRole" asp-route-roleId="@role.Id" title="Asociar usuarios al Rol">
