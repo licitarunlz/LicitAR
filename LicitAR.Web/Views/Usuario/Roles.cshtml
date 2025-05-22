@@ -29,9 +29,6 @@
                     <a asp-action="Roles" class="btn btn-warning" title="Limpiar filtros">
                         <i class="bx bx-reset"></i>
                     </a>
-                    <a asp-action="CreateRole" class="btn btn-success ms-2" title="Crear Nuevo Rol">
-                        <i class="bx bx-message-square-add"></i>
-                    </a>
                 </div>
             </div>
         </form>
@@ -52,9 +49,6 @@
                         <td>
                             <a class="text-primary me-2" asp-action="AssignUsersToRole" asp-route-roleId="@role.Id" title="Asociar usuarios al Rol">
                                 <i class="bx bx-group"></i>
-                            </a>
-                            <a class="text-danger me-2" asp-action="DisableRole" asp-route-id="@role.Id" title="Deshabilitar Rol">
-                                <i class="bx bx-block"></i>
                             </a>
                         </td>
                     </tr>
