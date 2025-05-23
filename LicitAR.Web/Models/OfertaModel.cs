@@ -13,6 +13,7 @@ namespace LicitAR.Web.Models
         public required int IdLicitacion { get; set; } 
          
         public required int IdPersona { get; set; }
+        public string? CodigoOfertaLicitacion { get; set; }
          
         public required DateTime FechaOferta { get; set; }
          

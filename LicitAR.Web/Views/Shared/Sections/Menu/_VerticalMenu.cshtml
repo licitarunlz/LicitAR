@@ -316,7 +316,7 @@
                 </ul>
             </li>
 
-            <li class='menu-item@(  currentPage.StartsWith("/Proveedor/") ? " active open" : "")'>
+            <li class='menu-item@(  currentPage.StartsWith("/Proveedor/") ||currentPage.StartsWith("/Ofertas")  ? " active open" : "")'>
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-home-smile"></i>
                     <div class="text-truncate" data-i18n="Dashboards">Licitaciones</div>
@@ -330,6 +330,12 @@
                         </a>
                     </li>
 
+                    <li class='menu-item@(currentPage == "/Ofertas" ? " active" : "")'>
+
+                        <a asp-action="Index" asp-controller="Ofertas" class="menu-link">
+                            <div>Mis Ofertas</div>
+                        </a>
+                    </li>
 
 
                 </ul>

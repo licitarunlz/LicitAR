@@ -19,6 +19,7 @@ namespace LicitAR.Core.Data.Models.Parametros
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         [MaxLength(20, ErrorMessage = ErrorMessages.MAXLENGTH)]
+        [Display(Name = "Estado Oferta")]
         public required string Descripcion { get; set; }
 
         public bool Enabled { get; set; } = true; // Por defecto, habilitado
