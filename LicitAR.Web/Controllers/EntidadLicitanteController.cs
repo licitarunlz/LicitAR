@@ -282,7 +282,7 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpPost]
-        [AuthorizeClaim("EntidadLicitante.AsociarUsuario")]
+        [AuthorizeClaim("EntidadLicitante.Editar")]
         public async Task<IActionResult> AsociarUsuario(int idEntidadLicitante, string idUsuario)
         {
             _messageManager = await _entidadLicitanteManager.AsociarUsuarioAsync(idEntidadLicitante, idUsuario, IdentityHelper.GetUserLicitARId(User));
@@ -292,7 +292,7 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpPost]
-        [AuthorizeClaim("EntidadLicitante.DesasociarUsuario")]
+        [AuthorizeClaim("EntidadLicitante.Editar")]
         public async Task<IActionResult> DesasociarUsuario(int idEntidadLicitante, string idUsuario)
         {
             _messageManager = await _entidadLicitanteManager.DesasociarUsuarioAsync(idEntidadLicitante, idUsuario, IdentityHelper.GetUserLicitARId(User));
@@ -302,7 +302,7 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpGet]
-        [AuthorizeClaim("EntidadLicitante.AsociarUsuario")]
+        [AuthorizeClaim("EntidadLicitante.Editar")]
         public async Task<IActionResult> AsociarUsuario(int idEntidadLicitante)
         {
             var entidadLicitante = await _entidadLicitanteManager.GetEntidadLicitanteByIdAsync(idEntidadLicitante);
@@ -323,7 +323,7 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpPost]
-        [AuthorizeClaim("EntidadLicitante.AsociarUsuario")]
+        [AuthorizeClaim("EntidadLicitante.Editar")]
         public async Task<IActionResult> AsociarUsuario(int idEntidadLicitante, List<string> selectedUsuarios)
         {
             if (selectedUsuarios == null || !selectedUsuarios.Any())
