@@ -20,20 +20,31 @@ public class UsuarioController : Controller
 {
     private readonly ILogger<UsuarioController> _logger;
     private readonly IRegistroManager _registroManager;
+    private readonly UserManager<LicitArUser> _userManager;
     private readonly SignInManager<LicitArUser> _signInManager;
     private readonly IUsuarioManager _usuarioManager;
     private readonly IRolManager _rolManager;
     private readonly IPersonaManager _personaManager;
+    private readonly IEntidadLicitanteManager _entidadLicitanteManager;
 
-    public UsuarioController(SignInManager<LicitArUser> signInManager, IRegistroManager registroManager,
-    ILogger<UsuarioController> logger, IUsuarioManager usuarioManager, IRolManager rolManager, IPersonaManager personaManager)
+    public UsuarioController(
+        UserManager<LicitArUser> userManager,
+        SignInManager<LicitArUser> signInManager,
+        IRegistroManager registroManager,
+        ILogger<UsuarioController> logger,
+        IUsuarioManager usuarioManager,
+        IRolManager rolManager,
+        IPersonaManager personaManager,
+        IEntidadLicitanteManager entidadLicitanteManager)
     {
-        _logger = logger;
-        _registroManager = registroManager;
+        _userManager = userManager;
         _signInManager = signInManager;
+        _registroManager = registroManager;
+        _logger = logger;
         _usuarioManager = usuarioManager;
         _rolManager = rolManager;
         _personaManager = personaManager;
+        _entidadLicitanteManager = entidadLicitanteManager;
     }
 
     [Authorize]
@@ -83,14 +94,16 @@ public class UsuarioController : Controller
     [AuthorizeClaim("Roles.Ver")]
     public async Task<IActionResult> Roles(string? nombre)
     {
-        var roles = await _rolManager.GetAllRolesAsync();
+        var rolesResumen = await _rolManager.GetAllRolesWithResumenAsync();
 
         if (!string.IsNullOrEmpty(nombre))
         {
-            roles = roles.Where(r => r.Name.Contains(nombre, StringComparison.OrdinalIgnoreCase)).ToList();
+            rolesResumen = rolesResumen
+                .Where(r => r.Rol.Name.Contains(nombre, StringComparison.OrdinalIgnoreCase))
+                .ToList();
         }
 
-        return View(roles);
+        return View(rolesResumen); // rolesResumen ahora es IEnumerable<RolModel>
     }
 
     [Authorize]
@@ -179,6 +192,75 @@ public class UsuarioController : Controller
         {
             _logger.LogError(ex, "Error while assigning users to role. RoleId: {RoleId}, RoleName: {RoleName}", model.RoleId, model.RoleName);
             TempData["ErrorMessage"] = "Ocurrió un error al asignar usuarios al rol.";
+            return RedirectToAction("Generic", "Error");
+        }
+    }
+
+    [Authorize]
+    [AuthorizeClaim("EntidadLicitante.Editar")]
+    public async Task<IActionResult> AssignUsersToEntidad(int id)
+    {
+        var entidad = await _entidadLicitanteManager.GetEntidadLicitanteByIdAsync(id);
+        if (entidad == null)
+            return View("NotFound");
+
+        var allUsers = await _usuarioManager.GetAllUsersAsync();
+        var assignedUsers = entidad.Usuarios?.Select(u => u.Usuario).ToList() ?? new List<LicitArUser>();
+
+        var model = new AssignUsersToEntidadViewModel
+        {
+            IdEntidadLicitante = id,
+            NombreEntidad = entidad.RazonSocial,
+            AvailableUsers = allUsers.ExceptBy(assignedUsers.Select(u => u.Id), u => u.Id).ToList(),
+            AssignedUsers = assignedUsers
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [Authorize]
+    [AuthorizeClaim("EntidadLicitante.Editar")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AssignUsersToEntidad(AssignUsersToEntidadViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        try
+        {
+            var entidad = await _entidadLicitanteManager.GetEntidadLicitanteByIdAsync(model.IdEntidadLicitante);
+            if (entidad == null)
+                return View("NotFound");
+
+            var currentAssignedUserIds = entidad.Usuarios?.Select(u => u.IdUsuario).ToHashSet() ?? new HashSet<string>();
+            var toAdd = model.SelectedToAdd ?? new List<string>();
+            var toRemove = model.SelectedToRemove ?? new List<string>();
+
+            // Agregar usuarios seleccionados
+            foreach (var userId in toAdd)
+            {
+                if (!currentAssignedUserIds.Contains(userId))
+                {
+                    await _entidadLicitanteManager.AsociarUsuarioAsync(model.IdEntidadLicitante, userId, /*idUser*/ 1);
+                }
+            }
+            // Quitar usuarios seleccionados
+            foreach (var userId in toRemove)
+            {
+                if (currentAssignedUserIds.Contains(userId))
+                {
+                    await _entidadLicitanteManager.DesasociarUsuarioAsync(model.IdEntidadLicitante, userId, /*idUser*/ 1);
+                }
+            }
+
+            TempData["SuccessMessage"] = "Usuarios de la entidad actualizados correctamente.";
+            return RedirectToAction("Index", "EntidadLicitante"); // O donde corresponda
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al asignar usuarios a la entidad licitante.");
+            TempData["ErrorMessage"] = "Ocurrió un error al asignar usuarios a la entidad.";
             return RedirectToAction("Generic", "Error");
         }
     }

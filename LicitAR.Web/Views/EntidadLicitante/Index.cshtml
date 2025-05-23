@@ -94,7 +94,7 @@
                                         <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdEntidadLicitante">
                                             <i class="bx bx-show me-1"></i> Detalles
                                         </a>
-                                        <a class="dropdown-item" asp-action="AsociarUsuario" asp-route-id="@item.IdEntidadLicitante">
+                                        <a class="dropdown-item" asp-controller="Usuario" asp-action="AssignUsersToEntidad" asp-route-id="@item.IdEntidadLicitante">
                                             <i class="bx bx-user-plus me-1"></i> Asociar Usuario
                                         </a>
                                         <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdEntidadLicitante">

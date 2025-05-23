@@ -1,4 +1,5 @@
-@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityRole>
+@model IEnumerable<LicitAR.Core.Data.Models.RolModel>
+
 
 @{
     ViewData["Title"] = "Roles";
@@ -34,20 +35,30 @@
         </form>
     </div>
     <div class="table-responsive text-nowrap">
+        <style>
+            .row-grisado {
+                color: #888 !important;
+            }
+            .row-activo {
+                background-color: #e0ffe0 !important;
+                font-weight: 600;
+            }
+        </style>
         <table class="table">
             <thead>
                 <tr>
-                    <th>Nombre</th>
+                    <th>NOMBRE</th>
                     <th>ACCIONES</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
-                @foreach (var role in Model)
+                @foreach (var item in Model.OrderBy(m => m.Rol.Name))
                 {
-                    <tr>
-                        <td>@role.Name</td>
+                    var rowClass = item.CantidadUsuarios == 0 ? "row-grisado" : "row-activo";
+                    <tr class="@rowClass">
+                        <td>@item.Rol.Name (@item.CantidadUsuarios)</td>
                         <td>
-                            <a class="text-primary me-2" asp-action="AssignUsersToRole" asp-route-roleId="@role.Id" title="Asociar usuarios al Rol">
+                            <a class="text-primary me-2" asp-action="AssignUsersToRole" asp-route-roleId="@item.Rol.Id" title="Asociar usuarios al Rol">
                                 <i class="bx bx-group"></i>
                             </a>
                         </td>

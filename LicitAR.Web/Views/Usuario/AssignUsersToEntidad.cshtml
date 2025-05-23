@@ -1,0 +1,159 @@
+@model LicitAR.Web.Models.Usuario.AssignUsersToEntidadViewModel
+
+@{
+    ViewData["Title"] = $"Asignar usuarios a la entidad: {Model.NombreEntidad}";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Asignar Usuarios a la Entidad [@Model.NombreEntidad]</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="AssignUsersToEntidad" method="post">
+            <input type="hidden" asp-for="IdEntidadLicitante" />
+            <input type="hidden" asp-for="NombreEntidad" />
+
+            <div class="row">
+                <div class="col-md-5">
+                    <h6>Usuarios disponibles</h6>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" placeholder="Buscar usuarios..." id="availableSearch" />
+                        <button type="button" class="btn btn-primary" id="filterAvailable">
+                            <i class="bx bx-filter-alt"></i>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="resetAvailable">
+                            <i class="bx bx-reset"></i>
+                        </button>
+                    </div>
+                    <ul id="availableUsers" class="list-group">
+                        @foreach (var user in Model.AvailableUsers)
+                        {
+                            <li class="list-group-item">
+                                <input type="checkbox" class="user-checkbox" value="@user.Id" />
+                                @user.Nombre (@user.Email)
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="col-md-2 text-center align-self-center">
+                    <button type="button" class="btn btn-primary mb-2" id="addSelected">Agregar &gt;&gt;</button>
+                    <button type="button" class="btn btn-secondary" id="removeSelected">&lt;&lt; Quitar</button>
+                </div>
+                <div class="col-md-5">
+                    <h6>Usuarios asignados</h6>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" placeholder="Buscar usuarios..." id="assignedSearch" />
+                        <button type="button" class="btn btn-primary" id="filterAssigned">
+                            <i class="bx bx-filter-alt"></i>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="resetAssigned">
+                            <i class="bx bx-reset"></i>
+                        </button>
+                    </div>
+                    <ul id="assignedUsers" class="list-group">
+                        @foreach (var user in Model.AssignedUsers)
+                        {
+                            <li class="list-group-item">
+                                <input type="checkbox" class="user-checkbox" value="@user.Id" />
+                                @user.Nombre (@user.Email)
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-12 text-start">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bx bx-save"></i> Guardar
+                    </button>
+                    <a asp-action="Index" asp-controller="EntidadLicitante" class="btn btn-secondary">
+                        <i class="bx bx-arrow-back"></i> Volver al listado
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section PageScripts {
+    <script>
+        // Filter logic for available users
+        document.getElementById('filterAvailable').addEventListener('click', function () {
+            filterList('availableSearch', 'availableUsers');
+        });
+
+        document.getElementById('resetAvailable').addEventListener('click', function () {
+            resetList('availableSearch', 'availableUsers');
+        });
+
+        document.getElementById('availableSearch').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                filterList('availableSearch', 'availableUsers');
+            }
+        });
+
+        // Filter logic for assigned users
+        document.getElementById('filterAssigned').addEventListener('click', function () {
+            filterList('assignedSearch', 'assignedUsers');
+        });
+
+        document.getElementById('resetAssigned').addEventListener('click', function () {
+            resetList('assignedSearch', 'assignedUsers');
+        });
+
+        document.getElementById('assignedSearch').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                filterList('assignedSearch', 'assignedUsers');
+            }
+        });
+
+        // Move selected users between lists
+        document.getElementById('addSelected').addEventListener('click', function () {
+            moveSelectedUsers('availableUsers', 'assignedUsers', 'SelectedToAdd');
+        });
+
+        document.getElementById('removeSelected').addEventListener('click', function () {
+            moveSelectedUsers('assignedUsers', 'availableUsers', 'SelectedToRemove');
+        });
+
+        function filterList(searchInputId, listId) {
+            const searchInput = document.getElementById(searchInputId).value.toLowerCase();
+            const listItems = document.getElementById(listId).querySelectorAll('li');
+
+            listItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchInput) ? '' : 'none';
+            });
+        }
+
+        function resetList(searchInputId, listId) {
+            document.getElementById(searchInputId).value = '';
+            const listItems = document.getElementById(listId).querySelectorAll('li');
+
+            listItems.forEach(item => {
+                item.style.display = '';
+            });
+        }
+
+        function moveSelectedUsers(sourceId, targetId, hiddenInputName) {
+            const sourceList = document.getElementById(sourceId);
+            const targetList = document.getElementById(targetId);
+
+            Array.from(sourceList.querySelectorAll('.user-checkbox:checked')).forEach(checkbox => {
+                const listItem = checkbox.closest('li');
+                checkbox.checked = false;
+
+                // Add a hidden input to the form for tracking selected users
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = hiddenInputName;
+                hiddenInput.value = checkbox.value;
+
+                listItem.appendChild(hiddenInput);
+                targetList.appendChild(listItem);
+            });
+        }
+    </script>
+}
