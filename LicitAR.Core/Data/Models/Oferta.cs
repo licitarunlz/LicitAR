@@ -26,11 +26,15 @@ namespace LicitAR.Core.Data.Models
         public required int IdPersona { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
-        [Display(Name = "Fecha de Publicación")]
+        [Display(Name = "Fecha de Oferta")]
         public required DateTime FechaOferta { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         public required int IdEstadoOferta { get; set; }
+
+        [Display(Name = "Cód. Oferta")]
+        [MaxLength(20, ErrorMessage = ErrorMessages.MAXLENGTH)]
+        public string? CodigoOfertaLicitacion { get; set; }
 
         [ForeignKey("IdEstadoOferta")]
         public EstadoOferta? EstadoOferta { get; set; }

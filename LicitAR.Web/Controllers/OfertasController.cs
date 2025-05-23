@@ -14,6 +14,8 @@ using LicitAR.Web.Helpers.Authorization;
 using LicitAR.Web.Helpers;
 using Microsoft.AspNetCore.Identity;
 using LicitAR.Core.Utils;
+using LicitAR.Core.Data.Models.Parametros;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace LicitAR.Web.Controllers
 {
@@ -100,10 +102,45 @@ namespace LicitAR.Web.Controllers
             return View(licitacion);
         }
         // GET: Ofertas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string codigoLicitacion, string titulo,   int page = 1, int pageSize = 10)
         {
-            var licitARDbContext = _context.Ofertas.Include(o => o.EstadoOferta).Include(o => o.Licitacion).Include(o => o.Persona);
-            return View(await licitARDbContext.ToListAsync());
+
+            int idPersona = int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona"));
+
+            var ofertas = await _ofertaManager.GetAllOfertasPorPersonaAsync(idPersona);
+            if (ofertas == null)
+                return View(ofertas);
+
+            var query = ofertas.AsQueryable();
+
+            if (!string.IsNullOrEmpty(codigoLicitacion))
+            {
+                query = query.Where(l => l.Licitacion.CodigoLicitacion.Contains(codigoLicitacion));
+            }
+
+            if (!string.IsNullOrEmpty(titulo))
+            {
+                query = query.Where(l => l.Licitacion.Titulo.Contains(titulo, StringComparison.OrdinalIgnoreCase));
+            }
+
+             
+
+            var totalItems = query.Count();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var ofertasVista = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+
+            return View(ofertasVista);
+             
+           
+           
         }
 
         // GET: Ofertas/Details/5
@@ -118,6 +155,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.EstadoOferta)
                 .Include(o => o.Licitacion)
                 .Include(o => o.Persona)
+                .Include(o=> o.Items)
+                .Include(o=> o.Licitacion.Items)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {

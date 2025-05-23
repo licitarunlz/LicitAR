@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace LicitAR.Core.Business.Licitaciones
 {
@@ -33,7 +34,9 @@ namespace LicitAR.Core.Business.Licitaciones
                 .Where(o => o.IdPersona == IdPersona && o.Audit.FechaBaja == null)
                 .Include(o => o.EstadoOferta) // Include EstadoLicitacion
                 .Include(o => o.Licitacion)
+                .Include(o => o.Persona)
                 .ToListAsync();
+
         }
 
         public async Task<List<Oferta>> GetAllOfertasPorLicitacionAsync(int IdLicitacion)
@@ -60,6 +63,8 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             try
             {
+
+                oferta.CodigoOfertaLicitacion = await this.ObtenerProximoCodigoOfertaAsync();
                 oferta.IdEstadoOferta = 1;
                 oferta.FechaOferta = DateTime.Now;
                 
@@ -80,5 +85,21 @@ namespace LicitAR.Core.Business.Licitaciones
             }
         }
 
+        private async Task<string?> ObtenerProximoCodigoOfertaAsync()
+        {
+            var connection = _dbContext.Database.GetDbConnection();
+            if (connection.State != ConnectionState.Open)
+                await connection.OpenAsync();
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "sp_ObtenerProximoCodigoOfertaLicitacion";
+                command.CommandType = CommandType.StoredProcedure;
+
+                var result = await command.ExecuteScalarAsync();
+                // No cierres la conexi�n manualmente
+                return result?.ToString();
+            }
+        }
     }
 }
