@@ -5,6 +5,7 @@
     var query = Context.Request.Query;
     var categorias = ViewBag.CategoriasLicitacion as IEnumerable<LicitAR.Core.Data.Models.Parametros.CategoriaLicitacion>;
     var estados = ViewBag.EstadosLicitacion as IEnumerable<LicitAR.Core.Data.Models.Parametros.EstadoLicitacion>;
+
 }
 
 <div class="card">
@@ -80,7 +81,6 @@
                     <th></th>
                     <th>Código Licitación</th>
                     <th>Título</th>
-                    <th>Descripción</th>
                     <th>Fecha Publicación</th>
                     <th>Fecha Cierre</th>
                     <th>Estado</th>
@@ -114,11 +114,10 @@
                         </td>
                         <td>@item.CodigoLicitacion</td>
                         <td>@item.Titulo</td>
-                        <td>@item.Descripcion</td>
                         <td>@item.FechaPublicacion.ToShortDateString()</td>
                         <td>@item.FechaCierre.ToShortDateString()</td>
                         <td>
-                            <span class="badge bg-label-secondary">
+                            <span class="@(item.IdEstadoLicitacion == 1? "badge bg-label-secondary":(item.IdEstadoLicitacion == 3? "badge bg-label-success":"badge bg-label-primary") )">
                                 @(item.EstadoLicitacion?.Descripcion ?? "N/A")
                             </span>
                         </td>

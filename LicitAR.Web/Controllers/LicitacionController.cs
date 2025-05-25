@@ -201,6 +201,43 @@ namespace LicitAR.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Licitacion/Delete/5
+        [AuthorizeClaim("Licitaciones.Crear")]
+        public async Task<IActionResult> Publicar(int? id)
+        {
+            if (id == null)
+            {
+                return View("NotFound"); // Updated
+            }
+
+            var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id.Value);
+            if (licitacion == null)
+            {
+                return View("NotFound"); // Updated
+            }
+
+            licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
+            return View(licitacion);
+        }
+
+        // POST: Licitacion/Delete/5
+        [HttpPost, ActionName("Publicar")]
+        [ValidateAntiForgeryToken]
+        [AuthorizeClaim("Licitaciones.Eliminar")]
+        public async Task<IActionResult> PublicarConfirmed(int id)
+        {
+            var result = await _licitacionManager.DeleteLicitacionAsync(id, IdentityHelper.GetUserLicitARId(User));
+            if (!result)
+            {
+                return View("NotFound"); // Updated
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+
         // GET: Licitacion/Oferentes/5
         [AuthorizeClaim("Oferente.Ver")]
         public async Task<IActionResult> Offerer(int id)

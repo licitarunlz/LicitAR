@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Detalle de la licitacion";
+    string classEstado =  Model.IdEstadoLicitacion == 1 ? "badge bg-label-secondary" : (Model.IdEstadoLicitacion == 3 ? "badge bg-label-success" : "badge bg-label-primary");
 }
 
 <div class="row">
@@ -9,6 +10,7 @@
         <div class="card mb-6">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><b>@Html.DisplayFor(model => model.CodigoLicitacion)</b> - @Html.DisplayFor(model => model.Titulo) </h5>
+                
             </div>
             <div class="card-body">
                 <dl class="row"> 
@@ -16,6 +18,11 @@
                     <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Descripcion)</b></dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.Descripcion)</dd>
 
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.EstadoLicitacion)</b></dt>
+                    <dd class="col-sm-9">
+                        <span class="@(classEstado)"> @Html.DisplayFor(model => model.EstadoLicitacion.Descripcion)</span>
+                        
+                    </dd>
 
                     <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.IdCategoriaLicitacion)</b></dt>
                     <dd class="col-sm-9">@Html.Raw(Model.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")</dd>
@@ -65,11 +72,29 @@
     </div>
 </div>
 
-<div class="text-start mt-8">
+<div class="text-end mt-8">
     <a asp-action="Index" class="btn btn-secondary">
         <i class="bx bx-arrow-back"></i> Volver al Listado
     </a>
-    <a asp-action="Edit" asp-route-id="@Model?.IdLicitacion" class="btn btn-primary">
-        <i class="bx bx-edit"></i> Editar
+    <a asp-action="Index" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="bx bx-cog"></i> Acciones
     </a>
+
+        <div class="dropdown-menu">
+            <a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.IdLicitacion">
+                <i class="bx bx-edit-alt me-1"></i> Editar
+            </a>
+            <a class="dropdown-item" asp-action="Publicar" asp-route-id="@Model.IdLicitacion">
+            <i class="bx bx-upload me-1"></i> Publicar
+            </a>
+            <a class="dropdown-item" asp-action="Cancelar" asp-route-id="@Model.IdLicitacion">
+                <i class="bx bx-cancel me-1"></i> Cancelar
+            </a>
+            <a class="dropdown-item" asp-action="Delete" asp-route-id="@Model.IdLicitacion">
+                <i class="bx bx-trash me-1"></i> Eliminar
+            </a>
+        </div>
+  
+         
+     
 </div>
