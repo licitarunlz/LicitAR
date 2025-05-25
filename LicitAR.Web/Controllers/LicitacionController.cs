@@ -41,12 +41,12 @@ namespace LicitAR.Web.Controllers
 
             if (fechaPublicacion.HasValue)
             {
-                query = query.Where(l => l.FechaPublicacion.Date == fechaPublicacion.Value.Date);
+                query = query.Where(l => l.FechaPublicacion.HasValue && l.FechaPublicacion.Value.Date == fechaPublicacion.Value.Date);
             }
 
             if (fechaCierre.HasValue)
             {
-                query = query.Where(l => l.FechaCierre.Date == fechaCierre.Value.Date);
+                query = query.Where(l => l.FechaCierre.HasValue && l.FechaCierre.Value.Date == fechaCierre.Value.Date);
             }
 
             if (idCategoriaLicitacion.HasValue)
@@ -132,6 +132,12 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound");
             }
+
+            if (licitacion.IdEstadoLicitacion != 1)
+            {
+                return View("NotFound");
+            }
+
             var lic = new LicitacionModel();
             lic.SetLicitacionData(licitacion);
             return View(lic);
@@ -182,6 +188,12 @@ namespace LicitAR.Web.Controllers
                 return View("NotFound"); // Updated
             }
 
+            if (licitacion.IdEstadoLicitacion != 1)
+            {
+                return View("NotFound");
+            }
+
+
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             return View(licitacion);
         }
@@ -202,7 +214,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Licitacion/Delete/5
-        [AuthorizeClaim("Licitaciones.Crear")]
+        [AuthorizeClaim("Licitaciones.Editar")]
         public async Task<IActionResult> Publicar(int? id)
         {
             if (id == null)
@@ -223,10 +235,10 @@ namespace LicitAR.Web.Controllers
         // POST: Licitacion/Delete/5
         [HttpPost, ActionName("Publicar")]
         [ValidateAntiForgeryToken]
-        [AuthorizeClaim("Licitaciones.Eliminar")]
-        public async Task<IActionResult> PublicarConfirmed(int id)
+        [AuthorizeClaim("Licitaciones.Crear")]
+        public async Task<IActionResult> PublicarConfirmed(LicitacionPublicarConfirmModel licitacion)
         {
-            var result = await _licitacionManager.DeleteLicitacionAsync(id, IdentityHelper.GetUserLicitARId(User));
+            var result = await _licitacionManager.PublicarLicitacionAsync(licitacion.IdLicitacion, licitacion.FechaCierre, IdentityHelper.GetUserLicitARId(User));
             if (!result)
             {
                 return View("NotFound"); // Updated
@@ -234,6 +246,30 @@ namespace LicitAR.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+
+
+
+        // GET: Licitacion/Delete/5
+        [AuthorizeClaim("Licitaciones.Crear")]
+        public async Task<IActionResult> Evaluar(int? id)
+        {
+            if (id == null)
+            {
+                return View("NotFound"); // Updated
+            }
+
+            bool iniciarEvaluacion = await _licitacionManager.IniciarEvaluacionLicitacionAsync(id.Value, IdentityHelper.GetUserLicitARId(User));
+            
+            if (iniciarEvaluacion)
+            {
+                return RedirectToAction("Iniciar", "Evaluacion");
+            }
+
+            return View("index");
+        }
+
+
 
 
 

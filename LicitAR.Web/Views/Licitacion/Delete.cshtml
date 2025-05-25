@@ -49,8 +49,14 @@
                             </tbody>
                         </table>
                     </div><br />
-                    <strong>Fecha de Publicación:</strong> @Model.FechaPublicacion.ToShortDateString() <br /><br />
-                    <strong>Fecha de Cierre:</strong> @Model.FechaCierre.ToShortDateString()<br />
+                    
+                    @if(Model.FechaPublicacion.HasValue) { 
+                    <strong>Fecha de Publicación:</strong> @Model.FechaPublicacion.Value.ToShortDateString() <br /><br />
+                    
+                    }
+                    @if(Model.FechaCierre.HasValue) { 
+                        <strong>Fecha de Cierre:</strong> @Model.FechaCierre.Value.ToShortDateString()<br />
+                    }
                 </p>
                 <form asp-action="Delete">
                     <input type="hidden" asp-for="IdLicitacion" />

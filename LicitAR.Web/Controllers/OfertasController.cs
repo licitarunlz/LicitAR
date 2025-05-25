@@ -43,7 +43,8 @@ namespace LicitAR.Web.Controllers
             //      que hayan sido publicadas
             //      y que no estén dadas de baja
             licitaciones = licitaciones.Where(x =>
-                                           x.FechaCierre > DateTime.Now
+                                           x.IdEstadoLicitacion == 3
+                                        && x.FechaCierre > DateTime.Now
                                         && x.FechaPublicacion < DateTime.Now
                                         && x.Audit.FechaBaja == null)?.ToList();
             if (licitaciones == null)

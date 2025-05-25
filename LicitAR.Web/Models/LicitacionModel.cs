@@ -33,14 +33,12 @@ namespace LicitAR.Web.Models
         [MaxLength(2000, ErrorMessage = ErrorMessages.MAXLENGTH)]
         [Display(Name = "Descripción")]
         public string Descripcion { get; set; }
-
-        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+         
         [Display(Name = "Fecha de Publicación")]
-        public DateTime FechaPublicacion { get; set; }
-
-        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        public DateTime? FechaPublicacion { get; set; }
+         
         [Display(Name = "Fecha de Cierre")]
-        public DateTime FechaCierre { get; set; }
+        public DateTime? FechaCierre { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         [Display(Name = "Estado")]
@@ -202,5 +200,11 @@ namespace LicitAR.Web.Models
             this.Cantidad = licitacionDetalle.Cantidad;
             this.PrecioEstimadoUnitario = licitacionDetalle.PrecioEstimadoUnitario;
         }
+    }
+
+    public class LicitacionPublicarConfirmModel
+    {
+        public int IdLicitacion { get; set; }
+        public DateTime FechaCierre { get; set; }
     }
 }

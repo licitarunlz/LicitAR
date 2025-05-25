@@ -4,6 +4,10 @@
     ViewData["Title"] = "Publicar licitación";
 }
 
+<div class="alert alert-success alert-dismissible" role="alert">
+    Atención! Al publicar esta licitación, la misma quedará disponible para que los proveedores puedan ofertar, y la licitación no podrá editarse ni eliminarse
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 
 <div class="row mb-12 g-6">
     <div class="col-md-12 col-lg-12">
@@ -49,17 +53,28 @@
                             </tbody>
                         </table>
                     </div><br />
-                   <strong>Fecha de Cierre:</strong> @Model.FechaCierre.ToShortDateString()<br />
+                    @if (Model.FechaCierre.HasValue)
+                    {
+                        <strong>Fecha de Cierre:</strong> @Model.FechaCierre.Value.ToShortDateString()
+
+                        <br />
+
+                    }
                 </p>
                 <form asp-action="Publicar">
                     <input type="hidden" asp-for="IdLicitacion" />
-
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FechaCierre" class="form-label"></label>
+                        <input asp-for="FechaCierre" required class="form-control" />
+                        <span asp-validation-for="FechaCierre" class="text-danger"></span>
+                    </div>
                     <div class="text-start mt-8">
                         <a asp-action="Index" class="btn btn-secondary">
                             <i class="bx bx-arrow-back"></i> Volver al Listado
                         </a>
-
-                        <input type="submit" value="Publicar" class="btn btn-danger" />
+                        
+                         
+                        <input type="submit" value="Publicar" class="btn btn-success" />
                     </div>
                 </form>
             </div>

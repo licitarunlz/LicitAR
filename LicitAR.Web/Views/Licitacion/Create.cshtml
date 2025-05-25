@@ -37,13 +37,13 @@
                         <h3 class="mb-3">Tipo de Invitación</h3>
 
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" asp-for="IdCategoriaLicitacion" value="1" id="privada" />
-                            <label class="form-check-label" for="privada">Privada</label>
+                            <input class="form-check-input" type="radio" asp-for="IdCategoriaLicitacion" value="1" id="publica" />
+                            <label class="form-check-label" for="privada">Pública</label>
                         </div>
 
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" asp-for="IdCategoriaLicitacion" value="2" id="publica" />
-                            <label class="form-check-label" for="publica">Pública</label>
+                            <input class="form-check-input" type="radio" asp-for="IdCategoriaLicitacion" value="2" id="privada" />
+                            <label class="form-check-label" for="publica">Privada</label>
                         </div>
 
                         <span asp-validation-for="IdCategoriaLicitacion" class="text-danger"></span>
@@ -77,9 +77,9 @@
 
                     </div>
 
-                    <div class="row">
+<!--                    <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="FechaPublicacion" class="form-label">Fecha Estimada de Publicación</label>
+                            <label asp-for="FechaPublicacion" class="form-label">Fecha de Publicación</label>
                             <input asp-for="FechaPublicacion" class="form-control" />
                             <span asp-validation-for="FechaPublicacion" class="text-danger"></span>
                         </div>
@@ -91,7 +91,7 @@
                         </div>
                     </div>
 
-
+                    -->
 
                     <div class="text-start mt-8">
                         <a asp-action="Index" class="btn btn-secondary">

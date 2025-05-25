@@ -49,10 +49,10 @@
                     <th></th>
                     <th>Código Licitación</th>
                     <th>Título</th>
-                    <th>Fecha Publicación</th>
-                    <th>Fecha Cierre</th>
                     <th>Estado</th>
                     <th>Categoría</th>
+                    <th>Fecha Publicación</th>
+                    <th>Fecha Cierre</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -78,9 +78,7 @@
                         </td>
                         <td>@item.CodigoLicitacion</td>
                         <td>@item.Titulo</td> 
-                        <td>@item.FechaPublicacion.ToShortDateString()</td>
-                        <td>@item.FechaCierre.ToShortDateString()</td>
-                        <td>
+                         <td>
                             <span class="badge bg-label-secondary">
                                 @(item.EstadoLicitacion?.Descripcion ?? "N/A")
                             </span>
@@ -90,6 +88,9 @@
                                 @(item.CategoriaLicitacion?.Descripcion ?? "N/A")
                             </span>
                         </td>
+                        <td>@(item.FechaPublicacion.HasValue ? item.FechaPublicacion.Value.ToShortDateString() : "-")</td>
+                        <td>@(item.FechaCierre.HasValue ? item.FechaCierre.Value.ToShortDateString() : "-")</td>
+
                     </tr>
                 }
             </tbody>

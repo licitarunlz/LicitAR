@@ -35,13 +35,13 @@ namespace LicitAR.Core.Data.Models
         [Display(Name = "Descripción")]
         public required string Descripcion { get; set; }
 
-        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        
         [Display(Name = "Fecha de Publicación")]
-        public required DateTime FechaPublicacion { get; set; }
+        public DateTime? FechaPublicacion { get; set; }
 
-        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
-        [Display(Name = "Fecha de Cierre")]
-        public required DateTime FechaCierre { get; set; }
+
+        [Display(Name = "Fecha de Cierre de Ofertas")]
+        public DateTime? FechaCierre { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         [Display(Name = "Estado")]

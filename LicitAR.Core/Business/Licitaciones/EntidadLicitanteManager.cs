@@ -36,6 +36,7 @@ namespace LicitAR.Core.Business.Licitaciones
             return await _dbContext.EntidadesLicitantes
                 .Include(e => e.Provincia)
                 .Include(e => e.Localidad)
+                .Include(e => e.Usuarios)
                 .FirstOrDefaultAsync(e => e.IdEntidadLicitante == idEntidadLicitante);
         }
 

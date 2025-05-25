@@ -4,6 +4,7 @@ using LicitAR.Core.Utils;
 using LicitAR.Core.Data.Models.Parametros;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using Microsoft.Identity.Client;
 
 namespace LicitAR.Core.Business.Licitaciones
 {
@@ -21,6 +22,10 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<List<CategoriaLicitacion>> GetAllCategoriasLicitacionAsync();
         Task<List<EstadoLicitacion>> GetAllEstadosLicitacionAsync();
         Task<List<CategoriaLicitacion>> GetAllCategoriasAsync();
+        Task<bool> PublicarLicitacionAsync(int idLicitacion, DateTime fechaCierre, int idUsuario);
+
+
+        Task<bool> IniciarEvaluacionLicitacionAsync(int idLicitacion, int idUsuario);
     }
 
     public class LicitacionManager : ILicitacionManager
@@ -146,6 +151,24 @@ namespace LicitAR.Core.Business.Licitaciones
             await _dbContext.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> PublicarLicitacionAsync(int idLicitacion, DateTime fechaCierre, int idUsuario)
+        {
+            var licitacion = await _dbContext.Licitaciones.FindAsync(idLicitacion);
+            if (licitacion == null)
+            {
+                return false;
+            }
+            licitacion.Enabled = true;
+            licitacion.FechaPublicacion = DateTime.Now;
+            licitacion.IdEstadoLicitacion = 3;
+            licitacion.FechaCierre = fechaCierre;
+            licitacion.Audit = AuditHelper.SetModificationData(licitacion.Audit, idUsuario);
+
+            _dbContext.Licitaciones.Update(licitacion);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
 
         public async Task<string> ObtenerProximoCodigoAsync()
         {
@@ -197,6 +220,33 @@ namespace LicitAR.Core.Business.Licitaciones
         public async Task<List<CategoriaLicitacion>> GetAllCategoriasAsync()
         {
             return await GetAllCategoriasLicitacionAsync();
+        }
+
+        public async Task<bool> IniciarEvaluacionLicitacionAsync(int idLicitacion, int idUsuario)
+        {
+            var licitacion = await _dbContext.Licitaciones.FindAsync(idLicitacion);
+            if (licitacion == null)
+            {
+                return false;
+            }
+
+            if (licitacion.IdEstadoLicitacion == 7)
+            {
+                return true; //ya fue cambiado el estado
+            }
+
+            if (licitacion.IdEstadoLicitacion != 3)
+            {
+                return false;
+            }
+
+
+            licitacion.IdEstadoLicitacion = 7;
+            licitacion.Audit = AuditHelper.SetModificationData(licitacion.Audit, idUsuario);
+
+            _dbContext.Licitaciones.Update(licitacion);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }
