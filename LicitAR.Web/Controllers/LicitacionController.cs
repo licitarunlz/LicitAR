@@ -263,7 +263,7 @@ namespace LicitAR.Web.Controllers
             
             if (iniciarEvaluacion)
             {
-                return RedirectToAction("Iniciar", "Evaluacion");
+                return RedirectToAction("Create", "Evaluaciones",new { idLicitacion = id});
             }
 
             return View("index");

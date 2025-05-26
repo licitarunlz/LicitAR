@@ -1,0 +1,54 @@
+﻿@using LicitAR.Core.Data.Models
+
+@{
+    ViewData["Title"] = "Postularse a licitación";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+    Licitacion licitacion = ViewBag.licitacion;
+    IEnumerable<Oferta> ofertas = ViewBag.ofertas;
+}
+
+<div class="container-fluid py-4">
+    <!-- Card: Información general de la licitación -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Cod. Licitación  <b>@licitacion.CodigoLicitacion</b></h5>
+            <div class="row">
+                <div class="col-md-4"><strong>Título:</strong> @licitacion.Titulo</div>
+
+                <div class="col-md-4"><strong>Descripción:</strong> @licitacion.Descripcion</div>
+                <div class="col-md-4"><strong>Fecha Publicacion:</strong> @licitacion.FechaPublicacion.Value.ToShortDateString()</div>
+                <div class="col-md-4"><strong>Categoría:</strong> @licitacion.CategoriaLicitacion.Descripcion</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-6">
+        <div class="card-header">
+            Ofertas por Item
+        </div>
+        <div class="card-body">
+
+            @foreach (var items in licitacion.Items)
+            {
+
+                <div class="card mb-6">
+                    <div class="card-header">
+                        Ofertas por Item
+                    </div>
+                    <div class="card-body">
+                    </div> 
+                    <h5 class="card-title mb-1">Card title</h5>
+                    <div class="card-subtitle mb-4">Card subtitle</div>
+                    <p class="card-text">
+                        Some quick example text to build on the card title and make up the bulk of the card's content.
+                    </p>
+                    <a href="javascript:void(0)" class="card-link">Card link</a>
+                    <a href="javascript:void(0)" class="card-link">Another link</a>
+                </div>
+            }
+
+
+        </div>
+    </div>
+
+</div>

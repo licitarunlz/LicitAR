@@ -47,5 +47,23 @@ namespace LicitAR.Core.Data.Models
         public AuditTable Audit { get; set; }
     }
 
+    [PrimaryKey("IdEvaluacionOfertaDetalle")]
+    public class EvaluacionOfertaDetalle
+    {
+        [Key]
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        public int IdEvaluacionOfertaDetalle { get; set; }
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        public int IdEvaluacion { get; set; }
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        public int IdOferta { get; set; }
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        public int IdOfertaDetalle { get; set; }
+        public bool OfertaDetalleGanadora { get; set; }
+        public Evaluacion? Evaluacion { get; set; }
+        public Oferta? Oferta { get; set; }
+        public OfertaDetalle? OfertaDetalle { get; set; }
+        public AuditTable Audit { get; set; }
+    }
 
 }

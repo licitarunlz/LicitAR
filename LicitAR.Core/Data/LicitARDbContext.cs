@@ -36,6 +36,7 @@ namespace LicitAR.Core.Data
 
         public DbSet<Evaluacion> Evaluaciones { get; set; }
         public DbSet<EvaluacionOferta> EvaluacionOfertas { get; set; }
+        public DbSet<EvaluacionOfertaDetalle> EvaluacionOfertasDetalle { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -58,6 +59,7 @@ namespace LicitAR.Core.Data
 
             modelBuilder.Entity<Evaluacion>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<EvaluacionOferta>().OwnsOne(p => p.Audit);
+            modelBuilder.Entity<EvaluacionOfertaDetalle>().OwnsOne(p => p.Audit);
 
             modelBuilder.Entity<Evaluacion>()
                         .HasOne(p => p.Licitacion)
@@ -84,6 +86,12 @@ namespace LicitAR.Core.Data
                 .HasOne(p => p.Oferta)
                 .WithMany()
                 .HasForeignKey(p => p.IdOferta)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<EvaluacionOfertaDetalle>()
+                .HasOne(p => p.OfertaDetalle)
+                .WithMany()
+                .HasForeignKey(p => p.IdOfertaDetalle)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Licitacion>().OwnsOne(p => p.Audit);

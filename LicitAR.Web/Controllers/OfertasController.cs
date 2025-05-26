@@ -217,21 +217,26 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Ofertas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? idOferta)
         {
-            if (id == null)
+            if (idOferta == null)
             {
                 return NotFound();
             }
 
-            var oferta = await _context.Ofertas.FindAsync(id);
+
+            var oferta = await _context.Ofertas
+                .Include(o => o.EstadoOferta)
+                .Include(o => o.Licitacion)
+                .Include(o => o.Persona)
+                .Include(o => o.Items)
+                .Include(o => o.Licitacion.Items)
+                .FirstOrDefaultAsync(m => m.IdOferta == idOferta);
             if (oferta == null)
             {
                 return NotFound();
             }
-            ViewData["IdEstadoOferta"] = new SelectList(_context.EstadosOferta, "IdEstadoOferta", "Descripcion", oferta.IdEstadoOferta);
-            ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion", oferta.IdLicitacion);
-            ViewData["IdPersona"] = new SelectList(_context.Personas, "IdPersona", "Cuit", oferta.IdPersona);
+
             return View(oferta);
         }
 
@@ -240,41 +245,25 @@ namespace LicitAR.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdOferta,IdLicitacion,IdPersona,FechaOferta,IdEstadoOferta")] Oferta oferta)
+        public async Task<IActionResult> Edit(int id,  OfertaModel ofertaModel)
         {
-            if (id != oferta.IdOferta)
-            {
-                return NotFound();
-            }
-
+            Oferta oferta = null;
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(oferta);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OfertaExists(oferta.IdOferta))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                
+                var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
+
+                oferta = ofertaModel.GetOferta(audit);
+                oferta.Items = ofertaModel.GetOfertaDetalles(audit);
+                await _ofertaManager.UpdateOfertaAsync(oferta, IdentityHelper.GetUserLicitARId(User));
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdEstadoOferta"] = new SelectList(_context.EstadosOferta, "IdEstadoOferta", "Descripcion", oferta.IdEstadoOferta);
-            ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion", oferta.IdLicitacion);
-            ViewData["IdPersona"] = new SelectList(_context.Personas, "IdPersona", "Cuit", oferta.IdPersona);
             return View(oferta);
+  
         }
 
         // GET: Ofertas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Cancelar(int? id)
         {
             if (id == null)
             {
@@ -285,6 +274,41 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.EstadoOferta)
                 .Include(o => o.Licitacion)
                 .Include(o => o.Persona)
+                .Include(o=> o.Items)
+                .Include(o => o.Licitacion.Items)
+                .FirstOrDefaultAsync(m => m.IdOferta == id);
+            if (oferta == null)
+            {
+                return NotFound();
+            }
+
+            return View("Delete",oferta);
+        }
+
+        // POST: Ofertas/Delete/5
+        [HttpPost, ActionName("Cancelar")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelarConfirmed(int id)
+        {
+            var result = _ofertaManager.CancelarOfertaAsync(id, IdentityHelper.GetUserLicitARId(User));
+             
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Ofertas/Delete/5
+        public async Task<IActionResult> Publicar(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var oferta = await _context.Ofertas
+                .Include(o => o.EstadoOferta)
+                .Include(o => o.Licitacion)
+                .Include(o => o.Persona)
+                .Include(o => o.Items)
+                .Include(o => o.Licitacion.Items)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {
@@ -295,17 +319,12 @@ namespace LicitAR.Web.Controllers
         }
 
         // POST: Ofertas/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("Publicar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> PublicarConfirmed(int id)
         {
-            var oferta = await _context.Ofertas.FindAsync(id);
-            if (oferta != null)
-            {
-                _context.Ofertas.Remove(oferta);
-            }
+            var result = _ofertaManager.PublicarOfertaAsync(id, IdentityHelper.GetUserLicitARId(User));
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

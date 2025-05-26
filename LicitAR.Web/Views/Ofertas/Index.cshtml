@@ -16,7 +16,7 @@
                 </div>
                 <div class="col-md-3">
                     <input type="text" name="titulo" class="form-control form-control-sm" placeholder="Título" value="@query["titulo"]" />
-                </div> 
+                </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary btn-sm w-100">
                         <i class="bx bx-filter-alt"></i> Filtrar
@@ -46,7 +46,7 @@
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Licitacion)
-                    </th> 
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -63,10 +63,18 @@
                                     <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdOferta">
                                         <i class="bx bx-show me-1"></i> Detalles
                                     </a>
-
-                                    <a class="dropdown-item" asp-action="Create" asp-route-idlicitacion="@item?.IdLicitacion">
-                                        <i class="bx bx-edit me-1"></i> Postularme
-                                    </a>
+                                    @if (item.IdEstadoOferta == 1)
+                                    {
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-idoferta="@item?.IdOferta">
+                                            <i class="bx bx-edit me-1"></i> Editar
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Publicar" asp-route-id="@item?.IdOferta">
+                                            <i class="bx bx-upload me-1"></i> Publicar
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Cancelar" asp-route-id="@item?.IdOferta">
+                                            <i class="bx bx-x me-1"></i> Cancelar
+                                        </a>
+                                    }
                                 </div>
                             </div>
                         </td>
@@ -81,7 +89,7 @@
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion) - @Html.DisplayFor(modelItem => item.Licitacion.Titulo)
-                        </td> 
+                        </td>
                     </tr>
                 }
             </tbody>

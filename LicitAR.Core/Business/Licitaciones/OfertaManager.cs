@@ -14,6 +14,9 @@ namespace LicitAR.Core.Business.Licitaciones
     public interface IOfertaManager
     {
         Task CreateOfertaAsync(Oferta oferta, int userId);
+        Task<bool> UpdateOfertaAsync(Oferta oferta, int userId);
+        Task<bool> PublicarOfertaAsync(int idOferta, int userId);
+        Task<bool> CancelarOfertaAsync(int id, int idUsuario);
         Task<List<Oferta>> GetAllOfertasPorLicitacionAsync(int IdLicitacion);
         Task<List<Oferta>> GetAllOfertasPorPersonaAsync(int IdPersona);
         Task<Oferta?> GetOfertaByIdAsync(int idOferta);
@@ -64,7 +67,7 @@ namespace LicitAR.Core.Business.Licitaciones
             try
             {
 
-                oferta.CodigoOfertaLicitacion = await this.ObtenerProximoCodigoOfertaAsync();
+                oferta.CodigoOfertaLicitacion = await this.ObtenerProximoCodigoOfertaAsync(oferta.IdLicitacion);
                 oferta.IdEstadoOferta = 1;
                 oferta.FechaOferta = DateTime.Now;
                 
@@ -85,7 +88,70 @@ namespace LicitAR.Core.Business.Licitaciones
             }
         }
 
-        private async Task<string?> ObtenerProximoCodigoOfertaAsync()
+        public async Task<bool> UpdateOfertaAsync(Oferta oferta, int userId)
+        {
+            try
+            {
+                var ofertaFromDdbb = await _dbContext.Ofertas.FirstOrDefaultAsync(x => x.IdOferta == oferta.IdOferta);
+                if (ofertaFromDdbb == null)
+                    return false;
+
+                ofertaFromDdbb.IdEstadoOferta = oferta.IdEstadoOferta;
+                ofertaFromDdbb.FechaOferta = oferta.FechaOferta;
+                
+                ofertaFromDdbb.Audit = AuditHelper.SetModificationData(ofertaFromDdbb.Audit, userId);
+                
+                ofertaFromDdbb.Items = oferta.Items;
+
+                _dbContext.Ofertas.Update(ofertaFromDdbb);
+
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return _dbContext.Ofertas.Any(e => e.IdOferta == oferta.IdOferta);
+            }
+        }
+       
+        public async Task<bool> PublicarOfertaAsync(int idOferta, int userId) {
+            try
+            {
+                var ofertaFromDdbb = _dbContext.Ofertas.ToList().FirstOrDefault(x => x.IdOferta == idOferta);
+                if (ofertaFromDdbb == null)
+                    return false;
+
+                ofertaFromDdbb.IdEstadoOferta = 2;
+                ofertaFromDdbb.FechaOferta = DateTime.Now;
+
+                ofertaFromDdbb.Audit = AuditHelper.SetModificationData(ofertaFromDdbb.Audit, userId);
+                                
+                _dbContext.Ofertas.Update(ofertaFromDdbb);
+
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return _dbContext.Ofertas.Any(e => e.IdOferta == idOferta);
+            }
+        }
+
+        public async Task<bool> CancelarOfertaAsync(int id, int idUsuario)
+        {
+            var oferta = _dbContext.Ofertas.ToList().FirstOrDefault(x=> x.IdOferta == id);
+            if (oferta == null)
+            {
+                return false;
+            }
+            oferta.Audit = AuditHelper.SetModificationData(oferta.Audit, idUsuario);
+            oferta.IdEstadoOferta = 3;
+
+            _dbContext.Ofertas.Update(oferta);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+        private async Task<string?> ObtenerProximoCodigoOfertaAsync(int idLicitacion)
         {
             var connection = _dbContext.Database.GetDbConnection();
             if (connection.State != ConnectionState.Open)
@@ -95,6 +161,13 @@ namespace LicitAR.Core.Business.Licitaciones
             {
                 command.CommandText = "sp_ObtenerProximoCodigoOfertaLicitacion";
                 command.CommandType = CommandType.StoredProcedure;
+
+                var param = command.CreateParameter();
+                param.ParameterName = "@pIdLicitacion";
+                param.Value = idLicitacion;
+                param.DbType = DbType.Int32;
+                command.Parameters.Add(param);
+
 
                 var result = await command.ExecuteScalarAsync();
                 // No cierres la conexi�n manualmente

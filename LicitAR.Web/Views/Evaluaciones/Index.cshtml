@@ -1,0 +1,54 @@
+﻿@model IEnumerable<LicitAR.Core.Data.Models.Evaluacion>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdUsuarioEvaluador)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaInicioEvaluacion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaFinEvaluacion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Licitacion)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdUsuarioEvaluador)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaInicioEvaluacion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaFinEvaluacion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdEvaluacion">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdEvaluacion">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdEvaluacion">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

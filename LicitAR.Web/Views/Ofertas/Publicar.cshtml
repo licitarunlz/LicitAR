@@ -1,13 +1,13 @@
 ﻿@model LicitAR.Core.Data.Models.Oferta
 
 @{
-    ViewData["Title"] = "Cancelar Postulación de Oferta";
+    ViewData["Title"] = "Publicar Postulación de Oferta";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 
     string backgroundClass = Model.EstadoOferta?.IdEstadoOferta == 1 ? "bg-label-warning" : Model.EstadoOferta?.IdEstadoOferta == 2 ? "bg-label-primary" : "bg-label-danger";
 }
 <div class="alert alert-warning alert-dismissible" role="alert">
-    Atención! Al cancelar esta oferta, la misma dejará de tener efecto.
+    Atención! Al confirmar esta oferta, la misma no podrá ser modificada posterior a este acto.
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 <div class="card mb-6">
@@ -100,14 +100,14 @@
     </div>
 </div>
 <div class="text-end mt-8">
-   
 
-    <form asp-action="Cancelar">
+
+    <form asp-action="Publicar">
         <input type="hidden" asp-for="IdOferta" />
         <a asp-action="Index" class="btn btn-secondary">
             <i class="bx bx-arrow-back"></i> Volver al Listado
         </a>
-        <input type="submit" value="Cancelar" class="btn btn-danger" />
+        <input type="submit" value="Publicar" class="btn btn-success" />
     </form>
 </div>
 

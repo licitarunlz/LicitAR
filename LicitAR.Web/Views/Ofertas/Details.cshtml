@@ -100,7 +100,27 @@
     <a asp-action="Index" class="btn btn-secondary">
         <i class="bx bx-arrow-back"></i> Volver al Listado
     </a>
-    <a asp-action="Edit" asp-route-idoferta="@Model?.IdOferta" class="btn btn-primary">
-        <i class="bx bx-edit"></i> Editar
+  
+ @if (Model.IdEstadoOferta == 1)
+        {
+    <a asp-action="Index" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="bx bx-cog"></i> Acciones
     </a>
-</div> 
+
+    <div class="dropdown-menu dropup">
+       
+            <a class="dropdown-item" asp-action="Edit" asp-route-idoferta="@Model?.IdOferta">
+                <i class="bx bx-edit-alt me-1"></i> Editar
+            </a>
+            <a class="dropdown-item" asp-action="Publicar" asp-route-id="@Model.IdOferta">
+                <i class="bx bx-upload me-1"></i> Publicar
+            </a>
+            <a class="dropdown-item" asp-action="Cancelar" asp-route-id="@Model.IdOferta">
+                <i class="bx bx-x me-1"></i> Cancelar
+            </a>
+       
+         
+    </div>
+    }
+</div>
+
