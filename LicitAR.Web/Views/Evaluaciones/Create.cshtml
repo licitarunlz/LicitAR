@@ -1,7 +1,9 @@
-﻿@using LicitAR.Core.Data.Models
+﻿
+@model EvaluacionModel
+@using LicitAR.Core.Data.Models
 
 @{
-    ViewData["Title"] = "Postularse a licitación";
+    ViewData["Title"] = "Evaluación de licitación";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
     Licitacion licitacion = ViewBag.licitacion;
     IEnumerable<Oferta> ofertas = ViewBag.ofertas;
@@ -13,42 +15,175 @@
         <div class="card-body">
             <h5 class="card-title">Cod. Licitación  <b>@licitacion.CodigoLicitacion</b></h5>
             <div class="row">
-                <div class="col-md-4"><strong>Título:</strong> @licitacion.Titulo</div>
-
-                <div class="col-md-4"><strong>Descripción:</strong> @licitacion.Descripcion</div>
-                <div class="col-md-4"><strong>Fecha Publicacion:</strong> @licitacion.FechaPublicacion.Value.ToShortDateString()</div>
-                <div class="col-md-4"><strong>Categoría:</strong> @licitacion.CategoriaLicitacion.Descripcion</div>
+                <div class="col-md-3"><strong>Título:</strong> </div>
+                <div class="col-md-9">@licitacion.Titulo</div>
+                <br />
+                <div class="col-md-3"><strong>Descripción:</strong> </div>
+                <div class="col-md-9">@licitacion.Descripcion</div>
+                <div class="col-md-3"><strong>Fecha Publicacion:</strong> </div>
+                <div class="col-md-9">@licitacion.FechaPublicacion.Value</div>
+                <div class="col-md-3"><strong>Fecha Cierre de Ofertas:</strong> </div>
+                <div class="col-md-9">@licitacion.FechaCierre.Value</div>
+                <div class="col-md-3"><strong>Categoría:</strong> </div>
+                <div class="col-md-9">@licitacion.CategoriaLicitacion.Descripcion</div>
             </div>
         </div>
     </div>
 
     <div class="card mb-6">
         <div class="card-header">
-            Ofertas por Item
+            <b>Ofertas por Item</b>
         </div>
         <div class="card-body">
+            <form method="post" asp-action="Create"> 
 
-            @foreach (var items in licitacion.Items)
-            {
+                <input asp-for="IdEvaluacion" type="hidden" />
+                <input asp-for="IdLicitacion" type="hidden" />
+                <input asp-for="IdUsuarioEvaluador" type="hidden" />
+                <input asp-for="FechaInicioEvaluacion" type="hidden" />
+                <input asp-for="FechaFinEvaluacion" type="hidden" />
 
-                <div class="card mb-6">
-                    <div class="card-header">
-                        Ofertas por Item
+                @foreach (var item in licitacion.Items)
+                {
+
+                    <div class="card mb-6">
+                        <div class="card-header">
+                            <b>#@(item.NroItem + 1) - @item.Item</b>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3"><strong>Descripción:</strong> </div>
+                                <div class="col-md-9">@item.Descripcion</div>
+
+                                <div class="col-md-3"><strong>Cantidad:</strong> </div>
+                                <div class="col-md-9">@item.Cantidad</div>
+
+                                <div class="col-md-3"><strong>Precio Unitario de Referencia:</strong> </div>
+                                <div class="col-md-9"> $ @item.PrecioEstimadoUnitario</div>
+                            </div>
+
+
+                            <table class="table mt-6">
+                                <thead>
+                                    <tr>
+
+                                        <td></td>
+                                        <td><b>PROVEEDOR</b></td>
+                                        <td><b>PRECIO UNITARIO</b></td>
+                                        <td><b>COMPARATIVA</b></td>
+                                        <td><b>PRECIO SUBTOTAL</b></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < ofertas.Count(); i++)
+                                    {
+                                        var ofertaProv = ofertas.ToArray()[i];
+                                        var ofertaDetalleProv = ofertaProv.Items?.FirstOrDefault(x => x.IdLicitacionDetalle == item.IdLicitacionDetalle);
+                                        if (ofertaDetalleProv == null) continue;
+
+
+                                        <tr>
+                                            <td>
+                                                <input type="radio"
+                                                       name="Evaluaciones[@item.IdLicitacionDetalle]"
+                                                       value="@ofertaDetalleProv.IdOfertaDetalle"
+                                                       class="oferta-radio"
+                                                       data-item="@item.IdLicitacionDetalle"
+                                                       data-itemnombre="@item.Item"
+                                                       data-proveedor="@ofertaProv.Persona?.RazonSocial"
+                                                       data-subtotal="@ofertaDetalleProv.ImporteSubtotal" />
+                                            </td>
+                                            <td>@ofertaProv.Persona?.Cuit - @ofertaProv.Persona?.RazonSocial </td>
+
+                                            <td>$ @(ofertaDetalleProv?.ImporteUnitario)</td>
+
+                                            <td>@(ofertaDetalleProv?.ImporteUnitario > item.PrecioEstimadoUnitario ? "Mayor" : "Menor")</td>
+
+                                            <td>$ @(ofertaDetalleProv?.ImporteSubtotal)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        </div>
                     </div>
-                    <div class="card-body">
-                    </div> 
-                    <h5 class="card-title mb-1">Card title</h5>
-                    <div class="card-subtitle mb-4">Card subtitle</div>
-                    <p class="card-text">
-                        Some quick example text to build on the card title and make up the bulk of the card's content.
-                    </p>
-                    <a href="javascript:void(0)" class="card-link">Card link</a>
-                    <a href="javascript:void(0)" class="card-link">Another link</a>
+                }
+
+
+                <div class="alert alert-success alert-dismissible" role="alert">
+
+                    <h4><b>Resumen de Selección</b></h4>
+                    <ul id="resumen-seleccion" class="list-group mb-3"></ul>
+                    <p><strong>Subtotal total: $<span id="total-suma">0.00</span></strong></p>
                 </div>
-            }
 
-
+                <div class="row">
+                    <div class="text-end">
+                        <button type="submit" id="btnGuardarEvaluacion" class="btn btn-primary">Guardar Evaluación</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
 </div>
+
+@section BusinessScripts {
+    <script>
+        const resumen = {};
+        const resumenList = document.getElementById('resumen-seleccion');
+        const totalSpan = document.getElementById('total-suma');
+
+        document.querySelectorAll('.oferta-radio').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const itemId = this.dataset.item;
+                const itemNombre = this.dataset.itemnombre;
+                const proveedor = this.dataset.proveedor;
+                const subtotal = parseFloat(this.dataset.subtotal) || 0;
+
+                // Guardamos la selección
+                resumen[itemId] = {
+                    itemNombre,
+                    proveedor,
+                    subtotal
+                };
+
+                actualizarResumen();
+            });
+        });
+
+        function actualizarResumen() {
+            resumenList.innerHTML = '';
+            let total = 0;
+
+            Object.values(resumen).forEach(sel => {
+                const li = document.createElement('li');
+                li.classList.add('list-group-item');
+                li.textContent = `${sel.itemNombre}: ${sel.proveedor} - $${sel.subtotal.toFixed(2)}`;
+                resumenList.appendChild(li);
+
+                total += sel.subtotal;
+            });
+
+            totalSpan.textContent = total.toFixed(2);
+        }
+
+                // Validar antes del submit
+        document.getElementById('btnGuardarEvaluacion').addEventListener('click', function (e) {
+
+            let nombres = new Set();
+            document.querySelectorAll('.oferta-radio').forEach(radio => {
+                nombres.add(radio.name);
+            });
+            let totalItems = nombres.size;
+
+            const seleccionados = Object.keys(resumen).length;
+
+            if (seleccionados < totalItems) {
+                e.preventDefault();
+                alert("Debe seleccionar una oferta por cada ítem antes de continuar.");
+            }
+        });
+
+    </script>
+}

@@ -48,6 +48,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 .Where(o => o.IdLicitacion == IdLicitacion && o.Audit.FechaBaja == null)
                 .Include(o => o.EstadoOferta) // Include EstadoLicitacion
                 .Include(o => o.Persona)
+                .Include(o=> o.Items)
                 .ToListAsync();
         }
 

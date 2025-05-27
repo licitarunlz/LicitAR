@@ -87,6 +87,12 @@
                 <i class="bx bx-edit-alt me-1"></i> Editar
             </a>
         }
+        @if ((Model.IdEstadoLicitacion == 3 && Model.FechaPublicacion > DateTime.Now) || Model.IdEstadoLicitacion == 7 )
+        {
+            <a class="dropdown-item" asp-action="Create" asp-controller="Evaluaciones" asp-route-idLicitacion="@Model.IdLicitacion">
+                <i class="bx bx-upload me-1"></i> Evaluar
+            </a>
+        }
         @if (Model.IdEstadoLicitacion == 1)
         {
             <a class="dropdown-item" asp-action="Publicar" asp-route-id="@Model.IdLicitacion">

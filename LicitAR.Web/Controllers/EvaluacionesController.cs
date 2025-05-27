@@ -70,24 +70,31 @@ namespace LicitAR.Web.Controllers
 
             var ofertas = await _ofertaManager.GetAllOfertasPorLicitacionAsync(idLicitacion);
 
-            ViewBag.ofertas = ofertas; 
+            ViewBag.ofertas = ofertas;
+            EvaluacionModel model = new EvaluacionModel();
+            model.IdLicitacion = idLicitacion;
+            model.FechaInicioEvaluacion = DateTime.Now;
+            model.IdEvaluacion = 0;
+            model.FechaFinEvaluacion = DateTime.Now;
+            model.IdUsuarioEvaluador = IdentityHelper.GetUserLicitARId(User);
 
             //ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion");
-            return View();
+            return View(model);
         }
 
         // POST: Evaluaciones/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost("/Licitacion/{idLicitacion:int}/Evaluaciones/Iniciar"), ActionName("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdEvaluacion,IdLicitacion,IdUsuarioEvaluador,FechaInicioEvaluacion,FechaFinEvaluacion")] Evaluacion evaluacion)
+        public async Task<IActionResult> Create(int idLicitacion, EvaluacionModel evaluacion)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(evaluacion);
+
+                /*_context.Add(evaluacion);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index));*/
             }
             ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion", evaluacion.IdLicitacion);
             return View(evaluacion);

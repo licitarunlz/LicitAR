@@ -54,6 +54,7 @@ namespace LicitAR.Core.Data
             modelBuilder.Entity<TipoPersona>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<Parametria>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<EstadoLicitacion>().OwnsOne(p => p.Audit);
+            modelBuilder.Entity<EstadoEvaluacion>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<EstadoOferta>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<CategoriaLicitacion>().OwnsOne(p => p.Audit);
 
@@ -73,7 +74,16 @@ namespace LicitAR.Core.Data
                         .HasForeignKey(i => i.IdEvaluacion)
                         .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Evaluacion>()
+                        .HasMany(l => l.EvaluacionOfertasDetalles)
+                        .WithOne(i => i.Evaluacion)
+                        .HasForeignKey(i => i.IdEvaluacion)
+                        .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Evaluacion>()
+                .HasOne(p => p.EstadoEvaluacion)
+                .WithMany()
+                .HasForeignKey(p => p.IdEstadoEvaluacion);
 
             modelBuilder.Entity<EvaluacionOferta>()
                 .HasOne(p => p.Evaluacion)
@@ -92,6 +102,14 @@ namespace LicitAR.Core.Data
                 .HasOne(p => p.OfertaDetalle)
                 .WithMany()
                 .HasForeignKey(p => p.IdOfertaDetalle)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
+
+            modelBuilder.Entity<EvaluacionOfertaDetalle>()
+                .HasOne(p => p.Evaluacion)
+                .WithMany(p=> p.EvaluacionOfertasDetalles)
+                .HasForeignKey(p => p.IdEvaluacion)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Licitacion>().OwnsOne(p => p.Audit);
