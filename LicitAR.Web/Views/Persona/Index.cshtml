@@ -9,22 +9,28 @@
 <div class="card">
     <div class="card-body">
         <form method="get" asp-action="Index">
+            <!-- First row: Filter fields -->
             <div class="row mb-3">
                 <div class="col-md-3">
-                    <input type="text" name="cuit" class="form-control" placeholder="CUIT" value="@query["cuit"]" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                    <input type="text" name="cuit" class="form-control form-control-sm" placeholder="CUIT" value="@query["cuit"]" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                 </div>
                 <div class="col-md-6">
-                    <input type="text" name="razonSocial" class="form-control" placeholder="Razón Social" value="@query["razonSocial"]" />
+                    <input type="text" name="razonSocial" class="form-control form-control-sm" placeholder="Razón Social" value="@query["razonSocial"]" />
                 </div>
-                <div class="col-md-3 text-end d-flex justify-content-between">
-                    <button type="submit" class="btn btn-primary w-100 me-2">
-                        <i class="bx bx-filter-alt"></i> Filtrar
+            </div>
+            <!-- Second row: Action buttons -->
+            <div class="row mb-3">
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-filter-alt"></i> &nbsp;Filtrar
                     </button>
-                    <a asp-action="Index" class="btn btn-warning" title="Limpiar filtros">
-                        <i class="bx bx-reset"></i>
+                    <a asp-action="Index" class="btn btn-warning btn-sm" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>&nbsp;
                     </a>
-                    <a asp-action="Create" class="btn btn-success ms-2" title="Agregar nueva Licitación">
-                        <i class="bx bx-message-square-add"></i>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-success btn-sm" title="Agregar nueva Licitación">
+                        <i class="bx bx-message-square-add"></i> &nbsp;Nuevo
                     </a>
                 </div>
             </div>
@@ -49,10 +55,10 @@
                         @Html.DisplayNameFor(model => model.Email)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Telefono)
+                        Activo
                     </th>
                     <th>
-                        Activo
+                        @Html.DisplayNameFor(model => model.Telefono)
                     </th>
                 </tr>
             </thead>
@@ -98,10 +104,10 @@
                             @Html.DisplayFor(modelItem => item.Email)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Telefono)
+                            <span class="badge bg-label-success">Sí</span>
                         </td>
                         <td>
-                            <span class="badge bg-label-success">Sí</span>
+                            @Html.DisplayFor(modelItem => item.Telefono)
                         </td>
                     </tr>
                 }

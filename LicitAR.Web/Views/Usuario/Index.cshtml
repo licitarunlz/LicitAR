@@ -14,28 +14,37 @@
 <div class="card">
     <div class="card-body">
         <form method="get" asp-action="Index">
+            <!-- First row: Filter fields -->
             <div class="row mb-3">
                 <div class="col-md-2">
-                    <input type="text" name="nombre" class="form-control" placeholder="Nombre" value="@query["nombre"]" />
+                    <input type="text" name="nombre" class="form-control form-control-sm" placeholder="Nombre" value="@query["nombre"]" />
                 </div>
                 <div class="col-md-2">
-                    <input type="text" name="apellido" class="form-control" placeholder="Apellido" value="@query["apellido"]" />
+                    <input type="text" name="apellido" class="form-control form-control-sm" placeholder="Apellido" value="@query["apellido"]" />
                 </div>
                 <div class="col-md-2">
-                    <input type="text" name="email" class="form-control" placeholder="Email" value="@query["email"]" />
+                    <input type="text" name="email" class="form-control form-control-sm" placeholder="Email" value="@query["email"]" />
                 </div>
                 <div class="col-md-2">
-                    <input type="text" name="cuit" class="form-control" placeholder="CUIT" value="@query["cuit"]" />
+                    <input type="text" name="cuit" class="form-control form-control-sm" placeholder="CUIT" value="@query["cuit"]" />
                 </div>
                 <div class="col-md-2">
-                    <select name="habilitado" class="form-select" asp-items="habilitadoOptions"></select>
+                    <select name="habilitado" class="form-select form-select-sm" asp-items="habilitadoOptions"></select>
                 </div>
-                <div class="col-md-2 d-flex justify-content-between">
-                    <button type="submit" class="btn btn-primary w-100 me-2">
-                        <i class="bx bx-filter-alt"></i> Filtrar
+            </div>
+            <!-- Second row: Action buttons -->
+            <div class="row mb-3">
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-filter-alt"></i> &nbsp;Filtrar
                     </button>
-                    <a asp-action="Index" class="btn btn-warning" title="Limpiar filtros">
-                        <i class="bx bx-reset"></i>
+                    <a asp-action="Index" class="btn btn-warning btn-sm" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>&nbsp;
+                    </a>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-success btn-sm" title="Agregar nuevo Usuario">
+                        <i class="bx bx-message-square-add"></i> &nbsp;Nuevo
                     </a>
                 </div>
             </div>

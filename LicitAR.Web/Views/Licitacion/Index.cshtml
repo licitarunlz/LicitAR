@@ -56,19 +56,17 @@
 
             <!-- Second row: Action buttons -->
             <div class="row mb-3">
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary btn-sm w-100">
-                        <i class="bx bx-filter-alt"></i> Filtrar
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-filter-alt"></i> &nbsp;Filtrar
                     </button>
-                </div>
-                <div class="col-md-1">
-                    <a asp-action="Index" class="btn btn-warning btn-sm w-100" title="Limpiar filtros">
-                        <i class="bx bx-reset"></i>
+                    <a asp-action="Index" class="btn btn-warning btn-sm" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>&nbsp;
                     </a>
                 </div>
-                <div class="col-md-1">
-                    <a asp-action="Create" class="btn btn-success btn-sm w-100" title="Agregar nueva Licitación">
-                        <i class="bx bx-message-square-add"></i>
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-success btn-sm" title="Agregar nueva Licitación">
+                        <i class="bx bx-message-square-add"></i> &nbsp;Nuevo
                     </a>
                 </div>
             </div>
