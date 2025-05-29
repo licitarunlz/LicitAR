@@ -18,6 +18,7 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<IMessageManager> DeleteEntidadLicitanteAsync(int idEntidadLicitante, int idUser);
         Task<IMessageManager> AsociarUsuarioAsync(int idEntidadLicitante, string idUsuario, int idUser);
         Task<IMessageManager> DesasociarUsuarioAsync(int idEntidadLicitante, string idUsuario, int idUser);
+        Task<List<(string IdUsuario, string Nombre, string Apellido, string Email)>> GetUsuariosAsociadosAsync(int idEntidadLicitante);
     }
 
     public class EntidadLicitanteManager : IEntidadLicitanteManager
@@ -184,6 +185,20 @@ namespace LicitAR.Core.Business.Licitaciones
                 _messageManager.ErrorMessage($"Error al desasociar usuario: {ex.Message}");
             }
             return _messageManager;
+        }
+
+        public async Task<List<(string IdUsuario, string Nombre, string Apellido, string Email)>> GetUsuariosAsociadosAsync(int idEntidadLicitante)
+        {
+            return await _dbContext.EntidadLicitanteUsuarios
+                .Where(eu => eu.IdEntidadLicitante == idEntidadLicitante)
+                .Include(eu => eu.Usuario)
+                .Select(eu => new ValueTuple<string, string, string, string>(
+                    eu.IdUsuario,
+                    eu.Usuario.Nombre,
+                    eu.Usuario.Apellido,
+                    eu.Usuario.Email
+                ))
+                .ToListAsync();
         }
     }
 }

@@ -91,28 +91,16 @@ namespace LicitAR.Web.Controllers
 
         // GET: EntidadLicitante/Details/5
         [AuthorizeClaim("EntidadLicitante.Ver")]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
+            var entidad = await _entidadLicitanteManager.GetEntidadLicitanteByIdAsync(id);
+            if (entidad == null)
                 return NotFound();
-            }
 
-            var entidadLicitante = await _context.EntidadesLicitantes
-                .Include(e => e.Provincia)
-                .Include(e => e.Localidad)
-                .FirstOrDefaultAsync(m => m.IdEntidadLicitante == id);
+            var usuariosAsociados = await _entidadLicitanteManager.GetUsuariosAsociadosAsync(id);
+            ViewBag.UsuariosAsociados = usuariosAsociados;
 
-            if (entidadLicitante == null)
-            {
-                return NotFound();
-            }
-
-            // Get associated users if there's a relationship to display
-            //var associatedUsers = await _usuarioManager.GetUsuariosByEntidadLicitanteIdAsync(id.Value);
-            //ViewBag.AssociatedUsers = associatedUsers;
-
-            return View(entidadLicitante);
+            return View(entidad);
         }
 
         // GET: EntidadLicitante/Create
@@ -292,13 +280,11 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpPost]
-        [AuthorizeClaim("EntidadLicitante.Editar")]
         public async Task<IActionResult> DesasociarUsuario(int idEntidadLicitante, string idUsuario)
         {
-            _messageManager = await _entidadLicitanteManager.DesasociarUsuarioAsync(idEntidadLicitante, idUsuario, IdentityHelper.GetUserLicitARId(User));
-            ViewBag.Messages = _messageManager.messages;
-
-            return RedirectToAction(nameof(Details), new { id = idEntidadLicitante });
+            int idUser = IdentityHelper.GetUserLicitARId(User);
+            await _entidadLicitanteManager.DesasociarUsuarioAsync(idEntidadLicitante, idUsuario, idUser);
+            return RedirectToAction("Details", new { id = idEntidadLicitante });
         }
 
         [HttpGet]
