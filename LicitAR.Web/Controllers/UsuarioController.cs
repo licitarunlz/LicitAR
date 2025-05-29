@@ -317,7 +317,9 @@ public class UsuarioController : Controller
 
                 Console.WriteLine("User signed in successfully.");
 
-                if (vinculacion == null && roleDescription.ToUpper() == "PROVEEDOR")
+                if (vinculacion == null && 
+                    (roleDescription.Equals("PROVEEDOR", StringComparison.OrdinalIgnoreCase) ||
+                     roleDescription.Equals("OFERENTE", StringComparison.OrdinalIgnoreCase)))
                     return RedirectToAction("CreatePersonaUsuario", "Persona");
 
                 return RedirectToAction("Index", "Home");
@@ -362,7 +364,7 @@ public class UsuarioController : Controller
     [AllowAnonymous]
     public IActionResult RegisterOk()
     {
-        TempData["SuccessMessage"] = "Usuario creado exitosamente!, pronto le va a llegar un correo al email registrado";
+        TempData["SuccessMessage"] = "Verifique su casilla de mail por un correo de activaci&oacute;n";
         TempData["MensajeCarga"] = "Procesando... Por favor espere.";
         return View();
     }

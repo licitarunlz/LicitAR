@@ -140,7 +140,6 @@ namespace LicitAR.Web.Controllers
             personaModel.Cuit = user.Cuit;
             personaModel.Email = user.Email;
             personaModel.RazonSocial = user.Apellido + ", " + user.Nombre;
-
             
             var items = _context.Provincias
                    .Select(x => new SelectListItem
@@ -206,9 +205,7 @@ namespace LicitAR.Web.Controllers
                     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var principal = new ClaimsPrincipal(identity);
 
-
                     await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
-
 
                     return RedirectToAction("Index","Home");
 
