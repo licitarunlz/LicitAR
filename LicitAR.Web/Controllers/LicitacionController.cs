@@ -302,7 +302,7 @@ namespace LicitAR.Web.Controllers
         // GET: Licitacion/History/5
         public async Task<IActionResult> History(int id)
         {
-            _logger.LogInformation("Accediendo al historial de la licitación con ID {Id}", id);
+            //_logger.LogInformation("Accediendo al historial de la licitación con ID {Id}", id);
 
             var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id);
             if (licitacion == null)
@@ -314,7 +314,7 @@ namespace LicitAR.Web.Controllers
             var historial = await _licitacionManager.GetHistorialEstados(id);
 
             ViewBag.Licitacion = licitacion;
-            _logger.LogInformation("Historial obtenido para la licitación con ID {Id}. Estados encontrados: {Count}", id, historial?.Count ?? 0);
+            //_logger.LogInformation("Historial obtenido para la licitación con ID {Id}. Estados encontrados: {Count}", id, historial?.Count ?? 0);
             return View(historial);
         }
     }

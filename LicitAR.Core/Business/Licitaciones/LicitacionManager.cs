@@ -81,7 +81,18 @@ namespace LicitAR.Core.Business.Licitaciones
                 }
 
                 await _dbContext.SaveChangesAsync();
-                
+
+                // Registrar historial de estado inicial
+                _dbContext.LicitacionEstadoHistorial.Add(new LicitacionEstadoHistorial
+                {
+                    IdLicitacion = licitacion.IdLicitacion,
+                    IdEstadoAnterior = null, // No hay estado anterior en creación
+                    IdEstadoNuevo = licitacion.IdEstadoLicitacion,
+                    FechaCambio = DateTime.Now,
+                    IdUsuarioCambio = userId
+                });
+
+                await _dbContext.SaveChangesAsync();
             }
             catch
             {
@@ -97,6 +108,9 @@ namespace LicitAR.Core.Business.Licitaciones
                 if (licitacionFromDdbb == null)
                     return false;
 
+                var estadoAnterior = licitacionFromDdbb.IdEstadoLicitacion;
+                bool cambioEstado = estadoAnterior != licitacion.IdEstadoLicitacion;
+
                 licitacionFromDdbb.Titulo = licitacion.Titulo;
                 licitacionFromDdbb.Descripcion = licitacion.Descripcion;
                 licitacionFromDdbb.IdCategoriaLicitacion = licitacion.IdCategoriaLicitacion;
@@ -106,6 +120,20 @@ namespace LicitAR.Core.Business.Licitaciones
                 licitacionFromDdbb.Audit = AuditHelper.SetModificationData(licitacionFromDdbb.Audit, userId);
 
                 licitacionFromDdbb.Items = licitacion.Items;
+
+                // Si cambió el estado, registrar en historial
+                if (cambioEstado)
+                {
+                    licitacionFromDdbb.IdEstadoLicitacion = licitacion.IdEstadoLicitacion;
+                    _dbContext.LicitacionEstadoHistorial.Add(new LicitacionEstadoHistorial
+                    {
+                        IdLicitacion = licitacion.IdLicitacion,
+                        IdEstadoAnterior = estadoAnterior,
+                        IdEstadoNuevo = licitacion.IdEstadoLicitacion,
+                        FechaCambio = DateTime.Now,
+                        IdUsuarioCambio = userId
+                    });
+                }
 
                 _dbContext.Licitaciones.Update(licitacionFromDdbb);
 
@@ -128,6 +156,20 @@ namespace LicitAR.Core.Business.Licitaciones
             licitacion.Enabled = false;
             licitacion.Audit = AuditHelper.SetDeletionData(licitacion.Audit, idUsuario);
 
+            // Registrar historial de cambio de estado si corresponde (por ejemplo, si hay un estado de "Eliminado")
+            // Si existe un estado específico para "Eliminado", descomentar y ajustar el siguiente bloque:
+            
+            var estadoAnterior = licitacion.IdEstadoLicitacion;
+            licitacion.IdEstadoLicitacion = 14; // Definir el valor correspondiente
+            _dbContext.LicitacionEstadoHistorial.Add(new LicitacionEstadoHistorial
+            {
+                IdLicitacion = id,
+                IdEstadoAnterior = estadoAnterior,
+                IdEstadoNuevo = 14,
+                FechaCambio = DateTime.Now,
+                IdUsuarioCambio = idUsuario
+            });
+            
             _dbContext.Licitaciones.Update(licitacion);
             await _dbContext.SaveChangesAsync();
             return true;
