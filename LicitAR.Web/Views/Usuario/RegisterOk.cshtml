@@ -21,15 +21,20 @@
                         </a>
                     </div>
 
-                    <h4 class="mb-1 fw-bold">Registro de nuevo usuario - Ok</h4> 
-
+                    <h4 class="mb-1 fw-bold">¡Registro exitoso!</h4>
+                    <p class="mb-3">Tu usuario ha sido registrado correctamente.</p>
                     @if (!string.IsNullOrEmpty(successMessage))
                     {
                         <div class="alert alert-success alert-dismissible fade show py-6" role="alert">
-                            @successMessage
+                            @Html.Raw(@successMessage?.ToString().Replace("\n", "<br/>"))
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     }
+                    <div class="mt-4 text-center">
+                        <a href="/Usuario/Login" class="btn btn-primary">
+                            <i class='bx bx-log-in'></i> &nbsp;Iniciar sesión
+                        </a>
+                    </div>
                 </div>
 
             </div>

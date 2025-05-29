@@ -8,16 +8,16 @@
 
 <div class="card">
     <div class="card-body">
-        <form method="get" asp-action="Index">
+        <form method="get" asp-action="IndexLicitaciones">
             <!-- First row: Filter fields -->
             <div class="row mb-3">
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <input type="text" name="codigoLicitacion" class="form-control form-control-sm" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
                 </div>
                 <div class="col-md-3">
                     <input type="text" name="titulo" class="form-control form-control-sm" placeholder="Título" value="@query["titulo"]" />
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <select name="idCategoriaLicitacion" class="form-select form-select-sm">
                         <option value="">Todas</option>
                         @foreach (var categoria in categorias)
@@ -28,17 +28,26 @@
                             </option>
                         }
                     </select>
-                </div> 
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary btn-sm w-100">
-                        <i class="bx bx-filter-alt"></i> Filtrar
-                    </button>
                 </div>
-                <div class="col-md-1">
-                    <a asp-action="Index" class="btn btn-warning btn-sm w-100" title="Limpiar filtros">
-                        <i class="bx bx-reset"></i> 
+            </div>
+            <!-- Second row: Action buttons -->
+            <div class="row mb-3">
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-filter-alt"></i> &nbsp;Filtrar
+                    </button>
+                    <a asp-action="IndexLicitaciones" class="btn btn-warning btn-sm" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>&nbsp;
                     </a>
-                </div> 
+                </div>
+                <!-- Si necesitas un botón de "Nuevo", puedes agregarlo aquí -->
+                <!--
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-success btn-sm" title="Nueva Licitación">
+                        <i class="bx bx-message-square-add"></i> &nbsp;Nuevo
+                    </a>
+                </div>
+                -->
             </div>
         </form>
     </div>
