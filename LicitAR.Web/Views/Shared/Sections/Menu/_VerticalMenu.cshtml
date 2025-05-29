@@ -83,13 +83,13 @@
                 </li>
             }
 
-            <!-- Proveedores -->
+            <!-- Oferentes -->
             @if (user.HasClaim("permission", "Proveedores.Ver"))
             {
                 <li class='menu-item'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-user"></i>
-                        <div class="text-truncate" data-i18n="Proveedores">Proveedores</div>
+                        <div class="text-truncate" data-i18n="Proveedores">Oferentes</div>
                     </a>
                     <ul class="menu-sub">
                         @if (user.HasClaim("permission", "Proveedores.Ver"))

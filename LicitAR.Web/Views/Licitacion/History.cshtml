@@ -1,7 +1,7 @@
 @model List<LicitAR.Core.Business.Licitaciones.EstadoHistorialDto>
 @{
     var licitacion = ViewBag.Licitacion as LicitAR.Core.Data.Models.Licitacion;
-    ViewData["Title"] = "Historial de Estados";
+    ViewData["Title"] = "Historial de una licitacion ";
     // Definir ids de estados exitosos y negativos (ajusta según tu catálogo)
     var exitosos = new[] { 4 }; // Ej: 4 = Adjudicada
     var negativos = new[] { 5, 6, 8 }; // Ej: 5 = Cancelada, 6 = Desistida, 8 = Impugnada
@@ -48,17 +48,18 @@
                         }
                     }
                 </div>
+                <div class="row mt-4">
+                    <div class="col d-flex gap-2">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bx bx-arrow-back"></i>&nbsp;Volver al listado
+                        </a>
+                        <a asp-action="Details" asp-route-id="@licitacion?.IdLicitacion" class="btn btn-primary">
+                            <i class="bx bx-show"></i>&nbsp;Ver detalle
+                        </a>
+                    </div>
+                </div>
             </div>
+            
         </div>
-    </div>
-</div>
-<div class="row mt-4">
-    <div class="col d-flex gap-2">
-        <a asp-action="Index" class="btn btn-secondary">
-            <i class="bx bx-arrow-back"></i> Volver al listado
-        </a>
-        <a asp-action="Details" asp-route-id="@licitacion?.IdLicitacion" class="btn btn-primary">
-            <i class="bx bx-show"></i> Ver detalle licitación
-        </a>
     </div>
 </div>

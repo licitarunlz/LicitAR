@@ -98,25 +98,25 @@
 </div> 
 <div class="text-start mt-8">
     <a asp-action="Index" class="btn btn-secondary">
-        <i class="bx bx-arrow-back"></i> Volver al Listado
+        <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
     </a>
   
  @if (Model.IdEstadoOferta == 1)
         {
     <a asp-action="Index" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-        <i class="bx bx-cog"></i> Acciones
+        <i class="bx bx-cog"></i>&nbsp;Acciones
     </a>
 
     <div class="dropdown-menu dropup">
        
             <a class="dropdown-item" asp-action="Edit" asp-route-idoferta="@Model?.IdOferta">
-                <i class="bx bx-edit-alt me-1"></i> Editar
+                <i class="bx bx-edit-alt me-1"></i>&nbsp;Editar
             </a>
             <a class="dropdown-item" asp-action="Publicar" asp-route-id="@Model.IdOferta">
-                <i class="bx bx-upload me-1"></i> Publicar
+                <i class="bx bx-upload me-1"></i>&nbsp;Publicar
             </a>
             <a class="dropdown-item" asp-action="Cancelar" asp-route-id="@Model.IdOferta">
-                <i class="bx bx-x me-1"></i> Cancelar
+                <i class="bx bx-x me-1"></i>&nbsp;Cancelar
             </a>
        
          

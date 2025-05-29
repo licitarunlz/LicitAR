@@ -96,39 +96,39 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdLicitacion">
-                                        <i class="bx bx-show me-1"></i> Detalles
+                                        <i class="bx bx-show me-1"></i>&nbsp;Detalles
                                     </a>
                                     @if (item.IdEstadoLicitacion == 1)
                                     {
                                         <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdLicitacion">
-                                            <i class="bx bx-edit-alt me-1"></i> Editar
+                                            <i class="bx bx-edit-alt me-1"></i>&nbsp;Editar
                                         </a>
                                     }
                                     @if (item.IdEstadoLicitacion == 1)
                                     {
                                         <a class="dropdown-item" asp-action="Publicar" asp-route-id="@item.IdLicitacion">
-                                            <i class="bx bx-upload me-1"></i> Publicar
+                                            <i class="bx bx-upload me-1"></i>&nbsp;Publicar
                                         </a>
                                     }
                                     @if ((item.IdEstadoLicitacion == 3 || item.IdEstadoLicitacion == 7) && item.FechaCierre.HasValue && item.FechaCierre.Value < DateTime.Now)
                                     {
                                         <a class="dropdown-item" asp-action="Evaluar" asp-route-id="@item.IdLicitacion">
-                                            <i class="bx bx-upload me-1"></i> Evaluar
+                                            <i class="bx bx-upload me-1"></i>&nbsp;Evaluar
                                         </a>
                                     }
                                     @if (item.IdEstadoLicitacion == 7)
                                     {
                                         <a class="dropdown-item" asp-action="Offerer" asp-route-id="@item.IdLicitacion">
-                                            <i class="bx bx-group me-1"></i> Ver Oferentes
+                                            <i class="bx bx-group me-1"></i>&nbsp;Ver Oferentes
                                         </a>
                                     }
                                     <a class="dropdown-item" asp-action="History" asp-route-id="@item.IdLicitacion">
-                                        <i class="bx bx-history me-1"></i> Historial
+                                        <i class="bx bx-history me-1"></i>&nbsp;Historial
                                     </a>
                                     @if (item.IdEstadoLicitacion == 1)
                                     {
                                         <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdLicitacion">
-                                            <i class="bx bx-trash me-1"></i> Eliminar
+                                            <i class="bx bx-trash me-1"></i>&nbsp;Eliminar
                                         </a>
                                     }
                                 </div>
