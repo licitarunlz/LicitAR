@@ -19,7 +19,7 @@
             </div>
 
             <!-- Sección derecha: Fecha + Estado -->
-            <div class="text-end">
+            <div class="text-start">
                 <h5 class="mb-0">
                     <b>@Html.DisplayFor(model => model.FechaOferta)</b>
                     <span class="badge @(backgroundClass)">
@@ -83,7 +83,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="5" class="text-end"><strong>TOTAL GENERAL:</strong></td>
+                            <td colspan="5" class="text-start"><strong>TOTAL GENERAL:</strong></td>
                             <td><strong><span id="total-general">@(Model.Items.Sum(x => x.ImporteSubtotal))</span></strong></td>
                         </tr>
                     </tfoot>
@@ -99,7 +99,7 @@
         </dl>
     </div>
 </div>
-<div class="text-end mt-8">
+<div class="text-start mt-8">
 
 
     <form asp-action="Publicar">
