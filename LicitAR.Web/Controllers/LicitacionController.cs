@@ -5,16 +5,19 @@ using LicitAR.Web.Helpers;
 using LicitAR.Core.Utils;
 using LicitAR.Web.Models;
 using LicitAR.Web.Helpers.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace LicitAR.Web.Controllers
 {
     public class LicitacionController : Controller
     {
         private readonly ILicitacionManager _licitacionManager;
+        private readonly ILogger<LicitacionController> _logger;
 
-        public LicitacionController(ILicitacionManager licitacionManager) // Fixed syntax issue
+        public LicitacionController(ILicitacionManager licitacionManager, ILogger<LicitacionController> logger)
         {
             _licitacionManager = licitacionManager;
+            _logger = logger;
         }
 
         // GET: Licitacion
@@ -247,9 +250,6 @@ namespace LicitAR.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
-
-
         // GET: Licitacion/Delete/5
         [AuthorizeClaim("Licitaciones.Crear")]
         public async Task<IActionResult> Evaluar(int? id)
@@ -268,11 +268,6 @@ namespace LicitAR.Web.Controllers
 
             return View("index");
         }
-
-
-
-
-
 
         // GET: Licitacion/Oferentes/5
         [AuthorizeClaim("Oferente.Ver")]
@@ -302,6 +297,25 @@ namespace LicitAR.Web.Controllers
         {
             var licitaciones = await _licitacionManager.GetLicitacionesByEstadoAsync(idEstadoLicitacion);
             return View(licitaciones);
+        }
+
+        // GET: Licitacion/History/5
+        public async Task<IActionResult> History(int id)
+        {
+            _logger.LogInformation("Accediendo al historial de la licitación con ID {Id}", id);
+
+            var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id);
+            if (licitacion == null)
+            {
+                _logger.LogWarning("No se encontró la licitación con ID {Id}", id);
+                return View("NotFound");
+            }
+
+            var historial = await _licitacionManager.GetHistorialEstados(id);
+
+            ViewBag.Licitacion = licitacion;
+            _logger.LogInformation("Historial obtenido para la licitación con ID {Id}. Estados encontrados: {Count}", id, historial?.Count ?? 0);
+            return View(historial);
         }
     }
 }

@@ -110,8 +110,6 @@
                                             <i class="bx bx-upload me-1"></i> Publicar
                                         </a>
                                     }
-
-
                                     @if ((item.IdEstadoLicitacion == 3 || item.IdEstadoLicitacion == 7) && item.FechaCierre.HasValue && item.FechaCierre.Value < DateTime.Now)
                                     {
                                         <a class="dropdown-item" asp-action="Evaluar" asp-route-id="@item.IdLicitacion">
@@ -124,6 +122,9 @@
                                             <i class="bx bx-group me-1"></i> Ver Oferentes
                                         </a>
                                     }
+                                    <a class="dropdown-item" asp-action="History" asp-route-id="@item.IdLicitacion">
+                                        <i class="bx bx-history me-1"></i> Historial
+                                    </a>
                                     @if (item.IdEstadoLicitacion == 1)
                                     {
                                         <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdLicitacion">

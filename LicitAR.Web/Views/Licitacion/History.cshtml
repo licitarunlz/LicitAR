@@ -1,0 +1,64 @@
+@model List<LicitAR.Core.Business.Licitaciones.EstadoHistorialDto>
+@{
+    var licitacion = ViewBag.Licitacion as LicitAR.Core.Data.Models.Licitacion;
+    ViewData["Title"] = "Historial de Estados";
+    // Definir ids de estados exitosos y negativos (ajusta según tu catálogo)
+    var exitosos = new[] { 4 }; // Ej: 4 = Adjudicada
+    var negativos = new[] { 5, 6, 8 }; // Ej: 5 = Cancelada, 6 = Desistida, 8 = Impugnada
+    var ultimo = Model.LastOrDefault();
+}
+
+<div class="row">
+    <div class="col-xl">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <b>@licitacion?.CodigoLicitacion</b> - @licitacion?.Titulo
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row flex-nowrap overflow-auto pb-3">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var estado = Model[i];
+                        var color = "bg-label-secondary";
+                        if (exitosos.Contains(estado.IdEstado)) color = "bg-label-success";
+                        if (negativos.Contains(estado.IdEstado)) color = "bg-label-danger";
+                        var isActual = (estado == ultimo);
+
+                        <div class="col-auto">
+                            <div class="card text-center @color @(isActual ? "border border-warning border-3 shadow" : "")" style="min-width:180px;">
+                                <div class="card-body py-3">
+                                    <h6 class="card-title mb-1">@estado.DescripcionEstado</h6>
+                                    <small class="text-muted">@estado.Fecha.ToString("dd/MM/yyyy HH:mm")</small>
+                                    @if (isActual)
+                                    {
+                                        <div class="mt-2">
+                                            <span class="badge bg-warning text-dark">Estado Actual</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        @if (i < Model.Count - 1)
+                        {
+                            <div class="col-auto d-flex align-items-center px-0">
+                                <i class="bx bx-chevron-right fs-2 text-muted"></i>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col d-flex gap-2">
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bx bx-arrow-back"></i> Volver al listado
+        </a>
+        <a asp-action="Details" asp-route-id="@licitacion?.IdLicitacion" class="btn btn-primary">
+            <i class="bx bx-show"></i> Ver detalle licitación
+        </a>
+    </div>
+</div>

@@ -23,9 +23,15 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<List<EstadoLicitacion>> GetAllEstadosLicitacionAsync();
         Task<List<CategoriaLicitacion>> GetAllCategoriasAsync();
         Task<bool> PublicarLicitacionAsync(int idLicitacion, DateTime fechaCierre, int idUsuario);
-
-
         Task<bool> IniciarEvaluacionLicitacionAsync(int idLicitacion, int idUsuario);
+        Task<List<EstadoHistorialDto>> GetHistorialEstados(int idLicitacion);
+    }
+
+    public class EstadoHistorialDto
+    {
+        public DateTime Fecha { get; set; }
+        public int IdEstado { get; set; }
+        public string DescripcionEstado { get; set; }
     }
 
     public class LicitacionManager : ILicitacionManager
@@ -247,6 +253,38 @@ namespace LicitAR.Core.Business.Licitaciones
             _dbContext.Licitaciones.Update(licitacion);
             await _dbContext.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<List<EstadoHistorialDto>> GetHistorialEstados(int idLicitacion)
+        {
+            // Si tienes una tabla log de estados, usa esto:
+            // var historial = await _dbContext.LicitacionEstadoLog
+            //     .Where(x => x.IdLicitacion == idLicitacion)
+            //     .OrderBy(x => x.Fecha)
+            //     .Select(x => new EstadoHistorialDto
+            //     {
+            //         Fecha = x.Fecha,
+            //         IdEstado = x.IdEstadoLicitacion,
+            //         DescripcionEstado = x.EstadoLicitacion.Descripcion
+            //     }).ToListAsync();
+
+            // Si NO tienes tabla log, simula con la info actual:
+            var licitacion = await _dbContext.Licitaciones
+                .Include(l => l.EstadoLicitacion)
+                .FirstOrDefaultAsync(l => l.IdLicitacion == idLicitacion);
+
+            var historial = new List<EstadoHistorialDto>();
+            if (licitacion != null)
+            {
+                // Simulación: solo el estado actual y su fecha de modificación/creación
+                historial.Add(new EstadoHistorialDto
+                {
+                    Fecha = licitacion.Audit.FechaModificacion ?? licitacion.Audit.FechaAlta,
+                    IdEstado = licitacion.IdEstadoLicitacion,
+                    DescripcionEstado = licitacion.EstadoLicitacion.Descripcion
+                });
+            }
+            return historial.OrderBy(x => x.Fecha).ToList();
         }
     }
 }
