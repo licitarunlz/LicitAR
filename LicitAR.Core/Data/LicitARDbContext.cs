@@ -1,6 +1,7 @@
 using LicitAR.Core.Data.Models;
 using LicitAR.Core.Data.Models.Identidad;
 using LicitAR.Core.Data.Models.Parametros;
+using LicitAR.Core.Data.Models.Historial;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
@@ -33,10 +34,10 @@ namespace LicitAR.Core.Data
         public DbSet<EstadoOferta> EstadosOferta { get; set; }
         public DbSet<Oferta> Ofertas { get; set; }
         public DbSet<OfertaDetalle> OfertasDetalle { get; set; }
-
         public DbSet<Evaluacion> Evaluaciones { get; set; }
         public DbSet<EvaluacionOferta> EvaluacionOfertas { get; set; }
         public DbSet<EvaluacionOfertaDetalle> EvaluacionOfertasDetalle { get; set; }
+        public DbSet<LicitacionEstadoHistorial> LicitacionEstadoHistorial { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -203,6 +204,23 @@ namespace LicitAR.Core.Data
                 .HasOne(eu => eu.Usuario)
                 .WithMany(u => u.Personas)
                 .HasForeignKey(eu => eu.IdUsuario);
+
+            modelBuilder.Entity<LicitacionEstadoHistorial>()
+                .HasOne(h => h.Licitacion)
+                .WithMany()
+                .HasForeignKey(h => h.IdLicitacion);
+
+            modelBuilder.Entity<LicitacionEstadoHistorial>()
+                .HasOne(h => h.EstadoNuevo)
+                .WithMany()
+                .HasForeignKey(h => h.IdEstadoNuevo)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<LicitacionEstadoHistorial>()
+                .HasOne(h => h.EstadoAnterior)
+                .WithMany()
+                .HasForeignKey(h => h.IdEstadoAnterior)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Ignorar escritura de IdUsuario después del insert
             modelBuilder.Entity<LicitArUser>()

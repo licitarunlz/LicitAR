@@ -2,6 +2,7 @@ using LicitAR.Core.Data;
 using LicitAR.Core.Data.Models;
 using LicitAR.Core.Utils;
 using LicitAR.Core.Data.Models.Parametros;
+using LicitAR.Core.Data.Models.Historial; // Asegúrate de tener el namespace correcto
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Microsoft.Identity.Client;
@@ -103,33 +104,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 licitacionFromDdbb.FechaCierre = licitacion.FechaCierre;
 
                 licitacionFromDdbb.Audit = AuditHelper.SetModificationData(licitacionFromDdbb.Audit, userId);
-                /*
-                // Marcar solo los campos modificados 
-                _context.Entry(licitacionFromDdbb).Property(u => u.Titulo).IsModified = true;
-                _context.Entry(licitacionFromDdbb).Property(u => u.Descripcion).IsModified = true;
-                _context.Entry(licitacionFromDdbb).Property(u => u.IdCategoriaLicitacion).IsModified = true;
-                _context.Entry(licitacionFromDdbb).Property(u => u.FechaPublicacion).IsModified = true;
-                _context.Entry(licitacionFromDdbb).Property(u => u.FechaCierre).IsModified = true;
-                */
 
-                /*foreach (var detalle in licitacion.Items)
-                {
-                    if (detalle.Audit.FechaBaja != null)
-                    {
-                        detalle.IdLicitacion = licitacion.IdLicitacion;
-                        //Si es distinto de null, estoy eliminando un registro
-                        continue;
-                    }
-
-                    if (detalle.IdLicitacionDetalle != 0)
-                    {
-                        //estoy editando
-
-                        detalle.IdLicitacion = licitacion.IdLicitacion;
-                        detalle.
-                    }
-                    detalle.Audit = AuditHelper.GetCreationData(userId);
-                }*/
                 licitacionFromDdbb.Items = licitacion.Items;
 
                 _dbContext.Licitaciones.Update(licitacionFromDdbb);
@@ -157,6 +132,7 @@ namespace LicitAR.Core.Business.Licitaciones
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
         public async Task<bool> PublicarLicitacionAsync(int idLicitacion, DateTime fechaCierre, int idUsuario)
         {
             var licitacion = await _dbContext.Licitaciones.FindAsync(idLicitacion);
@@ -164,6 +140,7 @@ namespace LicitAR.Core.Business.Licitaciones
             {
                 return false;
             }
+            var estadoAnterior = licitacion.IdEstadoLicitacion;
             licitacion.Enabled = true;
             licitacion.FechaPublicacion = DateTime.Now;
             licitacion.IdEstadoLicitacion = 3;
@@ -171,10 +148,20 @@ namespace LicitAR.Core.Business.Licitaciones
             licitacion.Audit = AuditHelper.SetModificationData(licitacion.Audit, idUsuario);
 
             _dbContext.Licitaciones.Update(licitacion);
+
+            // Registrar historial de cambio de estado
+            _dbContext.LicitacionEstadoHistorial.Add(new LicitacionEstadoHistorial
+            {
+                IdLicitacion = idLicitacion,
+                IdEstadoAnterior = estadoAnterior,
+                IdEstadoNuevo = 3,
+                FechaCambio = DateTime.Now,
+                IdUsuarioCambio = idUsuario
+            });
+
             await _dbContext.SaveChangesAsync();
             return true;
         }
-
 
         public async Task<string> ObtenerProximoCodigoAsync()
         {
@@ -246,45 +233,40 @@ namespace LicitAR.Core.Business.Licitaciones
                 return false;
             }
 
-
+            var estadoAnterior = licitacion.IdEstadoLicitacion;
             licitacion.IdEstadoLicitacion = 7;
             licitacion.Audit = AuditHelper.SetModificationData(licitacion.Audit, idUsuario);
 
             _dbContext.Licitaciones.Update(licitacion);
+
+            // Registrar historial de cambio de estado
+            _dbContext.LicitacionEstadoHistorial.Add(new LicitacionEstadoHistorial
+            {
+                IdLicitacion = idLicitacion,
+                IdEstadoAnterior = estadoAnterior,
+                IdEstadoNuevo = 7,
+                FechaCambio = DateTime.Now,
+                IdUsuarioCambio = idUsuario
+            });
+
             await _dbContext.SaveChangesAsync();
             return true;
         }
 
         public async Task<List<EstadoHistorialDto>> GetHistorialEstados(int idLicitacion)
         {
-            // Si tienes una tabla log de estados, usa esto:
-            // var historial = await _dbContext.LicitacionEstadoLog
-            //     .Where(x => x.IdLicitacion == idLicitacion)
-            //     .OrderBy(x => x.Fecha)
-            //     .Select(x => new EstadoHistorialDto
-            //     {
-            //         Fecha = x.Fecha,
-            //         IdEstado = x.IdEstadoLicitacion,
-            //         DescripcionEstado = x.EstadoLicitacion.Descripcion
-            //     }).ToListAsync();
-
-            // Si NO tienes tabla log, simula con la info actual:
-            var licitacion = await _dbContext.Licitaciones
-                .Include(l => l.EstadoLicitacion)
-                .FirstOrDefaultAsync(l => l.IdLicitacion == idLicitacion);
-
-            var historial = new List<EstadoHistorialDto>();
-            if (licitacion != null)
-            {
-                // Simulación: solo el estado actual y su fecha de modificación/creación
-                historial.Add(new EstadoHistorialDto
+            // Ahora consulta la tabla de historial real
+            var historial = await _dbContext.LicitacionEstadoHistorial
+                .Where(x => x.IdLicitacion == idLicitacion)
+                .OrderBy(x => x.FechaCambio)
+                .Select(x => new EstadoHistorialDto
                 {
-                    Fecha = licitacion.Audit.FechaModificacion ?? licitacion.Audit.FechaAlta,
-                    IdEstado = licitacion.IdEstadoLicitacion,
-                    DescripcionEstado = licitacion.EstadoLicitacion.Descripcion
-                });
-            }
-            return historial.OrderBy(x => x.Fecha).ToList();
+                    Fecha = x.FechaCambio,
+                    IdEstado = x.IdEstadoNuevo,
+                    DescripcionEstado = x.EstadoNuevo.Descripcion // Asegúrate de incluir la relación EstadoNuevo en el modelo
+                }).ToListAsync();
+
+            return historial;
         }
     }
 }

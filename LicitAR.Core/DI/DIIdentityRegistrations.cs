@@ -31,6 +31,8 @@ namespace LicitAR.Core.DI
             {
                 options.LoginPath = "/Usuario/Login";  // Página de inicio de sesión
                 options.AccessDeniedPath = "/Usuario/Register"; // Página de acceso denegado
+                options.ExpireTimeSpan = TimeSpan.FromHours(8); // Cambia el tiempo según tu necesidad
+                options.SlidingExpiration = true; // Renueva la cookie si hay actividad
             });
 
             // Configuración de autenticación externa

@@ -49,13 +49,13 @@
                         @Html.DisplayNameFor(model => model.RazonSocial)
                     </th>
                     <th>
+                        Activo
+                    </th>
+                    <th>
                         @Html.DisplayNameFor(model => model.IdTipoPersona)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Email)
-                    </th>
-                    <th>
-                        Activo
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Telefono)
@@ -98,13 +98,13 @@
                             @Html.DisplayFor(modelItem => item.RazonSocial)
                         </td>
                         <td>
+                            <span class="badge bg-label-success">Sí</span>
+                        </td>
+                        <td>
                             @Html.DisplayFor(modelItem => item.TipoPersona)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Email)
-                        </td>
-                        <td>
-                            <span class="badge bg-label-success">Sí</span>
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Telefono)
