@@ -86,7 +86,10 @@
             <!-- Oferentes -->
             @if (user.HasClaim("permission", "Proveedores.Ver"))
             {
-                <li class='menu-item'>
+                @{
+                    var isOferentesActive = currentPage.StartsWith("/Persona") || currentPage.StartsWith("/Proveedores");
+                }
+                <li class='menu-item@(isOferentesActive ? " active open" : "")'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-user"></i>
                         <div class="text-truncate" data-i18n="Proveedores">Oferentes</div>
@@ -94,7 +97,7 @@
                     <ul class="menu-sub">
                         @if (user.HasClaim("permission", "Proveedores.Ver"))
                         {
-                            <li class='menu-item'>
+                            <li class='menu-item@(currentPage.StartsWith("/Persona") ? " active" : "")'>
                                 <a asp-action="Index" asp-controller="Persona" class="menu-link">
                                     <div>Listado</div>
                                 </a>
@@ -102,7 +105,7 @@
                         }
                         @if (user.HasClaim("permission", "Proveedores.Postulaciones"))
                         {
-                            <li class='menu-item'>
+                            <li class='menu-item@(currentPage.StartsWith("/Proveedores/Postulaciones") ? " active" : "")'>
                                 <a asp-action="NotFound" asp-controller="Error" class="menu-link">
                                     <div>Postulaciones</div>
                                 </a>
@@ -115,7 +118,10 @@
             <!-- Entidades Licitantes -->
             @if (user.HasClaim("permission", "EntidadLicitante.Ver"))
             {
-                <li class='menu-item'>
+                @{
+                    var isEntidadesActive = currentPage.StartsWith("/EntidadLicitante");
+                }
+                <li class='menu-item@(isEntidadesActive ? " active open" : "")'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-user"></i>
                         <div class="text-truncate" data-i18n="Entidades Licitantes">Entidades</div>
@@ -123,7 +129,7 @@
                     <ul class="menu-sub">
                         @if (user.HasClaim("permission", "EntidadLicitante.Ver"))
                         {
-                            <li class='menu-item'>
+                            <li class='menu-item@(currentPage.StartsWith("/EntidadLicitante") ? " active" : "")'>
                                 <a asp-action="Index" asp-controller="EntidadLicitante" class="menu-link">
                                     <div>Listado</div>
                                 </a>
@@ -131,7 +137,7 @@
                         }
                         @if (user.HasClaim("permission", "EntidadLicitante.Postulaciones"))
                         {
-                            <li class='menu-item'>
+                            <li class='menu-item@(currentPage.StartsWith("/Postulacion") ? " active" : "")'>
                                 <a asp-action="NotFound" asp-controller="Error" class="menu-link">
                                     <div>Postulaciones</div>
                                 </a>
@@ -173,7 +179,11 @@
             <!-- Configuración -->
             @if (user.HasClaim("permission", "Configuracion.Ver"))
             {
-                <li class='menu-item'>
+                @{
+                    var isProvinciasActive = currentPage.Equals("/Parametro/Provincias", StringComparison.OrdinalIgnoreCase);
+                    var isLocalidadesActive = currentPage.Equals("/Parametro/Localidades", StringComparison.OrdinalIgnoreCase);
+                }
+                <li class='menu-item@((isProvinciasActive || isLocalidadesActive) ? " active open" : "")'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-cog"></i>
                         <div class="text-truncate" data-i18n="Configuración">Parametrización</div>
@@ -181,7 +191,7 @@
                     <ul class="menu-sub">
                         @if (user.HasClaim("permission", "Parametro.Ver"))
                         {
-                            <li class='menu-item'>
+                            <li class='menu-item@(isProvinciasActive ? " active" : "")'>
                                 <a asp-action="Provincias" asp-controller="Parametro" class="menu-link">
                                     <div>Provincias</div>
                                 </a>
@@ -189,7 +199,7 @@
                         }
                         @if (user.HasClaim("permission", "Parametro.Ver"))
                         {
-                            <li class='menu-item'>
+                            <li class='menu-item@(isLocalidadesActive ? " active" : "")'>
                                 <a asp-action="Localidades" asp-controller="Parametro" class="menu-link">
                                     <div>Localidades</div>
                                 </a>
@@ -226,7 +236,10 @@
             <!-- Seguridad -->
             @if (user.HasClaim("permission", "Usuarios.Ver"))
             {
-                <li class='menu-item'>
+                @{
+                    var isUsuariosActive = currentPage.StartsWith("/Usuario", StringComparison.OrdinalIgnoreCase);
+                }
+                <li class='menu-item@((isUsuariosActive) ? " active open" : "")'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-shield"></i>
                         <div class="text-truncate" data-i18n="Seguridad">Seguridad</div>
@@ -234,7 +247,7 @@
                     <ul class="menu-sub">
                         @if (user.HasClaim("permission", "Usuarios.Ver"))
                         {
-                            <li class='menu-item@(currentPage.StartsWith("/Usuario/") ? " active" : "")'>
+                            <li class='menu-item@(currentPage.Equals("/Usuario") ? " active" : "")'>
                                 <a asp-controller="Usuario" asp-action="Index" class="menu-link">
                                     <div>Usuarios</div>
                                 </a>
@@ -242,7 +255,7 @@
                         }
                         @if (user.HasClaim("permission", "Roles.Ver"))
                         {
-                            <li class='menu-item'>
+                            <li class='menu-item@(currentPage.StartsWith("/Usuario/Roles") ? " active" : "")'>
                                 <a asp-action="Roles" asp-controller="Usuario" class="menu-link">
                                     <div>Roles</div>
                                 </a>
