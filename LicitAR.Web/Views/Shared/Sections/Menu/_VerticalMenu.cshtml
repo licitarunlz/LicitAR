@@ -302,7 +302,7 @@
 
     }
 
-    @if (user.HasClaim("RoleDescription", "Proveedor"))
+    @if (user.HasClaim("RoleDescription", "Oferente"))
     {
         <ul class="menu-inner py-1">
             <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Dashboard/") ? " active open" : "")'>
