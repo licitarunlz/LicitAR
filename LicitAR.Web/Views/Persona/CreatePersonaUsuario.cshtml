@@ -3,161 +3,137 @@
     ViewData["Title"] = "Ingrese datos de Proveedor";
     Layout = "_BlankLayout";
 }
-<!--
-<div class="row">
-    <div class="col-xl">
-        <div class="card mb-6">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="mb-0">Completar datos</h3>
-                <small class="text-body float-end">Ingrese los detalles para poder compulsar en las licitaciones</small>
-            </div>
-            <div class="card-body"> -->
-
 <div class="container-xxl">
     <div class="authentication-wrapper authentication-basic container-p-y">
-        <div class="authentication-inner">
-            <div class="card px-sm-6 px-0">
+        <div class="authentication-inner d-flex justify-content-center">
+            <div class="card px-sm-6 px-0" style="min-width: 600px; width: 50vw; max-width: 900px;">
                 <div class="card-body">
-                    <div class="app-brand justify-content-center">
-                        <a href="/" class="app-brand-link gap-2">
-                            <img src="/images/Logo_LicitAR_rectangle_small.png" alt="Logo LicitAR" class="app-brand-logo" style="height: 50px; width: 85px;" />
-                            <span class="app-brand-text demo text-heading fw-bold"></span>
-                        </a>
+                    <div class="d-flex flex-column align-items-center mb-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <a href="/" class="app-brand-link">
+                                <img src="/images/Logo_LicitAR_rectangle_small.png" alt="Logo LicitAR" class="app-brand-logo" style="height: 40px; width: 70px;" />
+                            </a>
+                            <h3 class="fw-bold mb-0">Completar datos de Oferente</h3>
+                        </div>
+                        <small class="text-body">Ingrese los detalles para poder compulsar en las licitaciones</small>
                     </div>
-
-                    <h4 class="mb-1 fw-bold">Completar datos</h4>
-                    <h5 class=" py-3 "><i class="fas fa-user-plus "></i> Ingrese los detalles para poder compulsar en las licitaciones</h5>
-
-
+                    <br>
                     <form asp-action="CreatePersonaUsuario">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <div class="form-group  mb-3">
-
-                            <div class="row mb-3">
-
-                                <div class="col-md-12 mb-3">
+                        <div class="form-group mb-3">
+                            <h5 class="mt-3 mb-3"><i class='bx bx-id-card me-2'></i>Datos de Proveedor</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
                                     <label asp-for="IdTipoPersona" class="form-label"></label>
                                     <select asp-for="IdTipoPersona" asp-items="ViewBag.ComboTiposPersona" class="form-control">
                                         <option value="">Seleccione un Tipo Persona</option>
                                     </select>
                                     <span asp-validation-for="IdTipoPersona" class="text-danger"></span>
                                 </div>
-
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label asp-for="Cuit" class="form-label"></label>
                                     <input asp-for="Cuit" class="form-control" readonly="true" />
                                     <span asp-validation-for="Cuit" class="text-danger"></span>
                                 </div>
-
-
                                 <div class="col-md-12 mb-3">
                                     <label asp-for="RazonSocial" class="form-label"></label>
                                     <input asp-for="RazonSocial" class="form-control" readonly="true" />
                                     <span asp-validation-for="RazonSocial" class="text-danger"></span>
                                 </div>
-
                             </div>
-                            <h4 class="mt-6"> Contacto  </h4>
-                            <hr />
-
-                            <div class="row mb-3">
-                                <div class="col-md-12 mb-3">
+                            <h5 class="mt-4 mb-3"><i class='bx bx-envelope me-2'></i>Contacto</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
                                     <label asp-for="Email" class="form-label"></label>
                                     <input asp-for="Email" class="form-control" readonly="true" />
                                     <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
-
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label asp-for="Telefono" class="form-label"></label>
                                     <input asp-for="Telefono" class="form-control" />
                                     <span asp-validation-for="Telefono" class="text-danger"></span>
                                 </div>
                             </div>
-                            <h4 class="mt-6"> Domicilio </h4>
-                            <hr />
+                            <h5 class="mt-4 mb-3"><i class='bx bx-home me-2'></i>Domicilio</h5>
                             <div class="row">
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label asp-for="IdProvincia" class="form-label"></label>
                                     <select asp-for="IdProvincia" asp-items="ViewBag.ComboProvincias" class="form-control">
                                         <option value="">Seleccione una provincia</option>
                                     </select>
                                     <span asp-validation-for="IdProvincia" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label asp-for="IdLocalidad" class="form-label"></label>
                                     <select asp-for="IdLocalidad" class="form-control">
                                         <option value="">Seleccione una localidad</option>
                                     </select>
                                     <span asp-validation-for="IdLocalidad" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label asp-for="DireccionBarrio" class="form-label"></label>
                                     <input asp-for="DireccionBarrio" class="form-control" />
                                     <span asp-validation-for="DireccionBarrio" class="text-danger"></span>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label asp-for="DireccionCalle" class="form-label"></label>
                                     <input asp-for="DireccionCalle" class="form-control" />
                                     <span asp-validation-for="DireccionCalle" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label asp-for="DireccionNumero" class="form-label"></label>
                                     <input asp-for="DireccionNumero" class="form-control" />
                                     <span asp-validation-for="DireccionNumero" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label asp-for="DireccionPiso" class="form-label"></label>
                                     <input asp-for="DireccionPiso" class="form-control" />
                                     <span asp-validation-for="DireccionPiso" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label asp-for="DireccionDepto" class="form-label"></label>
                                     <input asp-for="DireccionDepto" class="form-control" />
                                     <span asp-validation-for="DireccionDepto" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-12 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label asp-for="DireccionCodigoPostal" class="form-label"></label>
                                     <input asp-for="DireccionCodigoPostal" class="form-control" />
                                     <span asp-validation-for="DireccionCodigoPostal" class="text-danger"></span>
                                 </div>
-
                             </div>
-                            <div class="text-end mt-8">
-                                <input type="submit" value="Crear" class="btn btn-primary" />
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="submit" class="btn btn-primary d-flex align-items-center">
+                                    <i class='bx bx-save me-2'></i>Crear
+                                </button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
-    @section BusinessScripts {
-
-        <script>
-            $(document).ready(function () {
-                $("#IdProvincia").change(function () {
-                    debugger;
-                    var provinciaId = $(this).val();
-                    $("#IdLocalidad").empty();
-                    if (provinciaId) {
-                        $.getJSON('/Provincias/GetLocalidades', { provinciaId: provinciaId }, function (data) {
-                            $("#IdLocalidad").append('<option value="">Seleccione una localidad</option>');
-                            $.each(data, function (index, localidad) {
-                                $("#IdLocalidad").append('<option value="' + localidad.idLocalidad + '">' + localidad.descripcion + '</option>');
-                            });
-                        });
-                    } else {
+@section BusinessScripts {
+    <script>
+        $(document).ready(function () {
+            $("#IdProvincia").change(function () {
+                var provinciaId = $(this).val();
+                $("#IdLocalidad").empty();
+                if (provinciaId) {
+                    $.getJSON('/Provincias/GetLocalidades', { provinciaId: provinciaId }, function (data) {
                         $("#IdLocalidad").append('<option value="">Seleccione una localidad</option>');
-                    }
-                });
+                        $.each(data, function (index, localidad) {
+                            $("#IdLocalidad").append('<option value="' + localidad.idLocalidad + '">' + localidad.descripcion + '</option>');
+                        });
+                    });
+                } else {
+                    $("#IdLocalidad").append('<option value="">Seleccione una localidad</option>');
+                }
             });
-
-        </script>
-
-    }
+        });
+    </script>
+    <!-- Boxicons CDN -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+}
 

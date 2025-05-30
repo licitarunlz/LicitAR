@@ -1,8 +1,43 @@
 /* Custom styles goes here */
+html {
+    font-size: 14px; /* Reduce el tamaño base de fuente */
+}
+
+button, input, select, textarea {
+    font-size: 0.875rem; /* Ajusta el tamaño de fuente de los controles */
+    padding: 0.5em 1em; /* Reduce el padding de los botones */
+}
+
+body {
+    line-height: 1.4; /* Ajusta el espaciado entre líneas */
+}
+
+/* Ajustar tamaños específicos */
+h1 {
+    font-size: 1.75rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+h3 {
+    font-size: 1.25rem;
+}
+
+h4, h5, h6 {
+    font-size: 1rem;
+}
+
+/* Ajustar tamaño de los textos en los botones */
+button {
+    font-size: 0.875rem;
+    padding: 0.4em 0.8em;
+}
+
 .pull-right {
     right:0;
 }
-
 
 .avatar-iniciales {
     width: 40px;
@@ -16,6 +51,7 @@
     font-weight: bold;
     font-size: 16px;
 }
+
 #overlay {
     position: fixed;
     top: 0;

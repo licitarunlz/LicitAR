@@ -1,284 +1,366 @@
 @using LicitAR.Web.Helpers.Authorization
 @{
-  TempData.Keep();
-  string? currentPage = ViewContext.HttpContext.Request.Path;
-  var user = ViewContext.HttpContext.User;
+    TempData.Keep();
+    string? currentPage = ViewContext.HttpContext.Request.Path;
+    var user = ViewContext.HttpContext.User;
+
+    // Declarar variables de estado de menú aquí para que estén disponibles en toda la vista
+    var isOferentesActive = currentPage.StartsWith("/Persona") || currentPage.StartsWith("/Proveedores");
+    var isEntidadesActive = currentPage.StartsWith("/EntidadLicitante");
+    var isProvinciasActive = currentPage.Equals("/Parametro/Provincias", StringComparison.OrdinalIgnoreCase);
+    var isLocalidadesActive = currentPage.Equals("/Parametro/Localidades", StringComparison.OrdinalIgnoreCase);
+    var isUsuariosActive = currentPage.StartsWith("/Usuario", StringComparison.OrdinalIgnoreCase);
 }
 
 <!-- Menu -->
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
 
-  <!-- Brand -->
-  <div class='app-brand demo @((@ViewData["navbarFull"] != null && Convert.ToBoolean(@ViewData["navbarFull"])) ? "d-xl-none" : "")'>
-    <a asp-controller="Home" asp-action="Index" class="app-brand-link">
+    <!-- Brand -->
+    <div class='app-brand demo @((@ViewData["navbarFull"] != null && Convert.ToBoolean(@ViewData["navbarFull"])) ? "d-xl-none" : "")'>
+        <a asp-controller="Home" asp-action="Index" class="app-brand-link">
             <span class="app-brand-logo demo">
                 <img src="~/images/Logo_LicitAR_circle_clear_small.png" alt="Logo" style="height: 40px;" />
             </span>
-      <span class="app-brand-text demo menu-text fw-bold ms-2">@TempData.Peek("appName")</span>
-    </a>
-
-    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
-      <i class="bx bx-chevron-left bx-sm d-flex align-items-center justify-content-center"></i>
-    </a>
-  </div>
-
-  <div class="menu-inner-shadow"></div>
-
-  <ul class="menu-inner py-1">
-    
-    <!-- Dashboard -->
-    @if (user.HasClaim("permission", "Dashboard.Ver"))
-    {
-      <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Dashboard/") ? " active open" : "")'>
-        <a asp-action="Index" asp-controller="Home" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-home-smile"></i>
-          <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
+            <span class="app-brand-text demo menu-text fw-bold ms-2">@TempData.Peek("appName")</span>
         </a>
-      </li>
-    }
 
-    <!-- Licitaciones -->
-    @if (user.HasClaim("permission", "Licitaciones.Ver"))
-    {
-      <li class='menu-item@(currentPage.StartsWith("/Licitacion/") ? " active open" : "")'>
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-file"></i>
-          <div class="text-truncate" data-i18n="Licitaciones">Licitaciones</div>
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="bx bx-chevron-left bx-sm d-flex align-items-center justify-content-center"></i>
         </a>
-        <ul class="menu-sub">
-          @if (user.HasClaim("permission", "Licitaciones.Ver"))
-          {
-            <li class='menu-item@(currentPage == "/Licitacion/Index" ? " active" : "")'>
-              <a asp-action="Index" asp-controller="Licitacion" class="menu-link">
-                <div>Listado</div>
-              </a>
-            </li>
-          }
-          @if (user.HasClaim("permission", "LicitacionesEstados.Ver"))
-          {
-            <li class='menu-item'>
-              <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                <div>Estados</div>
-              </a>
-            </li>
-          }
-          @if (user.HasClaim("permission", "LicitacionesDocumentos.Ver"))
-          {
-            <li class='menu-item'>
-              <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                <div>Documentos</div>
-              </a>
-            </li>
-          }
+    </div>
+
+    <div class="menu-inner-shadow"></div>
+    @if (user.HasClaim("RoleDescription", "Administrador Principal"))
+    {
+        <ul class="menu-inner py-1">
+
+            <!-- Dashboard -->
+            @if (user.HasClaim("permission", "Dashboard.Ver"))
+            {
+                <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Dashboard/") ? " active open" : "")'>
+                    <a asp-action="Index" asp-controller="Home" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-home-smile"></i>
+                        <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
+                    </a>
+                </li>
+            }
+
+            <!-- Licitaciones -->
+            @if (user.HasClaim("permission", "Licitaciones.Ver"))
+            {
+                <li class='menu-item@(currentPage.StartsWith("/Licitacion") ? " active open" : "")'>
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-file"></i>
+                        <div class="text-truncate" data-i18n="Licitaciones">Licitaciones</div>
+                    </a>
+                    <ul class="menu-sub">
+                        @if (user.HasClaim("permission", "Licitaciones.Ver"))
+                        {
+                            <li class='menu-item@(currentPage == "/Licitacion" ? " active" : "")'>
+                                <a asp-action="Index" asp-controller="Licitacion" class="menu-link">
+                                    <div>Listado</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "Licitaciones.Ver"))
+                        {
+                            <li class='menu-item@(currentPage == "/Evaluaciones/Index" ? " active" : "")'>
+                                <a asp-action="Index" asp-controller="Evaluaciones" class="menu-link">
+                                    <div>Evaluaciones</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "LicitacionesEstados.Ver"))
+                        {
+                            <li class='menu-item'>
+                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                                    <div>Estados</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "LicitacionesDocumentos.Ver"))
+                        {
+                            <li class='menu-item'>
+                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                                    <div>Documentos</div>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+
+            <!-- Oferentes -->
+            @if (user.HasClaim("permission", "Proveedores.Ver"))
+            {
+                <li class='menu-item@(isOferentesActive ? " active open" : "")'>
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-user"></i>
+                        <div class="text-truncate" data-i18n="Proveedores">Oferentes</div>
+                    </a>
+                    <ul class="menu-sub">
+                        @if (user.HasClaim("permission", "Proveedores.Ver"))
+                        {
+                            <li class='menu-item@(currentPage.StartsWith("/Persona") ? " active" : "")'>
+                                <a asp-action="Index" asp-controller="Persona" class="menu-link">
+                                    <div>Listado</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "Proveedores.Postulaciones"))
+                        {
+                            <li class='menu-item@(currentPage.StartsWith("/Proveedores/Postulaciones") ? " active" : "")'>
+                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                                    <div>Postulaciones</div>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+
+            <!-- Entidades Licitantes -->
+            @if (user.HasClaim("permission", "EntidadLicitante.Ver"))
+            {
+                <li class='menu-item@(isEntidadesActive ? " active open" : "")'>
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-user"></i>
+                        <div class="text-truncate" data-i18n="Entidades Licitantes">Entidades</div>
+                    </a>
+                    <ul class="menu-sub">
+                        @if (user.HasClaim("permission", "EntidadLicitante.Ver"))
+                        {
+                            <li class='menu-item@(currentPage.StartsWith("/EntidadLicitante") ? " active" : "")'>
+                                <a asp-action="Index" asp-controller="EntidadLicitante" class="menu-link">
+                                    <div>Listado</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "EntidadLicitante.Postulaciones"))
+                        {
+                            <li class='menu-item@(currentPage.StartsWith("/Postulacion") ? " active" : "")'>
+                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                                    <div>Postulaciones</div>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+
+            <!-- Personas -->
+            @if (user.HasClaim("permission", "Personas.Ver"))
+            {
+                <li class='menu-item'>
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-user"></i>
+                        <div class="text-truncate" data-i18n="Personas">Personas</div>
+                    </a>
+                    <ul class="menu-sub">
+                        @if (user.HasClaim("permission", "Personas.Ver"))
+                        {
+                            <li class='menu-item'>
+                                <a asp-action="Index" asp-controller="Persona" class="menu-link">
+                                    <div>Listado</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "Personas.Postulaciones"))
+                        {
+                            <li class='menu-item'>
+                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                                    <div>Postulaciones</div>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+
+            <!-- Configuración -->
+            @if (user.HasClaim("permission", "Configuracion.Ver"))
+            {
+                <li class='menu-item@((isProvinciasActive || isLocalidadesActive) ? " active open" : "")'>
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-cog"></i>
+                        <div class="text-truncate" data-i18n="Configuración">Parametrización</div>
+                    </a>
+                    <ul class="menu-sub">
+                        @if (user.HasClaim("permission", "Parametro.Ver"))
+                        {
+                            <li class='menu-item@(isProvinciasActive ? " active" : "")'>
+                                <a asp-action="Provincias" asp-controller="Parametro" class="menu-link">
+                                    <div>Provincias</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "Parametro.Ver"))
+                        {
+                            <li class='menu-item@(isLocalidadesActive ? " active" : "")'>
+                                <a asp-action="Localidades" asp-controller="Parametro" class="menu-link">
+                                    <div>Localidades</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "Configuracion.Regiones"))
+                        {
+                            <li class='menu-item'>
+                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                                    <div>Regiones</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "Configuracion.TiposDePersonas"))
+                        {
+                            <li class='menu-item'>
+                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                                    <div>Tipos de Personas</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "Configuracion.TiposDeContactos"))
+                        {
+                            <li class='menu-item'>
+                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                                    <div>Tipos de Contactos</div>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+
+            <!-- Seguridad -->
+            @if (user.HasClaim("permission", "Usuarios.Ver"))
+            {
+                <li class='menu-item@((isUsuariosActive) ? " active open" : "")'>
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-shield"></i>
+                        <div class="text-truncate" data-i18n="Seguridad">Seguridad</div>
+                    </a>
+                    <ul class="menu-sub">
+                        @if (user.HasClaim("permission", "Usuarios.Ver"))
+                        {
+                            <li class='menu-item@(currentPage.Equals("/Usuario") ? " active" : "")'>
+                                <a asp-controller="Usuario" asp-action="Index" class="menu-link">
+                                    <div>Usuarios</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "Roles.Ver"))
+                        {
+                            <li class='menu-item@(currentPage.StartsWith("/Usuario/Roles") ? " active" : "")'>
+                                <a asp-action="Roles" asp-controller="Usuario" class="menu-link">
+                                    <div>Roles</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "Permisos.Ver"))
+                        {
+                            <li class='menu-item'>
+                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                                    <div>Permisos</div>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+
+            <!-- Auditoría -->
+            @if (user.HasClaim("permission", "Auditoria.Ver"))
+            {
+                <li class='menu-item'>
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-search"></i>
+                        <div class="text-truncate" data-i18n="Auditoría">Auditoría</div>
+                    </a>
+                    <ul class="menu-sub">
+                        @if (user.HasClaim("permission", "Auditoria.AuditTrail"))
+                        {
+                            <li class='menu-item'>
+                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                                    <div>Audit Trail</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "Auditoria.Historial"))
+                        {
+                            <li class='menu-item'>
+                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                                    <div>Historial</div>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+
+
+
         </ul>
-      </li>
+
     }
 
-    <!-- Proveedores -->
-    @if (user.HasClaim("permission", "Proveedores.Ver"))
+    @if (user.HasClaim("RoleDescription", "Proveedor"))
     {
-      <li class='menu-item'>
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-user"></i>
-          <div class="text-truncate" data-i18n="Proveedores">Proveedores</div>
-        </a>
-        <ul class="menu-sub">
-          @if (user.HasClaim("permission", "Proveedores.Ver"))
-          {
-            <li class='menu-item'>
-              <a asp-action="Index" asp-controller="Persona" class="menu-link">
-                <div>Listado</div>
-              </a>
+        <ul class="menu-inner py-1">
+            <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Dashboard/") ? " active open" : "")'>
+                <a asp-action="Index" asp-controller="Home" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-home-smile"></i>
+                    <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
+                </a>
             </li>
-          }
-          @if (user.HasClaim("permission", "Proveedores.Postulaciones"))
-          {
-            <li class='menu-item'>
-              <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                <div>Postulaciones</div>
-              </a>
+
+
+            <li class='menu-item@(  currentPage.StartsWith("/Usuario/") ? " active open" : "")'>
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-shield"></i>
+                    <div class="text-truncate" data-i18n="Dashboards">Usuario</div>
+                </a>
+                <ul class="menu-sub">
+
+                    <li class='menu-item@(currentPage == "/Usuario/MyProfile" ? " active" : "")'>
+
+                        <a asp-action="MyProfile" asp-controller="Usuario" class="menu-link">
+                            <div>Mi Perfil</div>
+                        </a>
+                    </li>
+
+
+
+                </ul>
             </li>
-          }
+
+            <li class='menu-item@(  currentPage.StartsWith("/Proveedor/") ||currentPage.StartsWith("/Ofertas")  ? " active open" : "")'>
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-file"></i>
+                    <div class="text-truncate" data-i18n="Dashboards">Licitaciones</div>
+                </a>
+                <ul class="menu-sub">
+
+                    <li class='menu-item@(currentPage == "/Proveedor/Licitaciones" ? " active" : "")'>
+
+                        <a asp-action="IndexLicitaciones" asp-controller="Ofertas" class="menu-link">
+                            <div>Licitaciones</div>
+                        </a>
+                    </li>
+
+                    <li class='menu-item@(currentPage == "/Ofertas" ? " active" : "")'>
+
+                        <a asp-action="Index" asp-controller="Ofertas" class="menu-link">
+                            <div>Mis Ofertas</div>
+                        </a>
+                    </li>
+
+
+                </ul>
+            </li>
+
         </ul>
-      </li>
     }
 
-    <!-- Entidades Licitantes -->
-    @if (user.HasClaim("permission", "EntidadLicitante.Ver"))
-    {
-      <li class='menu-item'>
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-user"></i>
-          <div class="text-truncate" data-i18n="Entidades Licitantes">Entidades</div>
-        </a>
-        <ul class="menu-sub">
-          @if (user.HasClaim("permission", "EntidadLicitante.Ver"))
-          {
-            <li class='menu-item'>
-              <a asp-action="Index" asp-controller="EntidadLicitante" class="menu-link">
-                <div>Listado</div>
-              </a>
-            </li>
-          }
-          @if (user.HasClaim("permission", "EntidadLicitante.Postulaciones"))
-          {
-            <li class='menu-item'>
-              <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                <div>Postulaciones</div>
-              </a>
-            </li>
-          }
-        </ul>
-      </li>
-    }
 
-    <!-- Personas -->
-    @if (user.HasClaim("permission", "Personas.Ver"))
-    {
-      <li class='menu-item'>
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-user"></i>
-          <div class="text-truncate" data-i18n="Personas">Personas</div>
-        </a>
-        <ul class="menu-sub">
-          @if (user.HasClaim("permission", "Personas.Ver"))
-          {
-            <li class='menu-item'>
-              <a asp-action="Index" asp-controller="Persona" class="menu-link">
-                <div>Listado</div>
-              </a>
-            </li>
-          }
-          @if (user.HasClaim("permission", "Personas.Postulaciones"))
-          {
-            <li class='menu-item'>
-              <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                <div>Postulaciones</div>
-              </a>
-            </li>
-          }
-        </ul>
-      </li>
-    }
 
-    <!-- Configuración -->
-    @if (user.HasClaim("permission", "Configuracion.Ver"))
-    {
-      <li class='menu-item'>
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-cog"></i>
-          <div class="text-truncate" data-i18n="Configuración">Parametrización</div>
-        </a>
-        <ul class="menu-sub">
-          @if (user.HasClaim("permission", "Parametro.Ver"))
-          {
-            <li class='menu-item'>
-              <a asp-action="Provincias" asp-controller="Parametro" class="menu-link">
-                <div>Provincias</div>
-              </a>
-            </li>
-          }
-          @if (user.HasClaim("permission", "Parametro.Ver"))
-          {
-            <li class='menu-item'>
-              <a asp-action="Localidades" asp-controller="Parametro" class="menu-link">
-                <div>Localidades</div>
-              </a>
-            </li>
-          }
-          @if (user.HasClaim("permission", "Configuracion.Regiones"))
-          {
-            <li class='menu-item'>
-              <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                <div>Regiones</div>
-              </a>
-            </li>
-          }
-          @if (user.HasClaim("permission", "Configuracion.TiposDePersonas"))
-          {
-            <li class='menu-item'>
-              <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                <div>Tipos de Personas</div>
-              </a>
-            </li>
-          }
-          @if (user.HasClaim("permission", "Configuracion.TiposDeContactos"))
-          {
-            <li class='menu-item'>
-              <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                <div>Tipos de Contactos</div>
-              </a>
-            </li>
-          }
-        </ul>
-      </li>
-    }
-
-    <!-- Seguridad -->
-    @if (user.HasClaim("permission", "Usuarios.Ver"))
-    {
-      <li class='menu-item'>
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-shield"></i>
-          <div class="text-truncate" data-i18n="Seguridad">Seguridad</div>
-        </a>
-        <ul class="menu-sub">
-          @if (user.HasClaim("permission", "Usuarios.Ver"))
-          {
-            <li class='menu-item@(currentPage.StartsWith("/Usuario/") ? " active" : "")'>
-              <a asp-controller="Usuario" asp-action="Index" class="menu-link">
-                <div>Usuarios</div>
-              </a>
-            </li>
-          }
-          @if (user.HasClaim("permission", "Roles.Ver_NO_ACTIVO"))
-          {
-            <li class='menu-item'>
-              <a asp-action="Roles" asp-controller="Usuario" class="menu-link">
-                <div>Roles</div>
-              </a>
-            </li>
-          }
-          @if (user.HasClaim("permission", "Permisos.Ver"))
-          {
-            <li class='menu-item'>
-              <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                <div>Permisos</div>
-              </a>
-            </li>
-          }
-        </ul>
-      </li>
-    }
-
-    <!-- Auditoría -->
-    @if (user.HasClaim("permission", "Auditoria.Ver"))
-    {
-      <li class='menu-item'>
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons bx bx-search"></i>
-          <div class="text-truncate" data-i18n="Auditoría">Auditoría</div>
-        </a>
-        <ul class="menu-sub">
-          @if (user.HasClaim("permission", "Auditoria.AuditTrail"))
-          {
-            <li class='menu-item'>
-              <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                <div>Audit Trail</div>
-              </a>
-            </li>
-          }
-          @if (user.HasClaim("permission", "Auditoria.Historial"))
-          {
-            <li class='menu-item'>
-              <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                <div>Historial</div>
-              </a>
-            </li>
-          }
-        </ul>
-      </li>
-    }
-  </ul>
 </aside>
 <!-- / Menu -->

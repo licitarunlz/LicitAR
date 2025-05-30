@@ -1,0 +1,81 @@
+﻿@model LicitAR.Core.Data.Models.Licitacion
+
+@{
+    ViewData["Title"] = "Publicar licitación";
+}
+
+<div class="alert alert-success alert-dismissible" role="alert">
+    Atención! Al publicar esta licitación, la misma quedará disponible para que los oferentes puedan ofertar, y la licitación no podrá editarse ni eliminarse
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="row mb-12 g-6">
+    <div class="col-md-12 col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                Confirmar Publicación de la Licitacion:
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.Titulo</h5>
+                <p class="card-text">
+                    <strong>Código:</strong> @Model.CodigoLicitacion <br /><br />
+                    <strong>Descripción:</strong> @Model.Descripcion <br /><br />
+                    <strong>Tipo de Licitación:</strong> @(Model.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")<br /><br />
+                    <strong>Detalles</strong>
+
+                    <div class="mb-3 mt-3">
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td><b>NRO ITEM</b></td>
+                                    <td><b>ITEM</b></td>
+                                    <td><b>DESCRIPCIÓN</b></td>
+                                    <td><b>CANTIDAD</b></td>
+                                    <td><b>PRECIO UNITARIO ESTIMADO</b></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Items.Count; i++)
+                                {
+                                    var item = Model.Items.ToArray()[i];
+                                    <tr>
+                                        <td>#@(item.NroItem + 1)</td>
+
+                                        <td>@(item.Item)</td>
+
+                                        <td>@(item.Descripcion)</td>
+
+                                        <td>@(item.Cantidad)</td>
+                                        <td>$ @(item.PrecioEstimadoUnitario)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div><br />
+                    @if (Model.FechaCierre.HasValue)
+                    {
+                        <strong>Fecha de Cierre:</strong> @Model.FechaCierre.Value.ToShortDateString()
+
+                        <br />
+
+                    }
+                </p>
+                <form asp-action="Publicar">
+                    <input type="hidden" asp-for="IdLicitacion" />
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FechaCierre" class="form-label"></label>
+                        <input asp-for="FechaCierre" required class="form-control" />
+                        <span asp-validation-for="FechaCierre" class="text-danger"></span>
+                    </div>
+                    <div class="text-start mt-8">
+                        <input type="submit" value="Publicar" class="btn btn-success" />
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

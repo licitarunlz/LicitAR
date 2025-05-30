@@ -91,21 +91,16 @@ namespace LicitAR.Web.Controllers
 
         // GET: EntidadLicitante/Details/5
         [AuthorizeClaim("EntidadLicitante.Ver")]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
+            var entidad = await _entidadLicitanteManager.GetEntidadLicitanteByIdAsync(id);
+            if (entidad == null)
                 return NotFound();
-            }
 
-            var entidadLicitante = await _context.EntidadesLicitantes
-                .FirstOrDefaultAsync(m => m.IdEntidadLicitante == id);
-            if (entidadLicitante == null)
-            {
-                return NotFound();
-            }
+            var usuariosAsociados = await _entidadLicitanteManager.GetUsuariosAsociadosAsync(id);
+            ViewBag.UsuariosAsociados = usuariosAsociados;
 
-            return View(entidadLicitante);
+            return View(entidad);
         }
 
         // GET: EntidadLicitante/Create
@@ -173,6 +168,24 @@ namespace LicitAR.Web.Controllers
             {
                 return NotFound();
             }
+
+            // Cargar provincias y localidades para los combos
+            ViewBag.ComboProvincias = _context.Provincias
+                .Select(x => new SelectListItem
+                {
+                    Value = x.IdProvincia.ToString(),
+                    Text = x.Descripcion
+                })
+                .ToList();
+
+            ViewBag.ComboLocalidades = _context.Localidades
+                .Select(x => new SelectListItem
+                {
+                    Value = x.IdLocalidad.ToString(),
+                    Text = x.Descripcion
+                })
+                .ToList();
+
             EntidadLicitanteModel ent = new EntidadLicitanteModel();
             ent.SetEntidadLicitanteData(entidadLicitante);
             return View(ent);
@@ -257,7 +270,7 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpPost]
-        [AuthorizeClaim("EntidadLicitante.AsociarUsuario")]
+        [AuthorizeClaim("EntidadLicitante.Editar")]
         public async Task<IActionResult> AsociarUsuario(int idEntidadLicitante, string idUsuario)
         {
             _messageManager = await _entidadLicitanteManager.AsociarUsuarioAsync(idEntidadLicitante, idUsuario, IdentityHelper.GetUserLicitARId(User));
@@ -267,17 +280,15 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpPost]
-        [AuthorizeClaim("EntidadLicitante.DesasociarUsuario")]
         public async Task<IActionResult> DesasociarUsuario(int idEntidadLicitante, string idUsuario)
         {
-            _messageManager = await _entidadLicitanteManager.DesasociarUsuarioAsync(idEntidadLicitante, idUsuario, IdentityHelper.GetUserLicitARId(User));
-            ViewBag.Messages = _messageManager.messages;
-
-            return RedirectToAction(nameof(Details), new { id = idEntidadLicitante });
+            int idUser = IdentityHelper.GetUserLicitARId(User);
+            await _entidadLicitanteManager.DesasociarUsuarioAsync(idEntidadLicitante, idUsuario, idUser);
+            return RedirectToAction("Details", new { id = idEntidadLicitante });
         }
 
         [HttpGet]
-        [AuthorizeClaim("EntidadLicitante.AsociarUsuario")]
+        [AuthorizeClaim("EntidadLicitante.Editar")]
         public async Task<IActionResult> AsociarUsuario(int idEntidadLicitante)
         {
             var entidadLicitante = await _entidadLicitanteManager.GetEntidadLicitanteByIdAsync(idEntidadLicitante);
@@ -298,7 +309,7 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpPost]
-        [AuthorizeClaim("EntidadLicitante.AsociarUsuario")]
+        [AuthorizeClaim("EntidadLicitante.Editar")]
         public async Task<IActionResult> AsociarUsuario(int idEntidadLicitante, List<string> selectedUsuarios)
         {
             if (selectedUsuarios == null || !selectedUsuarios.Any())
@@ -313,6 +324,16 @@ namespace LicitAR.Web.Controllers
             }
 
             return RedirectToAction(nameof(Details), new { id = idEntidadLicitante });
+        }
+
+        [HttpGet]
+        public JsonResult GetLocalidadesByProvincia(int idProvincia)
+        {
+            var localidades = _context.Localidades
+                .Where(l => l.IdProvincia == idProvincia)
+                .Select(l => new { l.IdLocalidad, l.Descripcion })
+                .ToList();
+            return Json(localidades);
         }
 
         private bool EntidadLicitanteExists(int id)

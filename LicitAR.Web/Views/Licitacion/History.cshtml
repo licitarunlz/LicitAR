@@ -1,0 +1,101 @@
+@model List<LicitAR.Core.Business.Licitaciones.EstadoHistorialDto>
+@{
+    var licitacion = ViewBag.Licitacion as LicitAR.Core.Data.Models.Licitacion;
+    ViewData["Title"] = "Historial de una licitacion ";
+
+    // Estados positivos (camino feliz)
+    var positivos = new[] { 9 }; // 9 = Adjudicación
+    // Estados negativos (warning/amarillo/naranja)
+    var negativos = new[] { 6, 8, 13, 14 }; // 6 = Impugnada, 8 = Desistida, 13 = Desierta, 14 = Cancelada
+    // Estados neutros
+    var neutros = new[] { 1, 3, 7 }; // 1 = Planificación, 3 = Publicado, 7 = Evaluación
+
+    var ultimo = Model.LastOrDefault();
+    var terminaFeliz = ultimo != null && positivos.Contains(ultimo.IdEstado);
+}
+
+<div class="row">
+    <div class="col-xl">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <b>@licitacion?.CodigoLicitacion</b> - @licitacion?.Titulo
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row flex-wrap g-2 pb-3 justify-content-start align-items-stretch">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var estado = Model[i];
+                        string color;
+                        string textColor = "text-dark";
+                        // Definir color según el estado
+                        if (positivos.Contains(estado.IdEstado))
+                        {
+                            color = "bg-success";
+                            textColor = "text-white";
+                        }
+                        else if (negativos.Contains(estado.IdEstado))
+                        {
+                            color = "bg-warning";
+                            textColor = "text-dark";
+                        }
+                        else
+                        {
+                            color = "bg-light";
+                            textColor = "text-black";
+                        }
+
+                        var isActual = (estado == ultimo);
+
+                        // Si termina feliz, el último estado va en verde fuerte
+                        if (isActual && terminaFeliz)
+                        {
+                            color = "bg-success";
+                            textColor = "text-white";
+                        }
+                        // Si termina negativo, el último estado va en naranja fuerte
+                        else if (isActual && negativos.Contains(estado.IdEstado))
+                        {
+                            color = "bg-warning";
+                            textColor = "text-dark";
+                        }
+
+                        <div class="col-auto" style="flex: 0 0 200px; max-width: 220px;">
+                            <div class="card text-center @color @textColor @(isActual ? "border border-primary border-3 shadow" : "")" style="min-width:180px; min-height: 140px; display: flex; flex-direction: column; justify-content: center;">
+                                <div class="card-body py-3 d-flex flex-column justify-content-center align-items-center" style="height: 100%;">
+                                    <h6 class="card-title mb-1">@estado.DescripcionEstado</h6>
+                                    <div style="background: #fff; color: #222; border-radius: 4px; padding: 2px 8px; display: inline-block; margin-bottom: 2px;">
+                                        <small>@estado.Fecha.ToString("dd/MM/yyyy HH:mm")</small>
+                                    </div>
+                                    @if (isActual)
+                                    {
+                                        <div class="mt-2">
+                                            <span class="badge bg-primary text-white">Estado Actual</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        @if (i < Model.Count - 1)
+                        {
+                            <div class="col-auto d-flex align-items-center px-0" style="min-width: 32px;">
+                                <i class="bx bx-chevron-right fs-2 text-muted"></i>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="row mt-4">
+                    <div class="col d-flex gap-2 align-items-stretch">
+                        <a asp-action="Details" asp-route-id="@licitacion?.IdLicitacion" class="btn btn-secondary d-flex align-items-center justify-content-center" style="height:48px; min-width:170px;">
+                            <i class="bx bx-show"></i>&nbsp;Detalle
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary d-flex align-items-center justify-content-center" style="height:48px; min-width:170px;">
+                            <i class="bx bx-arrow-back"></i>&nbsp;Volver al listado
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

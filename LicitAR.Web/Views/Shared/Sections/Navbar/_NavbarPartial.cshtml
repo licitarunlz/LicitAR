@@ -1,7 +1,13 @@
 @{
   var userName = User?.FindFirst("FullName")?.Value ?? "Guest";
   var roleDescription = User?.FindFirst("RoleDescription")?.Value ?? "Sin Rol";
-  var iniciales = string.Join("", userName.Split(' ').Take(2).Select(n => n[0])).ToUpper();
+  var iniciales = string.Join(
+    "",
+    userName
+      .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+      .Take(2)
+      .Select(n => n[0])
+  ).ToUpper();
 }
 
 
@@ -32,7 +38,7 @@
   <!-- Search -->
   <div class="navbar-nav align-items-center">
     <div class="nav-item d-flex align-items-center">
-      @ViewData["Title"]
+            <h2 class="mt-4"> @ViewData["Title"]</h2>
     </div>
   </div>
   <!-- /Search -->

@@ -1,0 +1,154 @@
+﻿@model IEnumerable<LicitAR.Core.Data.Models.Licitacion>
+
+@{
+    ViewData["Title"] = "Licitaciones";
+    var query = Context.Request.Query;
+    var categorias = ViewBag.CategoriasLicitacion as IEnumerable<LicitAR.Core.Data.Models.Parametros.CategoriaLicitacion>;
+}
+
+<div class="card">
+    <div class="card-body">
+        <form method="get" asp-action="IndexLicitaciones">
+            <!-- First row: Filter fields -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <input type="text" name="codigoLicitacion" class="form-control form-control-sm" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="titulo" class="form-control form-control-sm" placeholder="Título" value="@query["titulo"]" />
+                </div>
+                <div class="col-md-3">
+                    <select name="idCategoriaLicitacion" class="form-select form-select-sm">
+                        <option value="">Todas</option>
+                        @foreach (var categoria in categorias)
+                        {
+                            bool isSelected = query["idCategoriaLicitacion"] == categoria.IdCategoriaLicitacion.ToString();
+                            <option value="@categoria.IdCategoriaLicitacion" selected="@(isSelected ? "selected" : null)">
+                                @categoria.Descripcion
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <!-- Second row: Action buttons -->
+            <div class="row mb-3">
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-filter-alt"></i> &nbsp;Filtrar
+                    </button>
+                    <a asp-action="IndexLicitaciones" class="btn btn-warning btn-sm" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>&nbsp;
+                    </a>
+                </div>
+                <!-- Si necesitas un botón de "Nuevo", puedes agregarlo aquí -->
+                <!--
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-success btn-sm" title="Nueva Licitación">
+                        <i class="bx bx-message-square-add"></i> &nbsp;Nuevo
+                    </a>
+                </div>
+                -->
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Código Licitación</th>
+                    <th>Título</th>
+                    <th>Estado</th>
+                    <th>Categoría</th>
+                    <th>Fecha Publicación</th>
+                    <th>Fecha Cierre</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="dropdown">
+                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                   
+                                    <a class="dropdown-item" asp-action="DetalleLicitaciones" asp-route-id="@item.IdLicitacion">
+                                        <i class="bx bx-show me-1"></i> Detalles
+                                    </a>
+
+                                    <a class="dropdown-item" asp-action="Create" asp-route-idlicitacion="@item?.IdLicitacion">
+                                        <i class="bx bx-edit me-1"></i> Postularme
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@item.CodigoLicitacion</td>
+                        <td>@item.Titulo</td> 
+                         <td>
+                            <span class="badge bg-label-secondary">
+                                @(item.EstadoLicitacion?.Descripcion ?? "N/A")
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge @(item.CategoriaLicitacion?.Descripcion == "Pública" ? "bg-label-primary" : "bg-label-warning")">
+                                @(item.CategoriaLicitacion?.Descripcion ?? "N/A")
+                            </span>
+                        </td>
+                        <td>@(item.FechaPublicacion.HasValue ? item.FechaPublicacion.Value.ToShortDateString() : "-")</td>
+                        <td>@(item.FechaCierre.HasValue ? item.FechaCierre.Value.ToShortDateString() : "-")</td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer d-flex justify-content-center">
+        <nav>
+            <ul class="pagination pagination-rounded mb-0">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="IndexLicitaciones"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-idCategoriaLicitacion="@query["idCategoriaLicitacion"]"
+                        >&laquo;</a>
+                    </li>
+                }
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link"
+                           asp-action="IndexLicitaciones"
+                           asp-route-page="@i"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-idCategoriaLicitacion="@query["idCategoriaLicitacion"]"
+                        >@i</a>
+                    </li>
+                }
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="IndexLicitaciones"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-idCategoriaLicitacion="@query["idCategoriaLicitacion"]"
+                        >&raquo;</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

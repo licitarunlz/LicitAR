@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Detalle de la Entidad Licitante";
+    var usuariosAsociados = ViewBag.UsuariosAsociados as List<(string IdUsuario, string Nombre, string Apellido, string Email)>;
 }
 
 <div class="row">
@@ -16,11 +17,11 @@
                     <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Cuit)</b></dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.Cuit)</dd>
 
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.IdProvincia)</b></dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.IdProvincia)</dd>
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Provincia)</b></dt>
+                    <dd class="col-sm-9">@Model.Provincia?.Descripcion</dd>
 
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.IdLocalidad)</b></dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.IdLocalidad)</dd>
+                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Localidad)</b></dt>
+                    <dd class="col-sm-9">@Model.Localidad?.Descripcion</dd>
 
                     <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionBarrio)</b></dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionBarrio)</dd>
@@ -45,50 +46,60 @@
     </div>
 </div>
 
-<h4>Usuarios Asociados</h4>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var usuario in Model.Usuarios)
-        {
-            <tr> <!-- Added missing opening <tr> tag -->
-                <td>@usuario?.Usuario?.Nombre</td>
-                <td>@usuario.Usuario.Email</td>
-                <td>
-                    <form asp-action="DesasociarUsuario" method="post">
-                        <input type="hidden" name="idEntidadLicitante" value="@Model.IdEntidadLicitante" />
-                        <input type="hidden" name="idUsuario" value="@usuario.IdUsuario" />
-                        <button type="submit" class="btn btn-danger">Desasociar</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<h4>Asociar Nuevo Usuario</h4>
-<form asp-action="AsociarUsuario" method="post">
-    <input type="hidden" name="idEntidadLicitante" value="@Model.IdEntidadLicitante" />
-    <select name="idUsuario" class="form-control">
-        @foreach (var user in ViewBag.UsuariosDisponibles)
-        {
-            <option value="@user.Id">@user.Nombre (@user.Email)</option>
-        }
-    </select>
-    <button type="submit" class="btn btn-primary mt-2">Asociar</button>
-</form>
+<div class="card mt-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Usuarios Asociados</h5>
+        <a href="@Url.Action("AssignUsersToEntidad", "Usuario", new { id = Model.IdEntidadLicitante })" class="btn btn-success btn-sm">
+            <i class="bx bx-user-plus"></i>&nbsp;Asignar Usuarios
+        </a>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (usuariosAsociados != null && usuariosAsociados.Any())
+                {
+                    foreach (var usuario in usuariosAsociados)
+                    {
+                        <tr>
+                            <td>@usuario.Nombre</td>
+                            <td>@usuario.Apellido</td>
+                            <td>@usuario.Email</td>
+                            <td>
+                                <form asp-action="DesasociarUsuario" method="post" style="display:inline;" onsubmit="return confirm('¿Está seguro que desea desasociar este usuario?');">
+                                    <input type="hidden" name="idEntidadLicitante" value="@Model.IdEntidadLicitante" />
+                                    <input type="hidden" name="idUsuario" value="@usuario.IdUsuario" />
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="bx bx-user-minus"></i>&nbsp;Desasociar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center">No hay usuarios asociados.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <div class="text-start mt-8">
     <a asp-action="Edit" asp-route-id="@Model?.IdEntidadLicitante" class="btn btn-primary">
-        <i class="bx bx-edit"></i> Editar
+        <i class="bx bx-edit"></i>&nbsp;Editar
     </a>
     <a asp-action="Index" class="btn btn-secondary">
-        <i class="bx bx-arrow-back"></i> Volver al Listado
+        <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
     </a>
 </div>

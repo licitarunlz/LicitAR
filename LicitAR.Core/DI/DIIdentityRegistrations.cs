@@ -31,6 +31,30 @@ namespace LicitAR.Core.DI
             {
                 options.LoginPath = "/Usuario/Login";  // Página de inicio de sesión
                 options.AccessDeniedPath = "/Usuario/Register"; // Página de acceso denegado
+                options.ExpireTimeSpan = TimeSpan.FromHours(8); // Cambia el tiempo según tu necesidad
+                options.SlidingExpiration = true; // Renueva la cookie si hay actividad
+
+                // Refresca los claims si la cookie sigue siendo válida pero los claims están vacíos
+                options.Events.OnValidatePrincipal = async context =>
+                {
+                    var userPrincipal = context.Principal;
+                    if (userPrincipal != null && userPrincipal.Identity != null && userPrincipal.Identity.IsAuthenticated)
+                    {
+                        // Si no hay claims personalizados, refresca el principal
+                        if (userPrincipal.Claims == null || !userPrincipal.Claims.Any(c => c.Type != "nbf" && c.Type != "exp" && c.Type != "iat"))
+                        {
+                            var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<LicitArUser>>();
+                            var user = await userManager.GetUserAsync(userPrincipal);
+                            if (user != null)
+                            {
+                                var claimsFactory = context.HttpContext.RequestServices.GetRequiredService<IUserClaimsPrincipalFactory<LicitArUser>>();
+                                var newPrincipal = await claimsFactory.CreateAsync(user);
+                                context.ReplacePrincipal(newPrincipal);
+                                context.ShouldRenew = true;
+                            }
+                        }
+                    }
+                };
             });
 
             // Configuración de autenticación externa

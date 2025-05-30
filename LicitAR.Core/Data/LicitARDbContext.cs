@@ -1,9 +1,11 @@
 using LicitAR.Core.Data.Models;
 using LicitAR.Core.Data.Models.Identidad;
 using LicitAR.Core.Data.Models.Parametros;
+using LicitAR.Core.Data.Models.Historial;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LicitAR.Core.Data
 {
@@ -28,6 +30,14 @@ namespace LicitAR.Core.Data
         public DbSet<EstadoLicitacion> EstadosLicitacion { get; set; }
         public DbSet<CategoriaLicitacion> CategoriasLicitacion { get; set; }
         public DbSet<Licitacion> Licitaciones { get; set; }
+        public DbSet<LicitacionDetalle> LicitacionesDetalle { get; set; }
+        public DbSet<EstadoOferta> EstadosOferta { get; set; }
+        public DbSet<Oferta> Ofertas { get; set; }
+        public DbSet<OfertaDetalle> OfertasDetalle { get; set; }
+        public DbSet<Evaluacion> Evaluaciones { get; set; }
+        public DbSet<EvaluacionOferta> EvaluacionOfertas { get; set; }
+        public DbSet<EvaluacionOfertaDetalle> EvaluacionOfertasDetalle { get; set; }
+        public DbSet<LicitacionEstadoHistorial> LicitacionEstadoHistorial { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,8 +55,101 @@ namespace LicitAR.Core.Data
             modelBuilder.Entity<TipoPersona>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<Parametria>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<EstadoLicitacion>().OwnsOne(p => p.Audit);
+            modelBuilder.Entity<EstadoEvaluacion>().OwnsOne(p => p.Audit);
+            modelBuilder.Entity<EstadoOferta>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<CategoriaLicitacion>().OwnsOne(p => p.Audit);
+
+            modelBuilder.Entity<Evaluacion>().OwnsOne(p => p.Audit);
+            modelBuilder.Entity<EvaluacionOferta>().OwnsOne(p => p.Audit);
+            modelBuilder.Entity<EvaluacionOfertaDetalle>().OwnsOne(p => p.Audit);
+
+            modelBuilder.Entity<Evaluacion>()
+                        .HasOne(p => p.Licitacion)
+                        .WithMany()
+                        .HasForeignKey(p => p.IdLicitacion);
+ 
+
+            modelBuilder.Entity<Evaluacion>()
+                        .HasMany(l => l.EvaluacionOfertas)
+                        .WithOne(i => i.Evaluacion)
+                        .HasForeignKey(i => i.IdEvaluacion)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Evaluacion>()
+                        .HasMany(l => l.EvaluacionOfertasDetalles)
+                        .WithOne(i => i.Evaluacion)
+                        .HasForeignKey(i => i.IdEvaluacion)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Evaluacion>()
+                .HasOne(p => p.EstadoEvaluacion)
+                .WithMany()
+                .HasForeignKey(p => p.IdEstadoEvaluacion);
+
+            modelBuilder.Entity<EvaluacionOferta>()
+                .HasOne(p => p.Evaluacion)
+                .WithMany(ld => ld.EvaluacionOfertas)
+                .HasForeignKey(p => p.IdEvaluacionOferta)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<EvaluacionOferta>()
+                .HasOne(p => p.Oferta)
+                .WithMany()
+                .HasForeignKey(p => p.IdOferta)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<EvaluacionOfertaDetalle>()
+                .HasOne(p => p.OfertaDetalle)
+                .WithMany()
+                .HasForeignKey(p => p.IdOfertaDetalle)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
+
+            modelBuilder.Entity<EvaluacionOfertaDetalle>()
+                .HasOne(p => p.Evaluacion)
+                .WithMany(p=> p.EvaluacionOfertasDetalles)
+                .HasForeignKey(p => p.IdEvaluacion)
+                .OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<Licitacion>().OwnsOne(p => p.Audit);
+
+            modelBuilder.Entity<Licitacion>()
+                        .HasMany(l => l.Items)
+                        .WithOne(i => i.Licitacion)
+                        .HasForeignKey(i => i.IdLicitacion)
+                        .OnDelete(DeleteBehavior.Cascade); // Borra ítems si se borra la licitación
+
+            modelBuilder.Entity<LicitacionDetalle>().OwnsOne(p => p.Audit);
+
+            modelBuilder.Entity<Oferta>().OwnsOne(p => p.Audit);
+
+
+            modelBuilder.Entity<Oferta>()
+                .HasOne(p => p.EstadoOferta)
+                .WithMany()
+                .HasForeignKey(p => p.IdEstadoOferta);
+
+
+            modelBuilder.Entity<Oferta>()
+                .HasOne(p => p.Licitacion)
+                .WithMany()
+                .HasForeignKey(p => p.IdLicitacion);
+
+            modelBuilder.Entity<Oferta>()
+                        .HasMany(l => l.Items)
+                        .WithOne(i => i.Oferta)
+                        .HasForeignKey(i => i.IdOferta)
+                        .OnDelete(DeleteBehavior.Cascade); // Borra ítems si se borra la licitación
+
+            modelBuilder.Entity<OfertaDetalle>().OwnsOne(p => p.Audit);
+            
+            modelBuilder.Entity<OfertaDetalle>()
+                .HasOne(p => p.LicitacionDetalle)
+                .WithMany(ld => ld.OfertasDetalle)
+                .HasForeignKey(p => p.IdLicitacionDetalle)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<LicitArUser>(entity =>
             {
@@ -101,6 +204,23 @@ namespace LicitAR.Core.Data
                 .HasOne(eu => eu.Usuario)
                 .WithMany(u => u.Personas)
                 .HasForeignKey(eu => eu.IdUsuario);
+
+            modelBuilder.Entity<LicitacionEstadoHistorial>()
+                .HasOne(h => h.Licitacion)
+                .WithMany()
+                .HasForeignKey(h => h.IdLicitacion);
+
+            modelBuilder.Entity<LicitacionEstadoHistorial>()
+                .HasOne(h => h.EstadoNuevo)
+                .WithMany()
+                .HasForeignKey(h => h.IdEstadoNuevo)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<LicitacionEstadoHistorial>()
+                .HasOne(h => h.EstadoAnterior)
+                .WithMany()
+                .HasForeignKey(h => h.IdEstadoAnterior)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Ignorar escritura de IdUsuario después del insert
             modelBuilder.Entity<LicitArUser>()

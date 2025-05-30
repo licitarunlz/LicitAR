@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<PersonaModel>
 
 @{
-    ViewData["Title"] = "Proveedores";
+    ViewData["Title"] = "Oferentes";
     var query = Context.Request.Query;
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
@@ -9,22 +9,28 @@
 <div class="card">
     <div class="card-body">
         <form method="get" asp-action="Index">
+            <!-- First row: Filter fields -->
             <div class="row mb-3">
                 <div class="col-md-3">
-                    <input type="text" name="cuit" class="form-control" placeholder="CUIT" value="@query["cuit"]" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                    <input type="text" name="cuit" class="form-control form-control-sm" placeholder="CUIT" value="@query["cuit"]" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                 </div>
                 <div class="col-md-6">
-                    <input type="text" name="razonSocial" class="form-control" placeholder="Razón Social" value="@query["razonSocial"]" />
+                    <input type="text" name="razonSocial" class="form-control form-control-sm" placeholder="Razón Social" value="@query["razonSocial"]" />
                 </div>
-                <div class="col-md-3 text-end d-flex justify-content-between">
-                    <button type="submit" class="btn btn-primary w-100 me-2">
-                        <i class="bx bx-filter-alt"></i> Filtrar
+            </div>
+            <!-- Second row: Action buttons -->
+            <div class="row mb-3">
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-filter-alt"></i> &nbsp;Filtrar
                     </button>
-                    <a asp-action="Index" class="btn btn-warning" title="Limpiar filtros">
-                        <i class="bx bx-reset"></i>
+                    <a asp-action="Index" class="btn btn-warning btn-sm" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>&nbsp;
                     </a>
-                    <a asp-action="Create" class="btn btn-success ms-2" title="Agregar nueva Licitación">
-                        <i class="bx bx-message-square-add"></i>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-success btn-sm" title="Agregar nueva Licitación">
+                        <i class="bx bx-message-square-add"></i> &nbsp;Nuevo
                     </a>
                 </div>
             </div>
@@ -43,6 +49,9 @@
                         @Html.DisplayNameFor(model => model.RazonSocial)
                     </th>
                     <th>
+                        Activo
+                    </th>
+                    <th>
                         @Html.DisplayNameFor(model => model.IdTipoPersona)
                     </th>
                     <th>
@@ -50,9 +59,6 @@
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Telefono)
-                    </th>
-                    <th>
-                        Activo
                     </th>
                 </tr>
             </thead>
@@ -92,6 +98,9 @@
                             @Html.DisplayFor(modelItem => item.RazonSocial)
                         </td>
                         <td>
+                            <span class="badge bg-label-success">Sí</span>
+                        </td>
+                        <td>
                             @Html.DisplayFor(modelItem => item.TipoPersona)
                         </td>
                         <td>
@@ -99,9 +108,6 @@
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Telefono)
-                        </td>
-                        <td>
-                            <span class="badge bg-label-success">Sí</span>
                         </td>
                     </tr>
                 }
@@ -115,19 +121,37 @@
                 @if (ViewBag.CurrentPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-pageSize="10">&laquo;</a>
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           asp-route-pageSize="10"
+                           asp-route-cuit="@query["cuit"]"
+                           asp-route-razonSocial="@query["razonSocial"]"
+                        >&laquo;</a>
                     </li>
                 }
                 @for (int i = 1; i <= ViewBag.TotalPages; i++)
                 {
                     <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="10">@i</a>
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-pageSize="10"
+                           asp-route-cuit="@query["cuit"]"
+                           asp-route-razonSocial="@query["razonSocial"]"
+                        >@i</a>
                     </li>
                 }
                 @if (ViewBag.CurrentPage < ViewBag.TotalPages)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-pageSize="10">&raquo;</a>
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           asp-route-pageSize="10"
+                           asp-route-cuit="@query["cuit"]"
+                           asp-route-razonSocial="@query["razonSocial"]"
+                        >&raquo;</a>
                     </li>
                 }
             </ul>

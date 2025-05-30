@@ -1,0 +1,149 @@
+﻿@model IEnumerable<LicitAR.Core.Data.Models.Oferta>
+
+@{
+    ViewData["Title"] = "Mis Ofertas";
+    var query = Context.Request.Query;
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+}
+
+<div class="card">
+    <div class="card-body">
+        <form method="get" asp-action="Index">
+            <!-- First row: Filter fields -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <input type="text" name="codigoLicitacion" class="form-control form-control-sm" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="titulo" class="form-control form-control-sm" placeholder="Título" value="@query["titulo"]" />
+                </div>
+            </div>
+            <!-- Second row: Action buttons -->
+            <div class="row mb-3">
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-filter-alt"></i> &nbsp;Filtrar
+                    </button>
+                    <a asp-action="Index" class="btn btn-warning btn-sm" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>&nbsp;
+                    </a>
+                </div>
+                <!-- Si necesitas un botón de "Nuevo", puedes agregarlo aquí como en EntidadLicitante -->
+                <!--
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-success btn-sm" title="Nueva Oferta">
+                        <i class="bx bx-message-square-add"></i> &nbsp;Nuevo
+                    </a>
+                </div>
+                -->
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CodigoOfertaLicitacion)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FechaOferta)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.EstadoOferta.Descripcion)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Licitacion)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="dropdown">
+                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu">
+
+                                    <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdOferta">
+                                        <i class="bx bx-show me-1"></i> Detalles
+                                    </a>
+                                    @if (item.IdEstadoOferta == 1)
+                                    {
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-idoferta="@item?.IdOferta">
+                                            <i class="bx bx-edit me-1"></i> Editar
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Publicar" asp-route-id="@item?.IdOferta">
+                                            <i class="bx bx-upload me-1"></i> Publicar
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Cancelar" asp-route-id="@item?.IdOferta">
+                                            <i class="bx bx-x me-1"></i> Cancelar
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CodigoOfertaLicitacion)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FechaOferta)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EstadoOferta.Descripcion)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion) - @Html.DisplayFor(modelItem => item.Licitacion.Titulo)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex justify-content-center">
+        <nav>
+            <ul class="pagination pagination-rounded mb-0">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                        >&laquo;</a>
+                    </li>
+                }
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                        >@i</a>
+                    </li>
+                }
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                        >&raquo;</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

@@ -1,60 +1,56 @@
-@model IEnumerable<LicitAR.Web.Models.OferenteModel>
+@model IEnumerable<LicitAR.Core.Business.Licitaciones.OferenteResumen>
 @{
-    ViewData["Title"] = "Oferentes - " + Model.FirstOrDefault()?.TituloLicitacion;
+    ViewData["Title"] = "Oferentes - " + (ViewBag.TituloLicitacion ?? "");
 }
 
 <div class="card">
     <div class="card-header">
-        <h5 class="card-title">@Model.FirstOrDefault()?.TituloLicitacion</h5>
-        <p>@Model.FirstOrDefault()?.RequisitosLicitacion</p>
+        <h5 class="card-title">@ViewBag.TituloLicitacion</h5>
+        <p>@ViewBag.RequisitosLicitacion</p>
     </div>
-    <div class="table-responsive text-nowrap">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre Entidad</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var oferente in Model)
-                {
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive text-nowrap">
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>@oferente.Id</td>
-                        <td>@oferente.NombreEntidad</td>
-                        <td>@oferente.Fecha.ToShortDateString()</td>
-                        <td>
-                            <span class="badge @(oferente.CumpleRequisitos ? "bg-label-success" : "bg-label-danger")">
-                                @(oferente.CumpleRequisitos ? "Sí" : "No")
-                            </span>
-                        </td>
-                        <td>
-                            <div class="dropdown">
-                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="javascript:void(0);">
-                                        <i class="bx bx-edit-alt me-1"></i> Editar
-                                    </a>
-                                    <a class="dropdown-item" href="javascript:void(0);">
-                                        <i class="bx bx-trash me-1"></i> Eliminar
-                                    </a>
-                                </div>
-                            </div>
-                        </td>
+                        <th>Razón Social</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var oferente in Model)
+                    {
+                        <tr>
+                            <td>@oferente.RazonSocial</td>
+                            <td>@oferente.FechaOferta.ToShortDateString()</td>
+                            <td>
+                                <span class="badge bg-label-info">
+                                    @oferente.EstadoOferta
+                                </span>
+                            </td>
+                            <td>
+                                <a class="btn btn-sm btn-primary" href="@Url.Action("Details", "Ofertas", new { id = oferente.IdOferta })">
+                                    <i class="bx bx-search"></i> Ver Detalle
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info m-4">
+            No hay postulaciones a esta licitación.
+        </div>
+    }
+    <div class="card-footer text-start">
+        <a href="/Licitacion/Index" class="btn btn-primary">
+            <i class="bx bx-arrow-back"></i>&nbsp;Volver al listado
+        </a>
     </div>
-</div>
-
-<div class="mt-4 mb-3">
-    <a href="/Licitacion/Index" class="btn btn-primary">
-        <i class="bx bx-arrow-back"></i> Volver a Licitaciones
-    </a>
 </div>

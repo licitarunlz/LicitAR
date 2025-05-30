@@ -1,0 +1,202 @@
+﻿@model LicitAR.Core.Data.Models.Oferta
+
+@{
+    ViewData["Title"] = "Editar Postulación a Licitación a licitación";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+    var licitacion = Model.Licitacion;
+    var subtotal = Model.Items.Sum(x => x.ImporteSubtotal);
+}
+
+<form asp-action="Edit" id="form-licitacion">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <input type="hidden" asp-for="IdLicitacion" value="@licitacion.IdLicitacion" />
+    <input type="hidden" asp-for="CodigoOfertaLicitacion" value="@Model.CodigoOfertaLicitacion" />
+    <input type="hidden" asp-for="IdEstadoOferta" value="@Model.IdEstadoOferta" />
+    <input type="hidden" asp-for="IdOferta" value="@Model.IdOferta" />
+    <input type="hidden" asp-for="IdPersona" value="@Model.IdPersona" />
+    <input type="hidden" asp-for="FechaOferta" value="@Model.FechaOferta" />
+    <div class="row">
+        <div class="col-xl">
+            <div class="card mb-6">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><b> @(licitacion.CodigoLicitacion)</b> - @(licitacion.Titulo) </h5>
+                </div>
+
+                <div class="card-body">
+                    <dl class="row">
+
+                        <dt class="col-sm-3"><b>Descripción</b></dt>
+                        <dd class="col-sm-9">@(licitacion.Descripcion)</dd>
+
+
+                        <dt class="col-sm-3"><b>Tipo de Licitación</b></dt>
+                        <dd class="col-sm-9">@(licitacion.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")</dd>
+
+                        <hr />
+                        <dt class="col-sm-3"><b>Nro. Oferta</b></dt>
+                        <dd class="col-sm-9">@(Model.CodigoOfertaLicitacion )</dd>
+
+                        <dt class="col-sm-3"><b>Detalle</b></dt>
+                        <dd class="col-sm-9"></dd>
+                        <div class="mb-3 mt-3">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <td><b>NRO ITEM</b></td>
+                                        <td><b>ITEM</b></td>
+                                        <td><b>DESCRIPCIÓN</b></td>
+                                        <td><b>CANTIDAD</b></td>
+                                        <td><b>PRECIO UNITARIO</b></td>
+                                        <td><b>SUBTOTAL</b></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < licitacion.Items.Count; i++)
+                                    {
+                                        var item = licitacion.Items.ToArray()[i];
+                                        var itemOferta = Model.Items.FirstOrDefault(x => x.IdLicitacionDetalle == item.IdLicitacionDetalle);
+                                        <tr>
+                                            <td>
+                                                #@(item.NroItem + 1)
+                                                <input name="Items[@i].IdLicitacionDetalle" type="hidden" class="form-control" value="@item.IdLicitacionDetalle" />
+
+                                            </td>
+
+                                            <td>
+                                                @(item.Item)
+                                                <input name="Items[@i].IdOfertaDetalle" type="hidden" class="form-control" value="@itemOferta.IdOfertaDetalle" />
+
+
+                                            </td>
+
+
+
+
+                                            <td>
+                                                @(item.Descripcion)
+
+                                                <input name="Items[@i].IdOferta" type="hidden" class="form-control" value="@itemOferta.IdOferta" />
+
+                                            </td>
+
+                                            <td>@(item.Cantidad)</td>
+                                            <input name="Items[@i].Cantidad" disabled type="hidden" class="form-control" value="@item.Cantidad" />
+
+                                            <td>
+                                                <input name="Items[@i].ImporteUnitario"
+                                                       type="number"
+                                                       step="0.01"
+                                                       class="form-control item-precio"
+                                                       data-index="@i"
+                                                       value="@itemOferta.ImporteUnitario" />
+                                                <span data-valmsg-for="Items[@i].ImporteUnitario" class="text-danger"></span>
+                                            </td>
+                                            <td>
+                                                <span class="item-subtotal" id="subtotal-@i">@itemOferta.ImporteSubtotal</span>
+                                                <input name="Items[@i].ImporteSubtotal" type="hidden" class="form-control" value="@itemOferta.ImporteSubtotal" />
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="5" class="text-start"><strong>TOTAL GENERAL:</strong></td>
+                                        <td><strong><span id="total-general">@subtotal</span></strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+
+                            <div class="alert alert-danger alert-dismissible fade show py-6 mt-2" role="alert" id="validacion-errores" style="display:none">
+                            </div>
+                        </div>
+
+
+                        <dt class="col-sm-3"><b>Fecha de Publicación</b></dt>
+                        <dd class="col-sm-9">@(licitacion.FechaPublicacion)</dd>
+
+                        <dt class="col-sm-3"><b>Fecha de Cierre</b></dt>
+                        <dd class="col-sm-9">@(licitacion.FechaCierre)</dd>
+                    </dl>
+                </div>
+                <div class="card-footer text-start">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bx bx-edit"></i>&nbsp;Editar
+                    </button>
+                    <a asp-action="Details" asp-route-id="@Model.IdOferta" class="btn btn-secondary">
+                        <i class="bx bx-arrow-back"></i>&nbsp;Volver 
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section BusinessScripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+
+           function recalcularTotales() {
+            let total = 0;
+
+            $(".item-precio").each(function () {
+                debugger;
+                const index = $(this).data("index");
+                const precio = parseFloat($(this).val()) || 0;
+                const cantidad = parseFloat($("input[name='Items[" + index + "].Cantidad']").val()) || 0;
+                const subtotal = (cantidad * precio).toFixed(2);
+                $("#subtotal-" + index).text(subtotal);
+                $("input[name='Items[" + index + "].ImporteSubtotal']").val(subtotal);
+
+                total += cantidad * precio;
+            });
+
+            $("#total-general").text(total.toFixed(2));
+        }
+
+        $(document).ready(function () {
+            $(".item-precio").on("input", function () {
+                recalcularTotales();
+            });
+
+            $("form").on("submit", function (e) {
+                let esValido = true;
+                let mensajes = [];
+
+                $("#validacion-errores").hide();
+
+                $(".item-precio").each(function () {
+                    const index = $(this).data("index");
+                    const precio = $(this).val().trim();
+                    const cantidad = $("input[name='Items[" + index + "].Cantidad']").val();
+
+                    let errores = [];
+
+                    if (!precio || isNaN(precio) || parseFloat(precio) <= 0) {
+                        errores.push("Precio inválido");
+                        esValido = false;
+                    }
+
+                    if (!cantidad || isNaN(cantidad) || parseFloat(cantidad) <= 0) {
+                        errores.push("Cantidad inválida");
+                        esValido = false;
+                    }
+
+                    if (errores.length > 0) {
+                        mensajes.push(`<li><b>Item #${index + 1}</b>: ${errores.join(", ")}</li>`);
+                    }
+                });
+
+                if (!esValido) {
+                    e.preventDefault();
+                    $("#validacion-errores").show();
+                    $("#validacion-errores").html(`<ul>${mensajes.join("")}</ul>`);
+                }
+            });
+        });
+    </script>
+}

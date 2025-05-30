@@ -4,6 +4,8 @@
     ViewData["Title"] = "Licitaciones";
     var query = Context.Request.Query;
     var categorias = ViewBag.CategoriasLicitacion as IEnumerable<LicitAR.Core.Data.Models.Parametros.CategoriaLicitacion>;
+    var estados = ViewBag.EstadosLicitacion as IEnumerable<LicitAR.Core.Data.Models.Parametros.EstadoLicitacion>;
+
 }
 
 <div class="card">
@@ -14,10 +16,10 @@
                 <div class="col-md-2">
                     <input type="text" name="codigoLicitacion" class="form-control form-control-sm" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input type="text" name="titulo" class="form-control form-control-sm" placeholder="Título" value="@query["titulo"]" />
                 </div>
-                <div class="col-md-2">
+                <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
                     <select name="idCategoriaLicitacion" class="form-select form-select-sm">
                         <option value="">Todas</option>
                         @foreach (var categoria in categorias)
@@ -29,29 +31,42 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
+                    <select name="idEstadoLicitacion" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        @if (estados != null)
+                        {
+                            foreach (var estado in estados)
+                            {
+                                bool isSelected = query["idEstadoLicitacion"] == estado.IdEstadoLicitacion.ToString();
+                                <option value="@estado.IdEstadoLicitacion" selected="@(isSelected ? "selected" : null)">
+                                    @estado.Descripcion
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
                     <input type="date" name="fechaPublicacion" class="form-control form-control-sm" placeholder="Fecha Publicación" value="@query["fechaPublicacion"]" />
                 </div>
-                <div class="col-md-2">
+                <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
                     <input type="date" name="fechaCierre" class="form-control form-control-sm" placeholder="Fecha Cierre" value="@query["fechaCierre"]" />
                 </div>
             </div>
 
             <!-- Second row: Action buttons -->
             <div class="row mb-3">
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary btn-sm w-100">
-                        <i class="bx bx-filter-alt"></i> Filtrar
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-filter-alt"></i> &nbsp;Filtrar
                     </button>
-                </div>
-                <div class="col-md-1">
-                    <a asp-action="Index" class="btn btn-warning btn-sm w-100" title="Limpiar filtros">
-                        <i class="bx bx-reset"></i> 
+                    <a asp-action="Index" class="btn btn-warning btn-sm" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>&nbsp;
                     </a>
                 </div>
-                <div class="col-md-1">
-                    <a asp-action="Create" class="btn btn-success btn-sm w-100" title="Agregar nueva Licitación">
-                        <i class="bx bx-message-square-add"></i> 
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-success btn-sm" title="Agregar nueva Licitación">
+                        <i class="bx bx-message-square-add"></i> &nbsp;Nuevo
                     </a>
                 </div>
             </div>
@@ -64,11 +79,10 @@
                     <th></th>
                     <th>Código Licitación</th>
                     <th>Título</th>
-                    <th>Descripción</th>
-                    <th>Fecha Publicación</th>
-                    <th>Fecha Cierre</th>
                     <th>Estado</th>
                     <th>Categoría</th>
+                    <th>Fecha Publicación</th>
+                    <th>Fecha Cierre</th>
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -81,28 +95,49 @@
                                     <i class="bx bx-dots-vertical-rounded"></i>
                                 </button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdLicitacion">
-                                        <i class="bx bx-edit-alt me-1"></i> Editar
-                                    </a>
                                     <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdLicitacion">
-                                        <i class="bx bx-show me-1"></i> Detalles
+                                        <i class="bx bx-show me-1"></i>&nbsp;Detalles
                                     </a>
-                                    <a class="dropdown-item" asp-action="Offerer" asp-route-id="@item.IdLicitacion">
-                                        <i class="bx bx-group me-1"></i> Ver Oferentes
+                                    @if (item.IdEstadoLicitacion == 1)
+                                    {
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdLicitacion">
+                                            <i class="bx bx-edit-alt me-1"></i>&nbsp;Editar
+                                        </a>
+                                    }
+                                    @if (item.IdEstadoLicitacion == 1)
+                                    {
+                                        <a class="dropdown-item" asp-action="Publicar" asp-route-id="@item.IdLicitacion">
+                                            <i class="bx bx-upload me-1"></i>&nbsp;Publicar
+                                        </a>
+                                    }
+                                    @if ((item.IdEstadoLicitacion == 3 || item.IdEstadoLicitacion == 7) && item.FechaCierre.HasValue && item.FechaCierre.Value < DateTime.Now)
+                                    {
+                                        <a class="dropdown-item" asp-action="Evaluar" asp-route-id="@item.IdLicitacion">
+                                            <i class="bx bx-upload me-1"></i>&nbsp;Evaluar
+                                        </a>
+                                    }
+                                    @if (item.IdEstadoLicitacion == 7)
+                                    {
+                                        <a class="dropdown-item" asp-action="Offerer" asp-route-id="@item.IdLicitacion">
+                                            <i class="bx bx-group me-1"></i>&nbsp;Ver Oferentes
+                                        </a>
+                                    }
+                                    <a class="dropdown-item" asp-action="History" asp-route-id="@item.IdLicitacion">
+                                        <i class="bx bx-history me-1"></i>&nbsp;Historial
                                     </a>
-                                    <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdLicitacion">
-                                        <i class="bx bx-trash me-1"></i> Eliminar
-                                    </a>
+                                    @if (item.IdEstadoLicitacion == 1)
+                                    {
+                                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdLicitacion">
+                                            <i class="bx bx-trash me-1"></i>&nbsp;Eliminar
+                                        </a>
+                                    }
                                 </div>
                             </div>
                         </td>
                         <td>@item.CodigoLicitacion</td>
                         <td>@item.Titulo</td>
-                        <td>@item.Descripcion</td>
-                        <td>@item.FechaPublicacion.ToShortDateString()</td>
-                        <td>@item.FechaCierre.ToShortDateString()</td>
                         <td>
-                            <span class="badge bg-label-secondary">
+                            <span class="@(item.IdEstadoLicitacion == 1? "badge bg-label-secondary":(item.IdEstadoLicitacion == 3? "badge bg-label-success":"badge bg-label-primary") )">
                                 @(item.EstadoLicitacion?.Descripcion ?? "N/A")
                             </span>
                         </td>
@@ -111,6 +146,9 @@
                                 @(item.CategoriaLicitacion?.Descripcion ?? "N/A")
                             </span>
                         </td>
+                        <td>@(item.FechaPublicacion.HasValue ? item.FechaPublicacion.Value.ToShortDateString() : "-")</td>
+                        <td>@(item.FechaCierre.HasValue ? item.FechaCierre.Value.ToShortDateString() : "-")</td>
+
                     </tr>
                 }
             </tbody>
@@ -123,19 +161,49 @@
                 @if (ViewBag.CurrentPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-pageSize="10">&laquo;</a>
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-idCategoriaLicitacion="@query["idCategoriaLicitacion"]"
+                           asp-route-idEstadoLicitacion="@query["idEstadoLicitacion"]"
+                           asp-route-fechaPublicacion="@query["fechaPublicacion"]"
+                           asp-route-fechaCierre="@query["fechaCierre"]"
+                        >&laquo;</a>
                     </li>
                 }
                 @for (int i = 1; i <= ViewBag.TotalPages; i++)
                 {
                     <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="10">@i</a>
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-idCategoriaLicitacion="@query["idCategoriaLicitacion"]"
+                           asp-route-idEstadoLicitacion="@query["idEstadoLicitacion"]"
+                           asp-route-fechaPublicacion="@query["fechaPublicacion"]"
+                           asp-route-fechaCierre="@query["fechaCierre"]"
+                        >@i</a>
                     </li>
                 }
                 @if (ViewBag.CurrentPage < ViewBag.TotalPages)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-pageSize="10">&raquo;</a>
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-idCategoriaLicitacion="@query["idCategoriaLicitacion"]"
+                           asp-route-idEstadoLicitacion="@query["idEstadoLicitacion"]"
+                           asp-route-fechaPublicacion="@query["fechaPublicacion"]"
+                           asp-route-fechaCierre="@query["fechaCierre"]"
+                        >&raquo;</a>
                     </li>
                 }
             </ul>

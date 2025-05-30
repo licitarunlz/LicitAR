@@ -32,7 +32,7 @@ namespace LicitAR.Core.Utils
 
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(LicitArUser user)
         {
-            Console.WriteLine("[Generating Claims...] ");
+            //Console.WriteLine("[Generating Claims...] ");
             var identity = await base.GenerateClaimsAsync(user);
             //Console.WriteLine($"User:: {user.Email} - {user.Id}");
             var userFromDB = await _context.Users.FirstOrDefaultAsync(x => x.Email == user.Email);
@@ -40,7 +40,7 @@ namespace LicitAR.Core.Utils
             {
                 // Add LicitARId claim
                 identity.AddClaim(new Claim("LicitARId", userFromDB.IdUsuario.ToString()));
-                Console.WriteLine($"LicitARId claim added: {userFromDB.IdUsuario}");
+                //Console.WriteLine($"LicitARId claim added: {userFromDB.IdUsuario}");
             }
             else
             {
