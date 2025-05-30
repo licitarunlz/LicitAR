@@ -3,6 +3,13 @@
     TempData.Keep();
     string? currentPage = ViewContext.HttpContext.Request.Path;
     var user = ViewContext.HttpContext.User;
+
+    // Declarar variables de estado de menú aquí para que estén disponibles en toda la vista
+    var isOferentesActive = currentPage.StartsWith("/Persona") || currentPage.StartsWith("/Proveedores");
+    var isEntidadesActive = currentPage.StartsWith("/EntidadLicitante");
+    var isProvinciasActive = currentPage.Equals("/Parametro/Provincias", StringComparison.OrdinalIgnoreCase);
+    var isLocalidadesActive = currentPage.Equals("/Parametro/Localidades", StringComparison.OrdinalIgnoreCase);
+    var isUsuariosActive = currentPage.StartsWith("/Usuario", StringComparison.OrdinalIgnoreCase);
 }
 
 <!-- Menu -->
@@ -86,9 +93,6 @@
             <!-- Oferentes -->
             @if (user.HasClaim("permission", "Proveedores.Ver"))
             {
-                @{
-                    var isOferentesActive = currentPage.StartsWith("/Persona") || currentPage.StartsWith("/Proveedores");
-                }
                 <li class='menu-item@(isOferentesActive ? " active open" : "")'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-user"></i>
@@ -118,9 +122,6 @@
             <!-- Entidades Licitantes -->
             @if (user.HasClaim("permission", "EntidadLicitante.Ver"))
             {
-                @{
-                    var isEntidadesActive = currentPage.StartsWith("/EntidadLicitante");
-                }
                 <li class='menu-item@(isEntidadesActive ? " active open" : "")'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-user"></i>
@@ -179,10 +180,6 @@
             <!-- Configuración -->
             @if (user.HasClaim("permission", "Configuracion.Ver"))
             {
-                @{
-                    var isProvinciasActive = currentPage.Equals("/Parametro/Provincias", StringComparison.OrdinalIgnoreCase);
-                    var isLocalidadesActive = currentPage.Equals("/Parametro/Localidades", StringComparison.OrdinalIgnoreCase);
-                }
                 <li class='menu-item@((isProvinciasActive || isLocalidadesActive) ? " active open" : "")'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-cog"></i>
@@ -236,9 +233,6 @@
             <!-- Seguridad -->
             @if (user.HasClaim("permission", "Usuarios.Ver"))
             {
-                @{
-                    var isUsuariosActive = currentPage.StartsWith("/Usuario", StringComparison.OrdinalIgnoreCase);
-                }
                 <li class='menu-item@((isUsuariosActive) ? " active open" : "")'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-shield"></i>

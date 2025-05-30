@@ -13,11 +13,13 @@ namespace LicitAR.Web.Controllers
     {
         private readonly ILicitacionManager _licitacionManager;
         private readonly ILogger<LicitacionController> _logger;
+        private readonly IOfertaManager _ofertaManager;
 
-        public LicitacionController(ILicitacionManager licitacionManager, ILogger<LicitacionController> logger)
+        public LicitacionController(ILicitacionManager licitacionManager, ILogger<LicitacionController> logger, IOfertaManager ofertaManager)
         {
             _licitacionManager = licitacionManager;
             _logger = logger;
+            _ofertaManager = ofertaManager;
         }
 
         // GET: Licitacion
@@ -273,20 +275,16 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Oferente.Ver")]
         public async Task<IActionResult> Offerer(int id)
         {
-            // Obtener la licitación desde la base de datos
             var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id);
             if (licitacion == null)
             {
-                return View("NotFound"); // Manejar caso de licitación no encontrada
+                return View("NotFound");
             }
 
-            // Simulación de datos de oferentes
-            var oferentes = new List<OferenteModel>
-            {
-                new OferenteModel { Id = 1, IdLicitacion = id, TituloLicitacion = licitacion.Titulo, RequisitosLicitacion = licitacion.Descripcion, NombreEntidad = "Entidad A", Fecha = DateTime.Now.AddDays(-2), CumpleRequisitos = true },
-                new OferenteModel { Id = 2, IdLicitacion = id, TituloLicitacion = licitacion.Titulo, RequisitosLicitacion = licitacion.Descripcion, NombreEntidad = "Entidad B", Fecha = DateTime.Now.AddDays(-1), CumpleRequisitos = false },
-                new OferenteModel { Id = 3, IdLicitacion = id, TituloLicitacion = licitacion.Titulo, RequisitosLicitacion = licitacion.Descripcion, NombreEntidad = "Entidad C", Fecha = DateTime.Now, CumpleRequisitos = true }
-            };
+            var oferentes = await _ofertaManager.GetOferentesPorLicitacionAsync(id);
+
+            ViewBag.TituloLicitacion = licitacion.Titulo;
+            ViewBag.RequisitosLicitacion = licitacion.Descripcion;
 
             return View(oferentes);
         }

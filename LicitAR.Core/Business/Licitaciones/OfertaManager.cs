@@ -20,12 +20,13 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<List<Oferta>> GetAllOfertasPorLicitacionAsync(int IdLicitacion);
         Task<List<Oferta>> GetAllOfertasPorPersonaAsync(int IdPersona);
         Task<Oferta?> GetOfertaByIdAsync(int idOferta);
+        Task<List<OferenteResumen>> GetOferentesPorLicitacionAsync(int idLicitacion);
     }
 
     public class OfertaManager : IOfertaManager
     {
         private readonly LicitARDbContext _dbContext;
-
+    
         public OfertaManager(LicitARDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -152,6 +153,24 @@ namespace LicitAR.Core.Business.Licitaciones
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<OferenteResumen>> GetOferentesPorLicitacionAsync(int idLicitacion)
+        {
+            return await _dbContext.Ofertas
+                .Where(o => o.IdLicitacion == idLicitacion && o.Audit.FechaBaja == null)
+                .Include(o => o.Persona)
+                .Include(o => o.EstadoOferta)
+                .Select(o => new OferenteResumen
+                {
+                    IdPersona = o.IdPersona,
+                    RazonSocial = o.Persona.RazonSocial,
+                    FechaOferta = o.FechaOferta,
+                    EstadoOferta = o.EstadoOferta != null ? o.EstadoOferta.Descripcion : "",
+                    IdOferta = o.IdOferta
+                })
+                .ToListAsync();
+        }
+
         private async Task<string?> ObtenerProximoCodigoOfertaAsync(int idLicitacion)
         {
             var connection = _dbContext.Database.GetDbConnection();
@@ -175,5 +194,14 @@ namespace LicitAR.Core.Business.Licitaciones
                 return result?.ToString();
             }
         }
+    }
+
+    public class OferenteResumen
+    {
+        public int IdPersona { get; set; }
+        public string? RazonSocial { get; set; }
+        public DateTime FechaOferta { get; set; }
+        public string? EstadoOferta { get; set; }
+        public int IdOferta { get; set; }
     }
 }
