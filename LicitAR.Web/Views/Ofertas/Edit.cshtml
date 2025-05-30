@@ -121,22 +121,17 @@
                         <dd class="col-sm-9">@(licitacion.FechaCierre)</dd>
                     </dl>
                 </div>
-
+                <div class="card-footer text-start">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bx bx-edit"></i>&nbsp;Editar
+                    </button>
+                    <a asp-action="Details" asp-route-id="@Model.IdOferta" class="btn btn-secondary">
+                        <i class="bx bx-arrow-back"></i>&nbsp;Volver 
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="text-start mt-8">
-        <a asp-action="Details" asp-route-id="@Model.IdOferta" class="btn btn-secondary">
-            <i class="bx bx-arrow-back"></i>&nbsp;Volver 
-        </a>
-        <button type="submit" class="btn btn-primary">
-            <i class="bx bx-edit"></i>&nbsp;Editar
-        </button>
-
-
-    </div>
-
 </form>
 
 @section BusinessScripts {

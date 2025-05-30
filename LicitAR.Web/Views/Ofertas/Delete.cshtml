@@ -98,14 +98,14 @@
             <dd class="col-sm-9">@Html.DisplayFor(model => model.Licitacion.FechaCierre)</dd>
         </dl>
     </div>
-</div>
-<div class="text-start mt-8">
-    <form asp-action="Cancelar">
-        <input type="hidden" asp-for="IdOferta" />
-        <input type="submit" value="Cancelar" class="btn btn-danger" />
+    <div class="card-footer text-start">
+        <form asp-action="Cancelar" class="d-inline">
+            <input type="hidden" asp-for="IdOferta" />
+            <input type="submit" value="Cancelar" class="btn btn-danger" />
+        </form>
         <a asp-action="Index" class="btn btn-secondary">
             <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
         </a>
-    </form>
+    </div>
 </div>
 

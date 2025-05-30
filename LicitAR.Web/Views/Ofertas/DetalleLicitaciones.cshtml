@@ -59,15 +59,14 @@
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.FechaCierre)</dd>
                 </dl>
             </div>
+            <div class="card-footer text-start">
+                <a asp-action="Create" asp-route-idlicitacion="@Model?.IdLicitacion" class="btn btn-primary">
+                    <i class="bx bx-edit"></i>&nbsp;Postularme
+                </a>
+                <a asp-action="IndexLicitaciones" class="btn btn-secondary">
+                    <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
+                </a>
+            </div>
         </div>
     </div>
-</div>
-
-<div class="text-start mt-8">
-    <a asp-action="Create" asp-route-idlicitacion="@Model?.IdLicitacion" class="btn btn-primary">
-        <i class="bx bx-edit"></i>&nbsp;Postularme
-    </a>
-    <a asp-action="IndexLicitaciones" class="btn btn-secondary">
-        <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
-    </a>
 </div>
