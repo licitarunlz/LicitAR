@@ -87,11 +87,11 @@
                 </div>
                 <div class="row mt-4">
                     <div class="col d-flex gap-2 align-items-stretch">
+                        <a asp-action="Details" asp-route-id="@licitacion?.IdLicitacion" class="btn btn-secondary d-flex align-items-center justify-content-center" style="height:48px; min-width:170px;">
+                            <i class="bx bx-show"></i>&nbsp;Detalle
+                        </a>
                         <a asp-action="Index" class="btn btn-secondary d-flex align-items-center justify-content-center" style="height:48px; min-width:170px;">
                             <i class="bx bx-arrow-back"></i>&nbsp;Volver al listado
-                        </a>
-                        <a asp-action="Details" asp-route-id="@licitacion?.IdLicitacion" class="btn btn-secondary d-flex align-items-center justify-content-center" style="height:48px; min-width:170px;">
-                            <i class="bx bx-show"></i>&nbsp;Ver detalle
                         </a>
                     </div>
                 </div>

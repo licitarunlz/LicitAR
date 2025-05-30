@@ -68,9 +68,6 @@
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.FechaCierre)</dd>
                 </dl>
                 <div class="text-start mt-8">
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
-                    </a>
                     <a asp-action="Index" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
                         <i class="bx bx-cog"></i>&nbsp;Acciones
                     </a>
@@ -111,6 +108,9 @@
                             </a>
                         }
                     </div>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
+                    </a>
                 </div>
             </div>
         </div>

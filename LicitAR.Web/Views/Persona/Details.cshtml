@@ -99,18 +99,14 @@
                     </dd>
                 </dl>
             </div>
+            <div class="card-footer text-start">
+                <a asp-action="Edit" asp-route-id="@Model?.IdPersona" class="btn btn-primary">
+                    <i class="bx bx-edit"></i>&nbsp;Editar
+                </a>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bx bx-arrow-back"></i>&nbsp;Volver al listado
+                </a>
+            </div>
         </div>
     </div>
-</div>
-
- 
-
-
-<div class="text-start mt-8">
-    <a asp-action="Edit" asp-route-id="@Model?.IdPersona" class="btn btn-primary">
-        <i class="bx bx-edit"></i>&nbsp;Editar
-    </a>
-    <a asp-action="Index" class="btn btn-secondary">
-        <i class="bx bx-arrow-back"></i>&nbsp;Volver al listado
-    </a>
 </div>
