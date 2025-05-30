@@ -63,13 +63,23 @@
                 @if (ViewBag.CurrentPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="Localidades" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-pageSize="10">&laquo;</a>
+                        <a class="page-link"
+                           asp-action="Localidades"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           asp-route-pageSize="10"
+                           asp-route-descripcion="@query["descripcion"]"
+                        >&laquo;</a>
                     </li>
                 }
                 @if (ViewBag.StartPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="Localidades" asp-route-page="1" asp-route-pageSize="10">1</a>
+                        <a class="page-link"
+                           asp-action="Localidades"
+                           asp-route-page="1"
+                           asp-route-pageSize="10"
+                           asp-route-descripcion="@query["descripcion"]"
+                        >1</a>
                     </li>
                     @if (ViewBag.StartPage > 2)
                     {
@@ -81,7 +91,12 @@
                 @for (int i = ViewBag.StartPage; i <= ViewBag.EndPage; i++)
                 {
                     <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                        <a class="page-link" asp-action="Localidades" asp-route-page="@i" asp-route-pageSize="10">@i</a>
+                        <a class="page-link"
+                           asp-action="Localidades"
+                           asp-route-page="@i"
+                           asp-route-pageSize="10"
+                           asp-route-descripcion="@query["descripcion"]"
+                        >@i</a>
                     </li>
                 }
                 @if (ViewBag.EndPage < ViewBag.TotalPages)
@@ -93,13 +108,23 @@
                         </li>
                     }
                     <li class="page-item">
-                        <a class="page-link" asp-action="Localidades" asp-route-page="@(ViewBag.TotalPages)" asp-route-pageSize="10">@ViewBag.TotalPages</a>
+                        <a class="page-link"
+                           asp-action="Localidades"
+                           asp-route-page="@(ViewBag.TotalPages)"
+                           asp-route-pageSize="10"
+                           asp-route-descripcion="@query["descripcion"]"
+                        >@ViewBag.TotalPages</a>
                     </li>
                 }
                 @if (ViewBag.CurrentPage < ViewBag.TotalPages)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="Localidades" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-pageSize="10">&raquo;</a>
+                        <a class="page-link"
+                           asp-action="Localidades"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           asp-route-pageSize="10"
+                           asp-route-descripcion="@query["descripcion"]"
+                        >&raquo;</a>
                     </li>
                 }
             </ul>
