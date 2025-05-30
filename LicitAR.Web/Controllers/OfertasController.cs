@@ -321,9 +321,9 @@ namespace LicitAR.Web.Controllers
         // POST: Ofertas/Delete/5
         [HttpPost, ActionName("Publicar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PublicarConfirmed(int id)
+        public async Task<IActionResult> PublicarConfirmed(int idOferta)
         {
-            var result = _ofertaManager.PublicarOfertaAsync(id, IdentityHelper.GetUserLicitARId(User));
+            var result = await _ofertaManager.PublicarOfertaAsync(idOferta, IdentityHelper.GetUserLicitARId(User));
 
             return RedirectToAction(nameof(Index));
         }
