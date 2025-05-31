@@ -38,6 +38,7 @@ namespace LicitAR.Core.Data
         public DbSet<EvaluacionOferta> EvaluacionOfertas { get; set; }
         public DbSet<EvaluacionOfertaDetalle> EvaluacionOfertasDetalle { get; set; }
         public DbSet<LicitacionEstadoHistorial> LicitacionEstadoHistorial { get; set; }
+        public DbSet<LicitacionInvitacion> LicitacionInvitacion { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -221,6 +222,19 @@ namespace LicitAR.Core.Data
                 .WithMany()
                 .HasForeignKey(h => h.IdEstadoAnterior)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<LicitacionInvitacion>()
+                .HasKey(x => new { x.IdLicitacion, x.IdPersona });
+            modelBuilder.Entity<LicitacionInvitacion>()
+                .HasOne(x => x.Licitacion)
+                .WithMany()
+                .HasForeignKey(x => x.IdLicitacion);
+            modelBuilder.Entity<LicitacionInvitacion>()
+                .HasOne(x => x.Persona)
+                .WithMany()
+                .HasForeignKey(x => x.IdPersona);
+
+            modelBuilder.Entity<LicitacionInvitacion>().OwnsOne(p => p.Audit);
 
             // Ignorar escritura de IdUsuario después del insert
             modelBuilder.Entity<LicitArUser>()

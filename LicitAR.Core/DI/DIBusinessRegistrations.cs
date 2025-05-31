@@ -24,6 +24,7 @@ namespace LicitAR.Core.DI
             services.AddScoped<IRolManager, RolManager>();
             services.AddScoped<IParametrosManager, ParametrosManager>();
             services.AddScoped<IEvaluacionManager, EvaluacionManager>();
+            services.AddScoped<ILicitacionInvitacionManager, LicitacionInvitacionManager>();
 
             return services;
         }

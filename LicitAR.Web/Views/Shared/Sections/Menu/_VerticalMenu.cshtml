@@ -70,6 +70,15 @@
                                 </a>
                             </li>
                         }
+                        @if (user.HasClaim("permission", "Licitaciones.Ver"))
+                        {
+                            <!-- Nueva opción: Licitaciones Invitación -->
+                            <li class='menu-item@(currentPage == "/LicitacionInvitacion/Index" ? " active" : "")'>
+                                <a asp-action="Index" asp-controller="LicitacionInvitacion" class="menu-link">
+                                    <div>Invitaciones</div>
+                                </a>
+                            </li>
+                        }
                         @if (user.HasClaim("permission", "LicitacionesEstados.Ver"))
                         {
                             <li class='menu-item'>
@@ -352,7 +361,6 @@
                             <div>Mis Ofertas</div>
                         </a>
                     </li>
-
 
                 </ul>
             </li>

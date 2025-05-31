@@ -122,6 +122,12 @@
                                             <i class="bx bx-group me-1"></i>&nbsp;Ver Oferentes
                                         </a>
                                     }
+                                    @if (item.IdEstadoLicitacion > 1)
+                                    {
+                                        <a class="dropdown-item" asp-controller="LicitacionInvitacion" asp-action="AssignPersonaToLicitacion" asp-route-idLicitacion="@item.IdLicitacion">
+                                            <i class="bx bx-user-plus me-1"></i>&nbsp;Invitar Oferentes
+                                        </a>
+                                    }
                                     <a class="dropdown-item" asp-action="History" asp-route-id="@item.IdLicitacion">
                                         <i class="bx bx-history me-1"></i>&nbsp;Historial
                                     </a>

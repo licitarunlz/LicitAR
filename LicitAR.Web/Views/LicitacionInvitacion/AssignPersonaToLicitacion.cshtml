@@ -1,0 +1,157 @@
+@model LicitAR.Web.Controllers.AssignPersonaToLicitacionViewModel
+
+@{
+    ViewData["Title"] = $"Invitar oferentes a la licitación: {Model.CodigoLicitacion} - {Model.TituloLicitacion}";
+}
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="AssignPersonaToLicitacion" method="post">
+            <input type="hidden" asp-for="IdLicitacion" />
+            <input type="hidden" asp-for="CodigoLicitacion" />
+            <input type="hidden" asp-for="TituloLicitacion" />
+
+            <div class="row">
+                <div class="col-md-5">
+                    <h6>Personas disponibles</h6>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" placeholder="Buscar personas..." id="availableSearch" />
+                        <button type="button" class="btn btn-primary" id="filterAvailable">
+                            <i class="bx bx-filter-alt"></i>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="resetAvailable">
+                            <i class="bx bx-reset"></i>
+                        </button>
+                    </div>
+                    <ul id="availablePersonas" class="list-group">
+                        @foreach (var persona in Model.AvailablePersonas)
+                        {
+                            <li class="list-group-item">
+                                <input type="checkbox" class="persona-checkbox" value="@persona.IdPersona" />
+                                @persona.Cuit - @persona.RazonSocial
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="col-md-2 text-center align-self-center">
+                    <button type="button" class="btn btn-primary mb-2" id="addSelected">Agregar &gt;&gt;</button>
+                    <button type="button" class="btn btn-secondary" id="removeSelected">&lt;&lt; Quitar</button>
+                </div>
+                <div class="col-md-5">
+                    <h6>Personas invitadas</h6>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" placeholder="Buscar personas..." id="assignedSearch" />
+                        <button type="button" class="btn btn-primary" id="filterAssigned">
+                            <i class="bx bx-filter-alt"></i>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="resetAssigned">
+                            <i class="bx bx-reset"></i>
+                        </button>
+                    </div>
+                    <ul id="assignedPersonas" class="list-group">
+                        @foreach (var persona in Model.AssignedPersonas)
+                        {
+                            <li class="list-group-item">
+                                <input type="checkbox" class="persona-checkbox" value="@persona.IdPersona" />
+                                @persona.Cuit - @persona.RazonSocial
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-12 text-start">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bx bx-save"></i>&nbsp;Guardar
+                    </button>
+                    <a asp-action="Index" asp-controller="LicitacionInvitacion" asp-route-idLicitacion="@Model.IdLicitacion" class="btn btn-secondary">
+                        <i class="bx bx-arrow-back"></i>&nbsp;Volver al listado
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section PageScripts {
+    <script>
+        // Filter logic for available personas
+        document.getElementById('filterAvailable').addEventListener('click', function () {
+            filterList('availableSearch', 'availablePersonas');
+        });
+
+        document.getElementById('resetAvailable').addEventListener('click', function () {
+            resetList('availableSearch', 'availablePersonas');
+        });
+
+        document.getElementById('availableSearch').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                filterList('availableSearch', 'availablePersonas');
+            }
+        });
+
+        // Filter logic for assigned personas
+        document.getElementById('filterAssigned').addEventListener('click', function () {
+            filterList('assignedSearch', 'assignedPersonas');
+        });
+
+        document.getElementById('resetAssigned').addEventListener('click', function () {
+            resetList('assignedSearch', 'assignedPersonas');
+        });
+
+        document.getElementById('assignedSearch').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                filterList('assignedSearch', 'assignedPersonas');
+            }
+        });
+
+        // Move selected personas between lists
+        document.getElementById('addSelected').addEventListener('click', function () {
+            moveSelected('availablePersonas', 'assignedPersonas', 'SelectedToAdd');
+        });
+
+        document.getElementById('removeSelected').addEventListener('click', function () {
+            moveSelected('assignedPersonas', 'availablePersonas', 'SelectedToRemove');
+        });
+
+        function filterList(searchInputId, listId) {
+            const searchInput = document.getElementById(searchInputId).value.toLowerCase();
+            const listItems = document.getElementById(listId).querySelectorAll('li');
+
+            listItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchInput) ? '' : 'none';
+            });
+        }
+
+        function resetList(searchInputId, listId) {
+            document.getElementById(searchInputId).value = '';
+            const listItems = document.getElementById(listId).querySelectorAll('li');
+
+            listItems.forEach(item => {
+                item.style.display = '';
+            });
+        }
+
+        function moveSelected(sourceId, targetId, hiddenInputName) {
+            const sourceList = document.getElementById(sourceId);
+            const targetList = document.getElementById(targetId);
+
+            Array.from(sourceList.querySelectorAll('.persona-checkbox:checked')).forEach(checkbox => {
+                const listItem = checkbox.closest('li');
+                checkbox.checked = false;
+
+                // Add a hidden input to the form for tracking selected personas
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = hiddenInputName;
+                hiddenInput.value = checkbox.value;
+
+                listItem.appendChild(hiddenInput);
+                targetList.appendChild(listItem);
+            });
+        }
+    </script>
+}
