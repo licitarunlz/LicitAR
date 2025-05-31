@@ -1,15 +1,18 @@
 ﻿@model EvaluacionModel
 
 @using LicitAR.Core.Data.Models
+@using Newtonsoft.Json
 
 @{
     ViewData["Title"] = "Evaluación de licitación";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
     Licitacion licitacion = ViewBag.licitacion;
     IEnumerable<Oferta> ofertas = ViewBag.ofertas;
+    decimal importeTotal = 0;
 }
 
-<div class="container-fluid py-4">
+
+<div  >
     <!-- Card: Información general de la licitación -->
     <div class="card mb-4">
         <div class="card-body">
@@ -68,7 +71,7 @@
                                     <tr>
 
                                         <td></td>
-                                        <td><b>PROVEEDOR</b></td>
+                                        <td><b>OFERENTE</b></td>
                                         <td><b>PRECIO UNITARIO</b></td>
                                         <td><b>COMPARATIVA</b></td>
                                         <td><b>PRECIO SUBTOTAL</b></td>
@@ -83,15 +86,18 @@
 
 
                                         <tr>
-                                            <td>
+                                            <td>  
                                                 <input type="radio"
-                                                       name="Ofertas[@item.IdLicitacionDetalle]"
-                                                       value="@ofertaDetalleProv.IdOfertaDetalle"
-                                                       class="oferta-radio"
-                                                       data-item="@item.IdLicitacionDetalle"
-                                                       data-itemnombre="@item.Item"
-                                                       data-proveedor="@ofertaProv.Persona?.RazonSocial"
-                                                       data-subtotal="@ofertaDetalleProv.ImporteSubtotal" />
+                                                name="Ofertas[@item.IdLicitacionDetalle]"
+                                                value="@ofertaDetalleProv.IdOfertaDetalle"
+                                                class="oferta-radio"
+                                                data-item="@item.IdLicitacionDetalle"
+                                                data-itemnombre="@item.Item"
+                                                disabled
+                                                @(Model.Ofertas != null && Model.Ofertas.ContainsKey(item.IdLicitacionDetalle) &&
+                                                 Model.Ofertas[item.IdLicitacionDetalle] == ofertaDetalleProv.IdOfertaDetalle ? "checked" : "")
+                                                data-proveedor="@ofertaProv.Persona?.RazonSocial"
+                                                data-subtotal="@ofertaDetalleProv.ImporteSubtotal" />
                                             </td>
                                             <td>@ofertaProv.Persona?.Cuit - @ofertaProv.Persona?.RazonSocial </td>
 
@@ -113,77 +119,35 @@
                 <div class="alert alert-success alert-dismissible" role="alert">
 
                     <h4><b>Resumen de Selección</b></h4>
-                    <ul id="resumen-seleccion" class="list-group mb-3"></ul>
-                    <p><strong>Subtotal total: $<span id="total-suma">0.00</span></strong></p>
+                    <ul id="resumen-seleccion" class="list-group mb-3">
+
+                        @foreach (var kvp in Model.Ofertas)
+                        {
+                            var detalle = licitacion.Items.FirstOrDefault(i => i.IdLicitacionDetalle == kvp.Key);
+                            var oferta = ofertas.SelectMany(o => o.Items)
+                            .FirstOrDefault(oi => oi.IdOfertaDetalle == kvp.Value);
+
+                            <li class="list-group-item">
+                                <b>Item:</b> @detalle?.Item |
+                                <b>Oferente:</b> @oferta?.Oferta.Persona?.RazonSocial |
+                                <b>Subtotal:</b> $@oferta?.ImporteSubtotal
+                            </li>
+
+                            importeTotal += oferta.ImporteSubtotal;
+                        }
+
+                    </ul>
+                    <p><strong>Subtotal total: $<span id="total-suma">@importeTotal</span></strong></p>
                 </div>
 
-                <div class="row">
+                <!--<div class="row">
                     <div class="text-end">
                         <button type="submit" id="btnGuardarEvaluacion" class="btn btn-primary">Guardar Evaluación</button>
                     </div>
-                </div>
+                </div> -->
             </form>
         </div>
     </div>
 
 </div>
-
-@section BusinessScripts {
-    <script>
-        const resumen = {};
-        const resumenList = document.getElementById('resumen-seleccion');
-        const totalSpan = document.getElementById('total-suma');
-
-        document.querySelectorAll('.oferta-radio').forEach(radio => {
-            radio.addEventListener('change', function () {
-                const itemId = this.dataset.item;
-                const itemNombre = this.dataset.itemnombre;
-                const proveedor = this.dataset.proveedor;
-                const subtotal = parseFloat(this.dataset.subtotal) || 0;
-
-                // Guardamos la selección
-                resumen[itemId] = {
-                    itemNombre,
-                    proveedor,
-                    subtotal
-                };
-
-                actualizarResumen();
-            });
-        });
-
-        function actualizarResumen() {
-            resumenList.innerHTML = '';
-            let total = 0;
-
-            Object.values(resumen).forEach(sel => {
-                const li = document.createElement('li');
-                li.classList.add('list-group-item');
-                li.textContent = `${sel.itemNombre}: ${sel.proveedor} - $${sel.subtotal.toFixed(2)}`;
-                resumenList.appendChild(li);
-
-                total += sel.subtotal;
-            });
-
-            totalSpan.textContent = total.toFixed(2);
-        }
-
-                // Validar antes del submit
-        document.getElementById('btnGuardarEvaluacion').addEventListener('click', function (e) {
-
-            let nombres = new Set();
-            document.querySelectorAll('.oferta-radio').forEach(radio => {
-                nombres.add(radio.name);
-            });
-            let totalItems = nombres.size;
-
-            const seleccionados = Object.keys(resumen).length;
-
-            if (seleccionados < totalItems) {
-                e.preventDefault();
-                alert("Debe seleccionar una oferta por cada ítem antes de continuar.");
-            }
-        });
-
-    </script>
-}
+ 

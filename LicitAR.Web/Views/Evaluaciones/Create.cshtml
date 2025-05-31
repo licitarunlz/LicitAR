@@ -68,7 +68,7 @@
                                     <tr>
 
                                         <td></td>
-                                        <td><b>PROVEEDOR</b></td>
+                                        <td><b>OFERENTE</b></td>
                                         <td><b>PRECIO UNITARIO</b></td>
                                         <td><b>COMPARATIVA</b></td>
                                         <td><b>PRECIO SUBTOTAL</b></td>
@@ -159,7 +159,7 @@
             Object.values(resumen).forEach(sel => {
                 const li = document.createElement('li');
                 li.classList.add('list-group-item');
-                li.textContent = `${sel.itemNombre}: ${sel.proveedor} - $${sel.subtotal.toFixed(2)}`;
+                li.innerHTML = `<b>Item:</b> ${sel.itemNombre} | <b>Oferente: </b> ${sel.proveedor} | <b>Subtotal</b> $${sel.subtotal.toFixed(2)}`;
                 resumenList.appendChild(li);
 
                 total += sel.subtotal;

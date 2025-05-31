@@ -1,50 +1,237 @@
-﻿@model LicitAR.Core.Data.Models.Evaluacion
+﻿@model EvaluacionModel
+
+@using LicitAR.Core.Data.Models
+@using Newtonsoft.Json
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Evaluación de licitación";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+    Licitacion licitacion = ViewBag.licitacion;
+    IEnumerable<Oferta> ofertas = ViewBag.ofertas;
+    decimal importeTotal = 0;
 }
 
-<h1>Edit</h1>
-
-<h4>Evaluacion</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdEvaluacion" />
-            <div class="form-group">
-                <label asp-for="IdLicitacion" class="control-label"></label>
-                <select asp-for="IdLicitacion" class="form-control" asp-items="ViewBag.IdLicitacion"></select>
-                <span asp-validation-for="IdLicitacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdUsuarioEvaluador" class="control-label"></label>
-                <input asp-for="IdUsuarioEvaluador" class="form-control" />
-                <span asp-validation-for="IdUsuarioEvaluador" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaInicioEvaluacion" class="control-label"></label>
-                <input asp-for="FechaInicioEvaluacion" class="form-control" />
-                <span asp-validation-for="FechaInicioEvaluacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaFinEvaluacion" class="control-label"></label>
-                <input asp-for="FechaFinEvaluacion" class="form-control" />
-                <span asp-validation-for="FechaFinEvaluacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <!-- Card: Información general de la licitación -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Cod. Licitación  <b>@licitacion.CodigoLicitacion</b></h5>
+            <div class="row">
+                <div class="col-md-3"><strong>Título:</strong> </div>
+                <div class="col-md-9">@licitacion.Titulo</div>
+                <br />
+                <div class="col-md-3"><strong>Descripción:</strong> </div>
+                <div class="col-md-9">@licitacion.Descripcion</div>
+                <div class="col-md-3"><strong>Fecha Publicacion:</strong> </div>
+                <div class="col-md-9">@licitacion.FechaPublicacion.Value</div>
+                <div class="col-md-3"><strong>Fecha Cierre de Ofertas:</strong> </div>
+                <div class="col-md-9">@licitacion.FechaCierre.Value</div>
+                <div class="col-md-3"><strong>Categoría:</strong> </div>
+                <div class="col-md-9">@licitacion.CategoriaLicitacion.Descripcion</div>
+            </div>
+        </div>
+    </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    <div class="card mb-6">
+        <div class="card-header">
+            <b>Ofertas por Item</b>
+        </div>
+        <div class="card-body">
+            <form method="post" asp-action="Create">
+
+                <input asp-for="IdEvaluacion" type="hidden" />
+                <input asp-for="IdLicitacion" type="hidden" />
+                <input asp-for="IdUsuarioEvaluador" type="hidden" />
+                <input asp-for="FechaInicioEvaluacion" type="hidden" />
+                <input asp-for="FechaFinEvaluacion" type="hidden" />
+
+                @foreach (var item in licitacion.Items)
+                {
+
+                    <div class="card mb-6">
+                        <div class="card-header">
+                            <b>#@(item.NroItem + 1) - @item.Item</b>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3"><strong>Descripción:</strong> </div>
+                                <div class="col-md-9">@item.Descripcion</div>
+
+                                <div class="col-md-3"><strong>Cantidad:</strong> </div>
+                                <div class="col-md-9">@item.Cantidad</div>
+
+                                <div class="col-md-3"><strong>Precio Unitario de Referencia:</strong> </div>
+                                <div class="col-md-9"> $ @item.PrecioEstimadoUnitario</div>
+                            </div>
+
+
+                            <table class="table mt-6">
+                                <thead>
+                                    <tr>
+
+                                        <td></td>
+                                        <td><b>OFERENTE</b></td>
+                                        <td><b>PRECIO UNITARIO</b></td>
+                                        <td><b>COMPARATIVA</b></td>
+                                        <td><b>PRECIO SUBTOTAL</b></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < ofertas.Count(); i++)
+                                    {
+                                        var ofertaProv = ofertas.ToArray()[i];
+                                        var ofertaDetalleProv = ofertaProv.Items?.FirstOrDefault(x => x.IdLicitacionDetalle == item.IdLicitacionDetalle);
+                                        if (ofertaDetalleProv == null) continue;
+
+
+                                        <tr>
+                                            <td>
+                                                <input type="radio"
+                                                       name="Ofertas[@item.IdLicitacionDetalle]"
+                                                       value="@ofertaDetalleProv.IdOfertaDetalle"
+                                                       class="oferta-radio"
+                                                       data-item="@item.IdLicitacionDetalle"
+                                                       data-itemnombre="@item.Item"
+                                                @(Model.Ofertas != null && Model.Ofertas.ContainsKey(item.IdLicitacionDetalle) &&
+                                                    Model.Ofertas[item.IdLicitacionDetalle] == ofertaDetalleProv.IdOfertaDetalle ? "checked" : "")
+                                                       data-proveedor="@ofertaProv.Persona?.RazonSocial"
+                                                       data-subtotal="@ofertaDetalleProv.ImporteSubtotal" />
+                                            </td>
+                                            <td>@ofertaProv.Persona?.Cuit - @ofertaProv.Persona?.RazonSocial </td>
+
+                                            <td>$ @(ofertaDetalleProv?.ImporteUnitario)</td>
+
+                                            <td>@(ofertaDetalleProv?.ImporteUnitario > item.PrecioEstimadoUnitario ? "Mayor" : "Menor")</td>
+
+                                            <td>$ @(ofertaDetalleProv?.ImporteSubtotal)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                }
+
+
+                <div class="alert alert-success alert-dismissible" role="alert">
+
+                    <h4><b>Resumen de Selección</b></h4>
+                    <ul id="resumen-seleccion" class="list-group mb-3">
+
+                        @foreach (var item in licitacion.Items.OrderBy(i => i.NroItem))
+                        {
+                            if (Model.Ofertas.TryGetValue(item.IdLicitacionDetalle, out var idOfertaDetalle))
+                            {
+                                var ofertaSeleccionada = ofertas
+                                .SelectMany(o => o.Items)
+                                .FirstOrDefault(oi => oi.IdOfertaDetalle == idOfertaDetalle);
+
+                                if (ofertaSeleccionada != null)
+                                {
+                                    importeTotal += ofertaSeleccionada.ImporteSubtotal;
+
+                                    <li class="list-group-item">
+                                        <b>Item:</b> @item.Item |
+                                        <b>Oferente:</b> @ofertaSeleccionada.Oferta.Persona?.RazonSocial |
+                                        <b>Subtotal:</b> $@ofertaSeleccionada.ImporteSubtotal
+                                    </li>
+                                }
+                            }
+                        }
+
+                    </ul>
+                    <p><strong>Subtotal total: $<span id="total-suma">@importeTotal</span></strong></p>
+                </div>
+
+                <div class="row">
+                    <div class="text-end">
+                        <button type="submit" id="btnGuardarEvaluacion" class="btn btn-primary">Guardar Evaluación</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div> 
+ 
+@section BusinessScripts {
+        <script>
+
+            const resumen = {};
+
+            @foreach (var kvp in Model.Ofertas)
+            {
+                var detalle = licitacion.Items.FirstOrDefault(i => i.IdLicitacionDetalle == kvp.Key);
+                var oferta = ofertas.SelectMany(o => o.Items)
+                    .FirstOrDefault(oi => oi.IdOfertaDetalle == kvp.Value);
+
+                if (detalle != null && oferta != null)
+                {
+                    <text> 
+                    resumen[@kvp.Key] = {
+                        itemNombre: "@detalle.Item.Replace("\"", "\\\"")",
+                        proveedor: "@oferta.Oferta.Persona?.RazonSocial?.Replace("\"", "\\\"")",
+                        subtotal: @oferta.ImporteSubtotal.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)
+                    };
+                    </text>
+                }
+            }
+               
+            const resumenList = document.getElementById('resumen-seleccion');
+            const totalSpan = document.getElementById('total-suma');
+
+            document.querySelectorAll('.oferta-radio').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    const itemId = this.dataset.item;
+                    const itemNombre = this.dataset.itemnombre;
+                    const proveedor = this.dataset.proveedor;
+                    const subtotal = parseFloat(this.dataset.subtotal) || 0;
+
+                    // Guardamos la selección
+                    resumen[itemId] = {
+                        itemNombre,
+                        proveedor,
+                        subtotal
+                    };
+
+                    actualizarResumen();
+                });
+            });
+
+            function actualizarResumen() {
+                resumenList.innerHTML = '';
+                let total = 0;
+
+                Object.values(resumen).forEach(sel => {
+                    const li = document.createElement('li');
+                    li.classList.add('list-group-item');
+                    li.innerHTML = `<b>Item:</b> ${sel.itemNombre} | <b>Oferente: </b> ${sel.proveedor} | <b>Subtotal</b> $${sel.subtotal.toFixed(2)}`;
+                    resumenList.appendChild(li);
+
+                    total += sel.subtotal;
+                });
+
+                totalSpan.textContent = total.toFixed(2);
+            }
+
+                    // Validar antes del submit
+            document.getElementById('btnGuardarEvaluacion').addEventListener('click', function (e) {
+
+                let nombres = new Set();
+                document.querySelectorAll('.oferta-radio').forEach(radio => {
+                    nombres.add(radio.name);
+                });
+                let totalItems = nombres.size;
+
+                const seleccionados = Object.keys(resumen).length;
+
+                if (seleccionados < totalItems) {
+                    e.preventDefault();
+                    alert("Debe seleccionar una oferta por cada ítem antes de continuar.");
+                }
+            });
+
+        </script>
+} 

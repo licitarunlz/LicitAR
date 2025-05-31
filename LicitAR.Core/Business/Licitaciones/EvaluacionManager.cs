@@ -19,6 +19,7 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<List<Evaluacion>> GetAllEvaluacionesAsync();
         Task<Evaluacion?> GetEvaluacionByIdAsync(int id);
         Task<bool> UpdateEvaluacionAsync(Evaluacion evaluacion, int userId);
+        Task<Evaluacion?> GetEvaluacionByLicitacionAsync(int idLicitacion);
     }
 
     public class EvaluacionManager : IEvaluacionManager
@@ -54,6 +55,16 @@ namespace LicitAR.Core.Business.Licitaciones
                 .FirstOrDefaultAsync(l => l.IdEvaluacion == id);
         }
 
+
+
+        public async Task<Evaluacion?> GetEvaluacionByLicitacionAsync(int idLicitacion)
+        {
+            return await _dbContext.Evaluaciones
+                .Include(l => l.EvaluacionOfertas) // Include EstadoLicitacion
+                .Include(l => l.EstadoEvaluacion) // Include CategoriaLicitacion
+                .Include(l => l.EvaluacionOfertasDetalles)
+                .FirstOrDefaultAsync(l => l.IdLicitacion == idLicitacion);
+        }
         public async Task CreateEvaluacionAsync(Evaluacion evaluacion, int userId)
         {
             try

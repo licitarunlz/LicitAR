@@ -41,13 +41,14 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Evaluaciones/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [HttpGet("/Licitacion/Evaluaciones/{idEvaluacion:int}/Detalles")]
+        public async Task<IActionResult> Details(int? idEvaluacion)
         {
 
-            if (id == null)
+            if (idEvaluacion == null)
                 return View("NotFound");
 
-            var evaluacion = await _evaluacionManager.GetEvaluacionByIdAsync(id.Value);
+            var evaluacion = await _evaluacionManager.GetEvaluacionByIdAsync(idEvaluacion.Value);
 
             if (evaluacion == null)
             {
@@ -141,21 +142,54 @@ namespace LicitAR.Web.Controllers
             return View(evaluacion);
         }
 
-        // GET: Evaluaciones/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: /Licitacion/{idLicitacion:int}/Evaluaciones/
+        [HttpGet("/Licitacion/Evaluaciones/{idEvaluacion:int}/Editar")]
+        public async Task<IActionResult> Edit(int? idEvaluacion)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var evaluacion = await _context.Evaluaciones.FindAsync(id);
+            if (idEvaluacion == null)
+                return View("NotFound");
+
+            var evaluacion = await _evaluacionManager.GetEvaluacionByIdAsync(idEvaluacion.Value);
+
             if (evaluacion == null)
             {
-                return NotFound();
+                return View("NotFound"); // Updated
             }
-            ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion", evaluacion.IdLicitacion);
-            return View(evaluacion);
+
+            var licitacion = await _licitacionManager.GetLicitacionByIdAsync(evaluacion.IdLicitacion);
+            if (licitacion == null)
+            {
+                return View("NotFound"); // Updated
+            }
+
+
+            licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
+
+            ViewBag.licitacion = licitacion;
+
+            var ofertas = await _ofertaManager.GetAllOfertasPorLicitacionAsync(evaluacion.IdLicitacion);
+
+            ViewBag.ofertas = ofertas;
+            EvaluacionModel model = new EvaluacionModel();
+            model.SetEvaluacion(evaluacion);
+            var ofertasGanadoras = evaluacion.EvaluacionOfertasDetalles.Select(x => x.IdOfertaDetalle);
+            var ofertasGanadorasModel = new Dictionary<int, int>();
+
+            foreach (var oferta in ofertas)
+            {
+                foreach (var ofertaDetalle in oferta.Items)
+                {
+
+                    if (ofertasGanadoras.Contains(ofertaDetalle.IdOfertaDetalle))
+                    {
+                        ofertasGanadorasModel.Add(ofertaDetalle.IdLicitacionDetalle, ofertaDetalle.IdOfertaDetalle);
+                    }
+                }
+            }
+            model.Ofertas = ofertasGanadorasModel;
+
+            return View(model);
         }
 
         // POST: Evaluaciones/Edit/5

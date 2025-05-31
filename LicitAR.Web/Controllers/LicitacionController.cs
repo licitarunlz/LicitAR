@@ -14,12 +14,15 @@ namespace LicitAR.Web.Controllers
         private readonly ILicitacionManager _licitacionManager;
         private readonly ILogger<LicitacionController> _logger;
         private readonly IOfertaManager _ofertaManager;
+        private readonly IEvaluacionManager _evaluacionManager;
 
-        public LicitacionController(ILicitacionManager licitacionManager, ILogger<LicitacionController> logger, IOfertaManager ofertaManager)
+        public LicitacionController(ILicitacionManager licitacionManager, ILogger<LicitacionController> logger, IOfertaManager ofertaManager,
+                                    IEvaluacionManager evaluacionManager)
         {
             _licitacionManager = licitacionManager;
             _logger = logger;
             _ofertaManager = ofertaManager;
+            _evaluacionManager = evaluacionManager;
         }
 
         // GET: Licitacion
@@ -256,10 +259,18 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Licitaciones.Crear")]
         public async Task<IActionResult> Evaluar(int? id)
         {
+
+            
+
             if (id == null)
             {
                 return View("NotFound"); // Updated
             }
+
+            var evaluacionExistente = await _evaluacionManager.GetEvaluacionByLicitacionAsync(id.Value);
+            if (evaluacionExistente != null)
+                return RedirectToAction("Edit", "Evaluaciones", new { idEvaluacion = evaluacionExistente.IdEvaluacion });
+
 
             bool iniciarEvaluacion = await _licitacionManager.IniciarEvaluacionLicitacionAsync(id.Value, IdentityHelper.GetUserLicitARId(User));
             
