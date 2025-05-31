@@ -4,6 +4,7 @@ using LicitAR.Core.Utils;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -93,16 +94,20 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             try
             {
-                var evaluacionFromDdbb = await _dbContext.Evaluaciones.FirstOrDefaultAsync(x => x.IdEvaluacion == evaluacion.IdEvaluacion);
+                var evaluacionFromDdbb = await _dbContext.Evaluaciones.Include(x=> x.EvaluacionOfertasDetalles)
+                                                .FirstOrDefaultAsync(x => x.IdEvaluacion == evaluacion.IdEvaluacion);
                 if (evaluacionFromDdbb == null)
                     return false;
 
-
                 evaluacionFromDdbb.Audit = AuditHelper.SetModificationData(evaluacionFromDdbb.Audit, userId);
 
-                evaluacionFromDdbb.EvaluacionOfertas = evaluacion.EvaluacionOfertas;
-                evaluacionFromDdbb.EvaluacionOfertasDetalles = evaluacion.EvaluacionOfertasDetalles;
+                evaluacionFromDdbb.EvaluacionOfertasDetalles.Zip(evaluacion.EvaluacionOfertasDetalles, (a, b) =>
+                {
+                    a.IdOfertaDetalle = b.IdOfertaDetalle;
+                    return 0;
+                }).ToList();
 
+            
                 _dbContext.Evaluaciones.Update(evaluacionFromDdbb);
 
                 await _dbContext.SaveChangesAsync();

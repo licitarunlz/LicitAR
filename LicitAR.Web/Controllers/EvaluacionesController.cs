@@ -12,6 +12,7 @@ using LicitAR.Web.Models;
 using LicitAR.Core.Business.Licitaciones;
 using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Utils;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace LicitAR.Web.Controllers
 {
@@ -133,10 +134,7 @@ namespace LicitAR.Web.Controllers
                 eval.EvaluacionOfertasDetalles = evaluacion.GetEvaluacionOferta(table).ToList();
 
                 await _evaluacionManager.CreateEvaluacionAsync(eval, IdentityHelper.GetUserLicitARId(User));
-                return RedirectToAction(nameof(Index));
-                /*_context.Add(evaluacion);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));*/
+                return RedirectToAction(nameof(Index)); 
             }
             ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion", evaluacion.IdLicitacion);
             return View(evaluacion);
@@ -195,37 +193,34 @@ namespace LicitAR.Web.Controllers
         // POST: Evaluaciones/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost("/Licitacion/Evaluaciones/{idEvaluacion:int}/Editar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdEvaluacion,IdLicitacion,IdUsuarioEvaluador,FechaInicioEvaluacion,FechaFinEvaluacion")] Evaluacion evaluacion)
+        public async Task<IActionResult> Edit(int idEvaluacion, EvaluacionModel evaluacionModel)
         {
-            if (id != evaluacion.IdEvaluacion)
+
+
+            if (idEvaluacion != evaluacionModel.IdEvaluacion) // Fix comparison to match IdLicitacion
             {
-                return NotFound();
+                return View("NotFound"); // Updated
             }
 
             if (ModelState.IsValid)
             {
-                try
+                var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
+              
+                var evaluacion = evaluacionModel.GetEvaluacion(audit);
+                evaluacion.IdEvaluacion = evaluacionModel.IdEvaluacion;
+                evaluacion.EvaluacionOfertasDetalles = evaluacionModel.GetEvaluacionOferta(audit).ToList();
+
+                var result = await _evaluacionManager.UpdateEvaluacionAsync(evaluacion, IdentityHelper.GetUserLicitARId(User));
+                if (!result)
                 {
-                    _context.Update(evaluacion);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EvaluacionExists(evaluacion.IdEvaluacion))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return View("NotFound"); // Updated
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion", evaluacion.IdLicitacion);
-            return View(evaluacion);
+            return View(evaluacionModel);
+             
         }
 
         // GET: Evaluaciones/Delete/5
