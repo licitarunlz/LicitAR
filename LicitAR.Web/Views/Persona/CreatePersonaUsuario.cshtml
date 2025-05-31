@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label asp-for="Telefono" class="form-label"></label>
-                                    <input asp-for="Telefono" class="form-control" />
+                                    <input asp-for="Telefono" class="form-control" maxlength="20" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
                                     <span asp-validation-for="Telefono" class="text-danger"></span>
                                 </div>
                             </div>
@@ -82,22 +82,22 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label asp-for="DireccionNumero" class="form-label"></label>
-                                    <input asp-for="DireccionNumero" class="form-control" />
+                                    <input asp-for="DireccionNumero" class="form-control" maxlength="7" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
                                     <span asp-validation-for="DireccionNumero" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label asp-for="DireccionPiso" class="form-label"></label>
-                                    <input asp-for="DireccionPiso" class="form-control" />
+                                    <input asp-for="DireccionPiso" class="form-control" maxlength="7" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
                                     <span asp-validation-for="DireccionPiso" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label asp-for="DireccionDepto" class="form-label"></label>
-                                    <input asp-for="DireccionDepto" class="form-control" />
+                                    <input asp-for="DireccionDepto" class="form-control" maxlength="5" pattern="[A-Za-z0-9]*" inputmode="text" oninput="this.value=this.value.replace(/[^A-Za-z0-9]/g,'')" />
                                     <span asp-validation-for="DireccionDepto" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label asp-for="DireccionCodigoPostal" class="form-label"></label>
-                                    <input asp-for="DireccionCodigoPostal" class="form-control" />
+                                    <input asp-for="DireccionCodigoPostal" class="form-control" maxlength="7" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
                                     <span asp-validation-for="DireccionCodigoPostal" class="text-danger"></span>
                                 </div>
                             </div>
@@ -130,6 +130,16 @@
                 } else {
                     $("#IdLocalidad").append('<option value="">Seleccione una localidad</option>');
                 }
+            });
+
+            // Solo números para Telefono, DireccionNumero, DireccionPiso, DireccionCodigoPostal
+            $('#Telefono, #DireccionNumero, #DireccionPiso, #DireccionCodigoPostal').on('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+
+            // Solo letras y números para DireccionDepto
+            $('#DireccionDepto').on('input', function () {
+                this.value = this.value.replace(/[^A-Za-z0-9]/g, '');
             });
         });
     </script>
