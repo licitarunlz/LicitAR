@@ -73,7 +73,7 @@
                         @if (user.HasClaim("permission", "Licitaciones.Ver"))
                         {
                             <!-- Nueva opción: Licitaciones Invitación -->
-                            <li class='menu-item@(currentPage == "/LicitacionInvitacion/Index" ? " active" : "")'>
+                            <li class='menu-item@(currentPage.StartsWith("/LicitacionInvitacion") ? " active" : "")'>
                                 <a asp-action="Index" asp-controller="LicitacionInvitacion" class="menu-link">
                                     <div>Invitaciones</div>
                                 </a>

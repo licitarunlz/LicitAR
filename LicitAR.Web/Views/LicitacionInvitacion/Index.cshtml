@@ -76,6 +76,7 @@
                         <td>
                             <a class="btn btn-success btn-sm"
                                title="Agregar personas a licitación"
+                               style="padding: 0.15rem 0.35rem; font-size: 0.75rem;"
                                href="@Url.Action("AssignPersonaToLicitacion", "LicitacionInvitacion", new { idLicitacion = item.IdLicitacion })">
                                 <i class="bx bx-plus"></i>
                             </a>
@@ -89,7 +90,11 @@
                             <form asp-action="Remove" method="post" class="d-inline">
                                 <input type="hidden" name="idLicitacion" value="@item.IdLicitacion" />
                                 <input type="hidden" name="idPersona" value="@item.IdPersona" />
-                                <button type="submit" class="btn btn-danger btn-sm" title="Eliminar invitación" onclick="return confirm('¿Está seguro de eliminar la invitación?');">
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        style="padding: 0.15rem 0.35rem; font-size: 0.75rem;"
+                                        title="Eliminar invitación"
+                                        onclick="return confirm('¿Está seguro de eliminar la invitación?');">
                                     <i class="bx bx-trash"></i>
                                 </button>
                             </form>
