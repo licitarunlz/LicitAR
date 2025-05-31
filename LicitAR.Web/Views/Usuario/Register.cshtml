@@ -18,7 +18,7 @@
                         </div>
                     </div>
                     <br>
-                    <h5 class="py-2"><i class="fas fa-user-plus"></i> Información Personal</h5>
+                    <h5 class="py-2"><i class="fas fa-user-plus"></i> Datos personales</h5>
                     @if (!ViewData.ModelState.IsValid)
                     {
                         <div class="alert alert-danger">
@@ -35,9 +35,21 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 @Html.LabelFor(m => m.Cuit, new { @class = "form-label" })
-                                @Html.TextBoxFor(m => m.Cuit, new { @class = "form-control", maxlength = 11 })
+                                @Html.TextBoxFor(m => m.Cuit, new { 
+                                    @class = "form-control", 
+                                    maxlength = 11, 
+                                    pattern = "[0-9]{11}", 
+                                    oninput = "this.value = this.value.replace(/[^0-9]/g, '').slice(0,11);" 
+                                })
                                 @Html.ValidationMessageFor(m => m.Cuit, "", new { @class = "text-danger" })
                             </div>
+                            <div class="col-md-6 mb-3">
+                                @Html.LabelFor(m => m.FechaNacimiento, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.FechaNacimiento, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                                @Html.ValidationMessageFor(m => m.FechaNacimiento, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-6 mb-3">
                                 @Html.LabelFor(m => m.Nombre, new { @class = "form-label" })
                                 @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", maxlength = 30, required = "required" })
@@ -48,28 +60,35 @@
                                 @Html.TextBoxFor(m => m.Apellido, new { @class = "form-control", maxlength = 30, required = "required" })
                                 @Html.ValidationMessageFor(m => m.Apellido, "", new { @class = "text-danger" })
                             </div>
-                            <div class="col-md-6 mb-3">
-                                @Html.LabelFor(m => m.FechaNacimiento, new { @class = "form-label" })
-                                @Html.TextBoxFor(m => m.FechaNacimiento, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
-                                @Html.ValidationMessageFor(m => m.FechaNacimiento, "", new { @class = "text-danger" })
-                            </div>
                         </div>
 
-                        <h5 class="py-2 mt-3"><i class="fas fa-user-plus"></i> Datos de Usuario</h5>
+                        <h5 class="py-2 mt-3"><i class="fas fa-user-plus"></i> Credenciales de acceso</h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 @Html.LabelFor(m => m.Email, new { @class = "form-label" })
                                 @Html.TextBoxFor(m => m.Email, new { @class = "form-control", maxlength = 50, required = "required" })
                                 @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-6 mb-3">
                                 @Html.LabelFor(m => m.Password, new { @class = "form-label" })
-                                @Html.PasswordFor(m => m.Password, new { @class = "form-control", maxlength = 50, required = "required" })
+                                <div class="input-group">
+                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", maxlength = 50, required = "required", id = "Password" })
+                                    <button type="button" class="btn btn-outline-secondary" tabindex="-1" onclick="togglePassword('Password', this)">
+                                        <i class="bx bx-show"></i>
+                                    </button>
+                                </div>
                                 @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                             </div>
                             <div class="col-md-6 mb-3">
                                 @Html.LabelFor(m => m.ConfirmaPassword, new { @class = "form-label" })
-                                @Html.PasswordFor(m => m.ConfirmaPassword, new { @class = "form-control", maxlength = 50, required = "required" })
+                                <div class="input-group">
+                                    @Html.PasswordFor(m => m.ConfirmaPassword, new { @class = "form-control", maxlength = 50, required = "required", id = "ConfirmaPassword" })
+                                    <button type="button" class="btn btn-outline-secondary" tabindex="-1" onclick="togglePassword('ConfirmaPassword', this)">
+                                        <i class="bx bx-show"></i>
+                                    </button>
+                                </div>
                                 @Html.ValidationMessageFor(m => m.ConfirmaPassword, "", new { @class = "text-danger" })
                             </div>
                         </div>
@@ -91,5 +110,18 @@
 
 @section BusinessScripts {
     <script>
+    function togglePassword(fieldId, btn) {
+        var input = document.getElementById(fieldId);
+        var icon = btn.querySelector('i');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('bx-show');
+            icon.classList.add('bx-hide');
+        } else {
+            input.type = "password";
+            icon.classList.remove('bx-hide');
+            icon.classList.add('bx-show');
+        }
+    }
     </script>
 }
