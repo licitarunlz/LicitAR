@@ -39,7 +39,7 @@ namespace LicitAR.Web.Controllers
 
             if (!string.IsNullOrEmpty(codigoLicitacion))
             {
-                query = query.Where(l => l.CodigoLicitacion.Contains(codigoLicitacion));
+                query = query.Where(l => l.CodigoLicitacion != null && l.CodigoLicitacion.Contains(codigoLicitacion, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrEmpty(titulo))
