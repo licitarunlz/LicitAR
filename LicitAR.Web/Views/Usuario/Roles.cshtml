@@ -61,17 +61,26 @@
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
-                @foreach (var item in Model.OrderBy(m => m.Rol.Name))
+                @if (!Model.Any())
                 {
-                    var rowClass = item.CantidadUsuarios == 0 ? "row-grisado" : "row-activo";
-                    <tr class="@rowClass">
-                        <td>@item.Rol.Name (@item.CantidadUsuarios)</td>
-                        <td>
-                            <a class="text-primary me-2" asp-action="AssignUsersToRole" asp-route-roleId="@item.Rol.Id" title="Asociar usuarios al Rol">
-                                <i class="bx bx-group"></i>
-                            </a>
-                        </td>
+                    <tr>
+                        <td colspan="2" class="text-center text-muted">No se han encontrado registros</td>
                     </tr>
+                }
+                else
+                {
+                    foreach (var item in Model.OrderBy(m => m.Rol.Name))
+                    {
+                        var rowClass = item.CantidadUsuarios == 0 ? "row-grisado" : "row-activo";
+                        <tr class="@rowClass">
+                            <td>@item.Rol.Name (@item.CantidadUsuarios)</td>
+                            <td>
+                                <a class="text-primary me-2" asp-action="AssignUsersToRole" asp-route-roleId="@item.Rol.Id" title="Asociar usuarios al Rol">
+                                    <i class="bx bx-group"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>

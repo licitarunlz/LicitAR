@@ -51,18 +51,27 @@
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
-                @foreach (var item in Model)
+                @if (!Model.Any())
                 {
                     <tr>
-                        <td>@item.FechaHora.ToString("g")</td>
-                        <td>@item.UsuarioId</td>
-                        <td>@item.Accion</td>
-                        <td>@item.Entidad</td>
-                        <td>@item.EntidadId</td>
-                        <td>@item.Descripcion</td>
-                        <td>@item.IpCliente</td>
-                        <td>@item.UserAgent</td>
+                        <td colspan="8" class="text-center text-muted">No se han encontrado registros</td>
                     </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.FechaHora.ToString("g")</td>
+                            <td>@item.UsuarioId</td>
+                            <td>@item.Accion</td>
+                            <td>@item.Entidad</td>
+                            <td>@item.EntidadId</td>
+                            <td>@item.Descripcion</td>
+                            <td>@item.IpCliente</td>
+                            <td>@item.UserAgent</td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>

@@ -70,36 +70,45 @@
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
-                @foreach (var item in Model)
+                @if (!Model.Any())
                 {
                     <tr>
-                        <td>
-                            <a class="btn btn-success btn-sm"
-                               title="Agregar personas a licitación"
-                               style="padding: 0.15rem 0.35rem; font-size: 0.75rem;"
-                               href="@Url.Action("AssignPersonaToLicitacion", "LicitacionInvitacion", new { idLicitacion = item.IdLicitacion })">
-                                <i class="bx bx-plus"></i>
-                            </a>
-                        </td>
-                        <td>@item.CodigoLicitacion</td>
-                        <td>@item.TituloLicitacion</td>
-                        <td>@item.Cuit</td>
-                        <td>@item.RazonSocial</td>
-                        <td>@(item.FechaInvitacion != DateTime.MinValue ? item.FechaInvitacion.ToShortDateString() : "-")</td>
-                        <td>
-                            <form asp-action="Remove" method="post" class="d-inline">
-                                <input type="hidden" name="idLicitacion" value="@item.IdLicitacion" />
-                                <input type="hidden" name="idPersona" value="@item.IdPersona" />
-                                <button type="submit"
-                                        class="btn btn-danger btn-sm"
-                                        style="padding: 0.15rem 0.35rem; font-size: 0.75rem;"
-                                        title="Eliminar invitación"
-                                        onclick="return confirm('¿Está seguro de eliminar la invitación?');">
-                                    <i class="bx bx-trash"></i>
-                                </button>
-                            </form>
-                        </td>
+                        <td colspan="7" class="text-center text-muted">No se han encontrado registros</td>
                     </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a class="btn btn-success btn-sm"
+                                   title="Agregar personas a licitación"
+                                   style="padding: 0.15rem 0.35rem; font-size: 0.75rem;"
+                                   href="@Url.Action("AssignPersonaToLicitacion", "LicitacionInvitacion", new { idLicitacion = item.IdLicitacion })">
+                                    <i class="bx bx-plus"></i>
+                                </a>
+                            </td>
+                            <td>@item.CodigoLicitacion</td>
+                            <td>@item.TituloLicitacion</td>
+                            <td>@item.Cuit</td>
+                            <td>@item.RazonSocial</td>
+                            <td>@(item.FechaInvitacion != DateTime.MinValue ? item.FechaInvitacion.ToShortDateString() : "-")</td>
+                            <td>
+                                <form asp-action="Remove" method="post" class="d-inline">
+                                    <input type="hidden" name="idLicitacion" value="@item.IdLicitacion" />
+                                    <input type="hidden" name="idPersona" value="@item.IdPersona" />
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            style="padding: 0.15rem 0.35rem; font-size: 0.75rem;"
+                                            title="Eliminar invitación"
+                                            onclick="return confirm('¿Está seguro de eliminar la invitación?');">
+                                        <i class="bx bx-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>

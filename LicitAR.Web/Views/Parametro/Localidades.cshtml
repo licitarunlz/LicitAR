@@ -37,22 +37,31 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @if (!Model.Any())
                 {
                     <tr>
-                        <td>@item.Descripcion</td>
-                        <td>@item.Provincia.Descripcion</td>
-                        <td>
-                            @if (item.Enabled)
-                            {
-                                <span class="badge bg-label-success">Sí</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-label-danger">No</span>
-                            }
-                        </td>
+                        <td colspan="3" class="text-center text-muted">No se han encontrado registros</td>
                     </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Descripcion</td>
+                            <td>@item.Provincia.Descripcion</td>
+                            <td>
+                                @if (item.Enabled)
+                                {
+                                    <span class="badge bg-label-success">Sí</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-label-danger">No</span>
+                                }
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>

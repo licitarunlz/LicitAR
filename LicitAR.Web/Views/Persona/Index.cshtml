@@ -63,53 +63,62 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @if (!Model.Any())
                 {
                     <tr>
-                        <td>
-                            <div class="dropdown">
-                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdPersona">
-                                        <i class="bx bx-edit-alt me-1"></i> Editar
-                                    </a>
-                                    <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdPersona">
-                                        <i class="bx bx-show me-1"></i> Detalles
-                                    </a>
-                                    <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdPersona">
-                                        <i class="bx bx-trash me-1"></i> Eliminar
-                                    </a>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            @if (!string.IsNullOrEmpty(item.Cuit) && item.Cuit.Length == 11) 
-                            { 
-                                @($"{item.Cuit.Substring(0, 2)}-{item.Cuit.Substring(2, 8)}-{item.Cuit.Substring(10, 1)}") 
-                            } 
-                            else 
-                            { 
-                                @item.Cuit 
-                            }
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.RazonSocial)
-                        </td>
-                        <td>
-                            <span class="badge bg-label-success">Sí</span>
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.TipoPersona)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Email)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Telefono)
-                        </td>
+                        <td colspan="7" class="text-center text-muted">No se han encontrado registros</td>
                     </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdPersona">
+                                            <i class="bx bx-edit-alt me-1"></i> Editar
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdPersona">
+                                            <i class="bx bx-show me-1"></i> Detalles
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdPersona">
+                                            <i class="bx bx-trash me-1"></i> Eliminar
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Cuit) && item.Cuit.Length == 11) 
+                                { 
+                                    @($"{item.Cuit.Substring(0, 2)}-{item.Cuit.Substring(2, 8)}-{item.Cuit.Substring(10, 1)}") 
+                                } 
+                                else 
+                                { 
+                                    @item.Cuit 
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.RazonSocial)
+                            </td>
+                            <td>
+                                <span class="badge bg-label-success">Sí</span>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TipoPersona)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Telefono)
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
