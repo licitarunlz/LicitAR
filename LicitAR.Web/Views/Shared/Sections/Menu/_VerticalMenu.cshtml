@@ -10,6 +10,9 @@
     var isProvinciasActive = currentPage.Equals("/Parametro/Provincias", StringComparison.OrdinalIgnoreCase);
     var isLocalidadesActive = currentPage.Equals("/Parametro/Localidades", StringComparison.OrdinalIgnoreCase);
     var isUsuariosActive = currentPage.StartsWith("/Usuario", StringComparison.OrdinalIgnoreCase);
+    var isAuditTrailActive = currentPage.StartsWith("/Audit/Trail", StringComparison.OrdinalIgnoreCase);
+    var isAuditLicitacionActive = currentPage.StartsWith("/Audit/Licitacion", StringComparison.OrdinalIgnoreCase);
+    var isAuditoriaActive = isAuditTrailActive || isAuditLicitacionActive;
 }
 
 <!-- Menu -->
@@ -30,7 +33,7 @@
     </div>
 
     <div class="menu-inner-shadow"></div>
-    @if (user.HasClaim("RoleDescription", "Administrador Principal"))
+    @if (user.HasClaim("RoleDescription", "Administrador"))
     {
         <ul class="menu-inner py-1">
 
@@ -67,6 +70,15 @@
                             <li class='menu-item@(currentPage == "/Evaluaciones/Index" ? " active" : "")'>
                                 <a asp-action="Index" asp-controller="Evaluaciones" class="menu-link">
                                     <div>Evaluaciones</div>
+                                </a>
+                            </li>
+                        }
+                        @if (user.HasClaim("permission", "Licitaciones.Ver"))
+                        {
+                            <!-- Nueva opción: Licitaciones Invitación -->
+                            <li class='menu-item@(currentPage.StartsWith("/LicitacionInvitacion") ? " active" : "")'>
+                                <a asp-action="Index" asp-controller="LicitacionInvitacion" class="menu-link">
+                                    <div>Invitaciones</div>
                                 </a>
                             </li>
                         }
@@ -124,7 +136,7 @@
             {
                 <li class='menu-item@(isEntidadesActive ? " active open" : "")'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-user"></i>
+                        <i class="menu-icon tf-icons bx bx-buildings"></i>
                         <div class="text-truncate" data-i18n="Entidades Licitantes">Entidades</div>
                     </a>
                     <ul class="menu-sub">
@@ -270,25 +282,25 @@
             <!-- Auditoría -->
             @if (user.HasClaim("permission", "Auditoria.Ver"))
             {
-                <li class='menu-item'>
+                <li class='menu-item@(isAuditoriaActive ? " active open" : "")'>
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-search"></i>
                         <div class="text-truncate" data-i18n="Auditoría">Auditoría</div>
                     </a>
                     <ul class="menu-sub">
-                        @if (user.HasClaim("permission", "Auditoria.AuditTrail"))
+                        @if (user.HasClaim("permission", "Auditoria.Trail"))
                         {
-                            <li class='menu-item'>
-                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
+                            <li class='menu-item@(isAuditTrailActive ? " active" : "")'>
+                                <a asp-action="Trail" asp-controller="Audit" class="menu-link">
                                     <div>Audit Trail</div>
                                 </a>
                             </li>
                         }
-                        @if (user.HasClaim("permission", "Auditoria.Historial"))
+                        @if (user.HasClaim("permission", "Auditoria.Licitacion"))
                         {
-                            <li class='menu-item'>
-                                <a asp-action="NotFound" asp-controller="Error" class="menu-link">
-                                    <div>Historial</div>
+                            <li class='menu-item@(isAuditLicitacionActive ? " active" : "")'>
+                                <a asp-action="Licitacion" asp-controller="Audit" class="menu-link">
+                                    <div>Licitación</div>
                                 </a>
                             </li>
                         }
@@ -296,13 +308,11 @@
                 </li>
             }
 
-
-
         </ul>
 
     }
 
-    @if (user.HasClaim("RoleDescription", "Proveedor"))
+    @if (user.HasClaim("RoleDescription", "Oferente"))
     {
         <ul class="menu-inner py-1">
             <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Dashboard/") ? " active open" : "")'>
@@ -352,7 +362,6 @@
                             <div>Mis Ofertas</div>
                         </a>
                     </li>
-
 
                 </ul>
             </li>

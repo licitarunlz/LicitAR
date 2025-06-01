@@ -68,7 +68,7 @@
                                     <tr>
 
                                         <td></td>
-                                        <td><b>PROVEEDOR</b></td>
+                                        <td><b>OFERENTE</b></td>
                                         <td><b>PRECIO UNITARIO</b></td>
                                         <td><b>COMPARATIVA</b></td>
                                         <td><b>PRECIO SUBTOTAL</b></td>
@@ -109,17 +109,27 @@
                     </div>
                 }
 
+                @if (ofertas.ToList().Count > 0)
+                  { 
+                    <div class="alert alert-success alert-dismissible" role="alert">
 
-                <div class="alert alert-success alert-dismissible" role="alert">
-
-                    <h4><b>Resumen de Selección</b></h4>
-                    <ul id="resumen-seleccion" class="list-group mb-3"></ul>
-                    <p><strong>Subtotal total: $<span id="total-suma">0.00</span></strong></p>
-                </div>
+                        <h4><b>Resumen de Selección</b></h4>
+                        <ul id="resumen-seleccion" class="list-group mb-3"></ul>
+                        <p><strong>Subtotal total: $<span id="total-suma">0.00</span></strong></p>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        No se registraron ofertas para esta licitación
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                        </button>
+                    </div>
+                }
 
                 <div class="row">
                     <div class="text-start">
-                        <button type="submit" id="btnGuardarEvaluacion" class="btn btn-primary">Guardar Evaluación</button>
+                        <button type="submit" id="btnGuardarEvaluacion" class="btn btn-primary">Iniciar Evaluación</button>
                     </div>
                 </div>
             </form>
@@ -159,7 +169,7 @@
             Object.values(resumen).forEach(sel => {
                 const li = document.createElement('li');
                 li.classList.add('list-group-item');
-                li.textContent = `${sel.itemNombre}: ${sel.proveedor} - $${sel.subtotal.toFixed(2)}`;
+                li.innerHTML = `<b>Item:</b> ${sel.itemNombre} | <b>Oferente: </b> ${sel.proveedor} | <b>Subtotal</b> $${sel.subtotal.toFixed(2)}`;
                 resumenList.appendChild(li);
 
                 total += sel.subtotal;

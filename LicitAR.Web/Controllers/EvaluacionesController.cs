@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using LicitAR.Core.Data;
 using LicitAR.Core.Data.Models;
 using LicitAR.Web.Helpers;
@@ -12,6 +11,8 @@ using LicitAR.Web.Models;
 using LicitAR.Core.Business.Licitaciones;
 using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Utils;
+using LicitAR.Core.Data.Models.Historial;
+using LicitAR.Core.Business.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {
@@ -21,33 +22,40 @@ namespace LicitAR.Web.Controllers
         private ILicitacionManager _licitacionManager;
         private IOfertaManager _ofertaManager;
         private IEvaluacionManager _evaluacionManager;
+        private readonly IAuditManager _auditManager;
 
         public EvaluacionesController(LicitARDbContext context,
                                       ILicitacionManager licitacionManager,
                                       IOfertaManager ofertaManager,
-                                      IEvaluacionManager evaluacionManager)
+                                      IEvaluacionManager evaluacionManager,
+                                      IAuditManager auditManager)
         {
             _context = context;
             _licitacionManager = licitacionManager;
             _ofertaManager = ofertaManager;
             _evaluacionManager = evaluacionManager;
+            _auditManager = auditManager;
         }
 
         // GET: Evaluaciones
         public async Task<IActionResult> Index()
         {
-            var licitARDbContext = _context.Evaluaciones.Include(e => e.Licitacion);
-            return View(await licitARDbContext.ToListAsync());
+            ViewBag.EstadosEvalacion = _context.EstadoEvaluacion.ToList();
+
+            var licitaciones = await _evaluacionManager.GetAllEvaluacionesAsync();
+
+            return View(licitaciones);
         }
 
         // GET: Evaluaciones/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [HttpGet("/Licitacion/Evaluaciones/{idEvaluacion:int}/Detalles")]
+        public async Task<IActionResult> Details(int? idEvaluacion)
         {
 
-            if (id == null)
+            if (idEvaluacion == null)
                 return View("NotFound");
 
-            var evaluacion = await _evaluacionManager.GetEvaluacionByIdAsync(id.Value);
+            var evaluacion = await _evaluacionManager.GetEvaluacionByIdAsync(idEvaluacion.Value);
 
             if (evaluacion == null)
             {
@@ -66,7 +74,7 @@ namespace LicitAR.Web.Controllers
             ViewBag.licitacion = licitacion;
 
             var ofertas = await _ofertaManager.GetAllOfertasPorLicitacionAsync(evaluacion.IdLicitacion);
-
+            ofertas = ofertas.Where(x => x.IdEstadoOferta == 2).ToList();
             ViewBag.ofertas = ofertas;
             EvaluacionModel model = new EvaluacionModel();
             model.SetEvaluacion(evaluacion);
@@ -105,7 +113,7 @@ namespace LicitAR.Web.Controllers
             ViewBag.licitacion = licitacion;
 
             var ofertas = await _ofertaManager.GetAllOfertasPorLicitacionAsync(idLicitacion);
-
+            ofertas = ofertas.Where(x => x.IdEstadoOferta == 2).ToList();
             ViewBag.ofertas = ofertas;
             EvaluacionModel model = new EvaluacionModel();
             model.IdLicitacion = idLicitacion;
@@ -132,99 +140,171 @@ namespace LicitAR.Web.Controllers
                 eval.EvaluacionOfertasDetalles = evaluacion.GetEvaluacionOferta(table).ToList();
 
                 await _evaluacionManager.CreateEvaluacionAsync(eval, IdentityHelper.GetUserLicitARId(User));
+                await _auditManager.LogLicitacionChange(
+                    idLicitacion,
+                    IdentityHelper.GetUserLicitARId(User),
+                    "Creación Evaluación",
+                    null, null, null
+                );
+                TempData["Mensaje"] = "Evaluación Creada Exitosamente!";
                 return RedirectToAction(nameof(Index));
-                /*_context.Add(evaluacion);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));*/
             }
+
             ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion", evaluacion.IdLicitacion);
+
             return View(evaluacion);
         }
 
-        // GET: Evaluaciones/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: /Licitacion/{idLicitacion:int}/Evaluaciones/
+        [HttpGet("/Licitacion/Evaluaciones/{idEvaluacion:int}/Editar")]
+        public async Task<IActionResult> Edit(int? idEvaluacion)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var evaluacion = await _context.Evaluaciones.FindAsync(id);
+            if (idEvaluacion == null)
+                return View("NotFound");
+
+            var evaluacion = await _evaluacionManager.GetEvaluacionByIdAsync(idEvaluacion.Value);
+
             if (evaluacion == null)
             {
-                return NotFound();
+                return View("NotFound"); // Updated
             }
-            ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion", evaluacion.IdLicitacion);
-            return View(evaluacion);
+
+            var licitacion = await _licitacionManager.GetLicitacionByIdAsync(evaluacion.IdLicitacion);
+            if (licitacion == null)
+            {
+                return View("NotFound"); // Updated
+            }
+
+
+            licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
+
+            ViewBag.licitacion = licitacion;
+
+            var ofertas = await _ofertaManager.GetAllOfertasPorLicitacionAsync(evaluacion.IdLicitacion);
+            ofertas = ofertas.Where(x => x.IdEstadoOferta == 2).ToList();
+            ViewBag.ofertas = ofertas;
+            EvaluacionModel model = new EvaluacionModel();
+            model.SetEvaluacion(evaluacion);
+            var ofertasGanadoras = evaluacion.EvaluacionOfertasDetalles.Select(x => x.IdOfertaDetalle);
+            var ofertasGanadorasModel = new Dictionary<int, int>();
+
+            foreach (var oferta in ofertas)
+            {
+                foreach (var ofertaDetalle in oferta.Items)
+                {
+
+                    if (ofertasGanadoras.Contains(ofertaDetalle.IdOfertaDetalle))
+                    {
+                        ofertasGanadorasModel.Add(ofertaDetalle.IdLicitacionDetalle, ofertaDetalle.IdOfertaDetalle);
+                    }
+                }
+            }
+            model.Ofertas = ofertasGanadorasModel;
+
+            return View(model);
         }
 
         // POST: Evaluaciones/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost("/Licitacion/Evaluaciones/{idEvaluacion:int}/Editar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdEvaluacion,IdLicitacion,IdUsuarioEvaluador,FechaInicioEvaluacion,FechaFinEvaluacion")] Evaluacion evaluacion)
+        public async Task<IActionResult> Edit(int idEvaluacion, EvaluacionModel evaluacionModel)
         {
-            if (id != evaluacion.IdEvaluacion)
+
+
+            if (idEvaluacion != evaluacionModel.IdEvaluacion) // Fix comparison to match IdLicitacion
             {
-                return NotFound();
+                return View("NotFound"); // Updated
             }
 
             if (ModelState.IsValid)
             {
-                try
+                var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
+
+                var evaluacion = evaluacionModel.GetEvaluacion(audit);
+                evaluacion.IdEvaluacion = evaluacionModel.IdEvaluacion;
+                evaluacion.EvaluacionOfertasDetalles = evaluacionModel.GetEvaluacionOferta(audit).ToList();
+
+                var result = await _evaluacionManager.UpdateEvaluacionAsync(evaluacion, IdentityHelper.GetUserLicitARId(User));
+                if (!result)
                 {
-                    _context.Update(evaluacion);
-                    await _context.SaveChangesAsync();
+                    return View("NotFound"); // Updated
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EvaluacionExists(evaluacion.IdEvaluacion))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _auditManager.LogLicitacionChange(
+                    evaluacion.IdLicitacion,
+                    IdentityHelper.GetUserLicitARId(User),
+                    "Edición Evaluación",
+                    null, null, null
+                );
+                TempData["Mensaje"] = "Evaluación Modificada Exitosamente!";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion", evaluacion.IdLicitacion);
-            return View(evaluacion);
+            return View(evaluacionModel);
+
         }
 
-        // GET: Evaluaciones/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Evaluaciones/Resultado/5
+        [HttpGet("/Licitacion/Evaluaciones/{idEvaluacion:int}/Resultado/{idEstadoResultado:int}")]
+        public async Task<IActionResult> Resultado(int? idEvaluacion, int? idEstadoResultado)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (idEvaluacion == null)
+                return View("NotFound");
 
-            var evaluacion = await _context.Evaluaciones
-                .Include(e => e.Licitacion)
-                .FirstOrDefaultAsync(m => m.IdEvaluacion == id);
+            var evaluacion = await _evaluacionManager.GetEvaluacionByIdAsync(idEvaluacion.Value);
+
             if (evaluacion == null)
             {
-                return NotFound();
+                return View("NotFound"); // Updated
             }
 
-            return View(evaluacion);
+            var licitacion = await _licitacionManager.GetLicitacionByIdAsync(evaluacion.IdLicitacion);
+            if (licitacion == null)
+            {
+                return View("NotFound"); // Updated
+            }
+
+
+            licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
+
+            ViewBag.licitacion = licitacion;
+
+            var ofertas = await _ofertaManager.GetAllOfertasPorLicitacionAsync(evaluacion.IdLicitacion);
+
+            ViewBag.ofertas = ofertas;
+            EvaluacionModel model = new EvaluacionModel();
+            model.SetEvaluacion(evaluacion);
+            var ofertasGanadoras = evaluacion.EvaluacionOfertasDetalles.Select(x => x.IdOfertaDetalle);
+            var ofertasGanadorasModel = new Dictionary<int, int>();
+
+            foreach (var oferta in ofertas)
+            {
+                foreach (var ofertaDetalle in oferta.Items)
+                {
+
+                    if (ofertasGanadoras.Contains(ofertaDetalle.IdOfertaDetalle))
+                    {
+                        ofertasGanadorasModel.Add(ofertaDetalle.IdLicitacionDetalle, ofertaDetalle.IdOfertaDetalle);
+                    }
+                }
+            }
+
+            ViewBag.IdEstadoResultado = idEstadoResultado;
+
+            model.Ofertas = ofertasGanadorasModel;
+
+            return View(model);
         }
 
         // POST: Evaluaciones/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost("/Licitacion/Evaluaciones/{idEvaluacion:int}/Resultado/{idEstadoResultado:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Resultado(int idEvaluacion, int idEstadoResultado)
         {
-            var evaluacion = await _context.Evaluaciones.FindAsync(id);
-            if (evaluacion != null)
-            {
-                _context.Evaluaciones.Remove(evaluacion);
-            }
+            int idUser = IdentityHelper.GetUserLicitARId(User);
+            var result = await _evaluacionManager.ResultadoEvaluacionAsync(idEvaluacion, idEstadoResultado, idUser);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

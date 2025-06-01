@@ -65,42 +65,51 @@
                 </tr>
             </thead>
             <tbody class="table-border-bottom-0">
-                @foreach (var item in Model)
+                @if (!Model.Any())
                 {
                     <tr>
-                        <td>
-                            <div class="dropdown">
-                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                   
-                                    <a class="dropdown-item" asp-action="DetalleLicitaciones" asp-route-id="@item.IdLicitacion">
-                                        <i class="bx bx-show me-1"></i> Detalles
-                                    </a>
-
-                                    <a class="dropdown-item" asp-action="Create" asp-route-idlicitacion="@item?.IdLicitacion">
-                                        <i class="bx bx-edit me-1"></i> Postularme
-                                    </a>
-                                </div>
-                            </div>
-                        </td>
-                        <td>@item.CodigoLicitacion</td>
-                        <td>@item.Titulo</td> 
-                         <td>
-                            <span class="badge bg-label-secondary">
-                                @(item.EstadoLicitacion?.Descripcion ?? "N/A")
-                            </span>
-                        </td>
-                        <td>
-                            <span class="badge @(item.CategoriaLicitacion?.Descripcion == "Pública" ? "bg-label-primary" : "bg-label-warning")">
-                                @(item.CategoriaLicitacion?.Descripcion ?? "N/A")
-                            </span>
-                        </td>
-                        <td>@(item.FechaPublicacion.HasValue ? item.FechaPublicacion.Value.ToShortDateString() : "-")</td>
-                        <td>@(item.FechaCierre.HasValue ? item.FechaCierre.Value.ToShortDateString() : "-")</td>
-
+                        <td colspan="7" class="text-center text-muted">No se han encontrado registros</td>
                     </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                       
+                                        <a class="dropdown-item" asp-action="DetalleLicitaciones" asp-route-id="@item.IdLicitacion">
+                                            <i class="bx bx-show me-1"></i> Detalles
+                                        </a>
+
+                                        <a class="dropdown-item" asp-action="Create" asp-route-idlicitacion="@item?.IdLicitacion">
+                                            <i class="bx bx-edit me-1"></i> Postularme
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@item.CodigoLicitacion</td>
+                            <td>@item.Titulo</td> 
+                             <td>
+                                <span class="badge bg-label-secondary">
+                                    @(item.EstadoLicitacion?.Descripcion ?? "N/A")
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge @(item.CategoriaLicitacion?.Descripcion == "Pública" ? "bg-label-primary" : "bg-label-warning")">
+                                    @(item.CategoriaLicitacion?.Descripcion ?? "N/A")
+                                </span>
+                            </td>
+                            <td>@(item.FechaPublicacion.HasValue ? item.FechaPublicacion.Value : "-")</td>
+                            <td>@(item.FechaCierre.HasValue ? item.FechaCierre.Value : "-")</td>
+
+                        </tr>
+                    }
                 }
             </tbody>
         </table>

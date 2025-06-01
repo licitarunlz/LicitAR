@@ -1,0 +1,172 @@
+@model IEnumerable<LicitAR.Web.Models.LicitacionInvitacionModel>
+@{
+    var query = Context.Request.Query;
+    int? idLicitacion = ViewBag.IdLicitacion;
+    string codigoLicitacion = ViewBag.CodigoLicitacion as string;
+    string tituloLicitacion = ViewBag.TituloLicitacion as string;
+
+    if (idLicitacion.HasValue && !string.IsNullOrEmpty(codigoLicitacion) && !string.IsNullOrEmpty(tituloLicitacion))
+    {
+        ViewData["Title"] = $"Invitaciones a Licitación: [{codigoLicitacion}] - {tituloLicitacion}";
+    }
+    else
+    {
+        ViewData["Title"] = "Invitaciones a Licitación";
+    }
+}
+
+<div class="card">
+    <div class="card-body">
+        <form method="get" asp-action="Index">
+            <!-- First row: Filter fields -->
+            <div class="row mb-3">
+                <div class="col-md-2">
+                    <input type="text" name="codigoLicitacion" class="form-control form-control-sm" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="cuit" id="cuitInput" class="form-control form-control-sm" placeholder="CUIT" value="@query["cuit"]" maxlength="11" />
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="razonSocial" class="form-control form-control-sm" placeholder="Razón Social" value="@query["razonSocial"]" />
+                </div>
+            </div>
+            <!-- Second row: Action buttons -->
+            <div class="row mb-3">
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-filter-alt"></i> &nbsp;Filtrar
+                    </button>
+                    <!-- Reset filtros, mantiene idLicitacion -->
+                    <a asp-action="Index" asp-route-idLicitacion="@idLicitacion" class="btn btn-warning btn-sm" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>&nbsp;
+                    </a>
+                    <!-- Reset total, solo si hay idLicitacion -->
+                    @if (idLicitacion.HasValue)
+                    {
+                        <a asp-action="Index" class="btn btn-outline-warning btn-sm" title="Limpiar filtros y mostrar todas las licitaciones">
+                            <i class="bx bx-reset"></i> Todas
+                        </a>
+                    }
+                </div>
+                <div class="col-md-6 text-end">
+                    <a asp-controller="Licitacion" asp-action="Index" class="btn btn-secondary btn-sm" title="Volver a Licitaciones">
+                        <i class="bx bx-arrow-back"></i> &nbsp;Volver a Licitaciones
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Código Licitación</th>
+                    <th>Título Licitación</th>
+                    <th>CUIT</th>
+                    <th>Razón Social</th>
+                    <th>Fecha Invitación</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No se han encontrado registros</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a class="btn btn-success btn-sm"
+                                   title="Agregar personas a licitación"
+                                   style="padding: 0.15rem 0.35rem; font-size: 0.75rem;"
+                                   href="@Url.Action("AssignPersonaToLicitacion", "LicitacionInvitacion", new { idLicitacion = item.IdLicitacion })">
+                                    <i class="bx bx-plus"></i>
+                                </a>
+                            </td>
+                            <td>@item.CodigoLicitacion</td>
+                            <td>@item.TituloLicitacion</td>
+                            <td>@item.Cuit</td>
+                            <td>@item.RazonSocial</td>
+                            <td>@(item.FechaInvitacion != DateTime.MinValue ? item.FechaInvitacion.ToShortDateString() : "-")</td>
+                            <td>
+                                <form asp-action="Remove" method="post" class="d-inline">
+                                    <input type="hidden" name="idLicitacion" value="@item.IdLicitacion" />
+                                    <input type="hidden" name="idPersona" value="@item.IdPersona" />
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            style="padding: 0.15rem 0.35rem; font-size: 0.75rem;"
+                                            title="Eliminar invitación"
+                                            onclick="return confirm('¿Está seguro de eliminar la invitación?');">
+                                        <i class="bx bx-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex justify-content-center">
+        <nav>
+            <ul class="pagination pagination-rounded mb-0">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-idLicitacion="@idLicitacion"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-cuit="@query["cuit"]"
+                           asp-route-razonSocial="@query["razonSocial"]"
+                        >&laquo;</a>
+                    </li>
+                }
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-idLicitacion="@idLicitacion"
+                           asp-route-page="@i"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-cuit="@query["cuit"]"
+                           asp-route-razonSocial="@query["razonSocial"]"
+                        >@i</a>
+                    </li>
+                }
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-idLicitacion="@idLicitacion"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-cuit="@query["cuit"]"
+                           asp-route-razonSocial="@query["razonSocial"]"
+                        >&raquo;</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+@section PageScripts {
+    <script>
+        // Solo permitir números en el input de CUIT
+        document.getElementById('cuitInput').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+}

@@ -1,0 +1,203 @@
+﻿@model EvaluacionModel
+
+@using LicitAR.Core.Data.Models
+
+@{
+    ViewData["Title"] = "Evaluación de licitación";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+    Licitacion licitacion = ViewBag.licitacion;
+    IEnumerable<Oferta> ofertas = ViewBag.ofertas;
+    decimal importeTotal = 0;
+    int idEstadoResultado = ViewBag.IdEstadoResultado;
+    string badgeAlertClass = "";
+    string buttonClass = "";
+    string buttonMessage = "";
+    string messageResultado = "";
+
+    switch (idEstadoResultado)
+    {
+
+        case 6: //Si está Impugnada
+            badgeAlertClass = "alert alert-danger";
+            buttonMessage = "Licitación Impugnada";
+            buttonClass = "btn btn-danger";
+            messageResultado = "Al marcar la licitación como Impugnada, la misma quedará descartada y no tendrá ningún ganador asignado";
+            break;
+        case 9: //Si está Adjudicada
+            badgeAlertClass = "alert alert-success";
+            buttonMessage = "Licitación Adjudicada";
+            buttonClass = "btn btn-success";
+            messageResultado = "Al marcar la licitación como Adjudicada, la misma tendrá los siguientes ganadores";
+            break;
+        case 13: //Si está desierta
+            badgeAlertClass = "alert alert-warning";
+            buttonMessage = "Licitación Desierta";
+            buttonClass = "btn btn-warning";
+            messageResultado = "Esta asignación quedará marcada como Desierta, puesto que no hubieron propuestas por parte de ningún oferente";
+            break;
+    }
+    
+}
+
+
+<div>
+    <!-- Card: Información general de la licitación -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Cod. Licitación  <b>@licitacion.CodigoLicitacion</b></h5>
+            <div class="row">
+                <div class="col-md-3"><strong>Título:</strong> </div>
+                <div class="col-md-9">@licitacion.Titulo</div>
+                <br />
+                <div class="col-md-3"><strong>Descripción:</strong> </div>
+                <div class="col-md-9">@licitacion.Descripcion</div>
+                <div class="col-md-3"><strong>Fecha Publicacion:</strong> </div>
+                <div class="col-md-9">@licitacion.FechaPublicacion.Value</div>
+                <div class="col-md-3"><strong>Fecha Cierre de Ofertas:</strong> </div>
+                <div class="col-md-9">@licitacion.FechaCierre.Value</div>
+                <div class="col-md-3"><strong>Categoría:</strong> </div>
+                <div class="col-md-9">@licitacion.CategoriaLicitacion.Descripcion</div>
+            </div>
+        </div>
+    </div>
+    <div class="@badgeAlertClass" role="alert">
+        @messageResultado
+    </div>
+    <div class="card mb-6">
+        <div class="card-header">
+            <b>Ofertas por Item</b>
+        </div>
+        <div class="card-body">
+            <form method="post" asp-action="">
+
+                <input asp-for="IdEvaluacion" type="hidden" />
+                <input asp-for="IdLicitacion" type="hidden" />
+                <input asp-for="IdUsuarioEvaluador" type="hidden" />
+                <input asp-for="FechaInicioEvaluacion" type="hidden" />
+                <input asp-for="FechaFinEvaluacion" type="hidden" />
+
+                @foreach (var item in licitacion.Items)
+                {
+
+                    <div class="card mb-6">
+                        <div class="card-header">
+                            <b>#@(item.NroItem + 1) - @item.Item</b>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3"><strong>Descripción:</strong> </div>
+                                <div class="col-md-9">@item.Descripcion</div>
+
+                                <div class="col-md-3"><strong>Cantidad:</strong> </div>
+                                <div class="col-md-9">@item.Cantidad</div>
+
+                                <div class="col-md-3"><strong>Precio Unitario de Referencia:</strong> </div>
+                                <div class="col-md-9"> $ @item.PrecioEstimadoUnitario</div>
+                            </div>
+
+
+                            <table class="table mt-6">
+                                <thead>
+                                    <tr>
+
+                                        <td></td>
+                                        <td><b>OFERENTE</b></td>
+                                        <td><b>PRECIO UNITARIO</b></td>
+                                        <td><b>COMPARATIVA</b></td>
+                                        <td><b>PRECIO SUBTOTAL</b></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < ofertas.Count(); i++)
+                                    {
+                                        var ofertaProv = ofertas.ToArray()[i];
+                                        var ofertaDetalleProv = ofertaProv.Items?.FirstOrDefault(x => x.IdLicitacionDetalle == item.IdLicitacionDetalle);
+                                        if (ofertaDetalleProv == null) continue;
+
+
+                                        <tr>
+                                            <td>
+                                                <input type="radio"
+                                                       name="Ofertas[@item.IdLicitacionDetalle]"
+                                                       value="@ofertaDetalleProv.IdOfertaDetalle"
+                                                       class="oferta-radio"
+                                                       data-item="@item.IdLicitacionDetalle"
+                                                       data-itemnombre="@item.Item"
+                                                       disabled
+                                                @(Model.Ofertas != null && Model.Ofertas.ContainsKey(item.IdLicitacionDetalle) &&
+                                                    Model.Ofertas[item.IdLicitacionDetalle] == ofertaDetalleProv.IdOfertaDetalle ? "checked" : "")
+                                                       data-proveedor="@ofertaProv.Persona?.RazonSocial"
+                                                       data-subtotal="@ofertaDetalleProv.ImporteSubtotal" />
+                                            </td>
+                                            <td>@ofertaProv.Persona?.Cuit - @ofertaProv.Persona?.RazonSocial </td>
+
+                                            <td>$ @(ofertaDetalleProv?.ImporteUnitario)</td>
+
+                                            <td>@(ofertaDetalleProv?.ImporteUnitario > item.PrecioEstimadoUnitario ? "Mayor" : "Menor")</td>
+
+                                            <td>$ @(ofertaDetalleProv?.ImporteSubtotal)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                }
+
+                @if(ofertas.ToList().Count > 0) { 
+                    <div class="alert alert-success alert-dismissible" role="alert">
+
+                    <h4><b>Resumen de Selección</b></h4>
+                    <ul id="resumen-seleccion" class="list-group mb-3">
+
+                        @foreach (var kvp in Model.Ofertas)
+                        {
+                            var detalle = licitacion.Items.FirstOrDefault(i => i.IdLicitacionDetalle == kvp.Key);
+                            var oferta = ofertas.SelectMany(o => o.Items)
+                            .FirstOrDefault(oi => oi.IdOfertaDetalle == kvp.Value);
+
+                            <li class="list-group-item">
+                                <b>Item:</b> @detalle?.Item |
+                                <b>Oferente:</b> @oferta?.Oferta.Persona?.RazonSocial |
+                                <b>Subtotal:</b> $@oferta?.ImporteSubtotal
+                            </li>
+
+                            importeTotal += oferta.ImporteSubtotal;
+                        }
+
+                    </ul>
+                    <p><strong>Subtotal total: $<span id="total-suma">@importeTotal</span></strong></p>
+                </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        No se registraron ofertas para esta licitación
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                        </button>
+                    </div>
+                }
+
+                <!--<div class="row">
+                    <div class="text-end">
+                        <button type="submit" id="btnGuardarEvaluacion" class="btn btn-primary">Guardar Evaluación</button>
+                    </div>
+                </div> -->
+            </form>
+
+            <div class="text-start mt-8 btn-group dropup">
+                <form asp-action="Resultado">
+                    <input type="hidden" id="IdEvaluacion" name="IdEvaluacion" value="@Model.IdEvaluacion" />
+                    <input type="hidden" id="idEstadoResultado" name="idEstadoResultado" value="@idEstadoResultado" />
+                    <input type="submit" value="@buttonMessage" class="@buttonClass" />
+
+                </form>
+                <a asp-action="Details" asp-route-idEvaluacion="@Model.IdEvaluacion" class="btn btn-secondary">
+                    <i class="bx bx-arrow-back"></i>&nbsp;Volver al detalle
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div> 

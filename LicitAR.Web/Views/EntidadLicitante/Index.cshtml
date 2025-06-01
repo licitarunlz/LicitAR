@@ -85,78 +85,87 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @if (!Model.Any())
                     {
                         <tr>
-                            <td>
-                                <div class="dropdown">
-                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdEntidadLicitante">
-                                            <i class="bx bx-edit-alt me-1"></i> Editar
-                                        </a>
-                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdEntidadLicitante">
-                                            <i class="bx bx-show me-1"></i> Detalles
-                                        </a>
-                                        <a class="dropdown-item" asp-controller="Usuario" asp-action="AssignUsersToEntidad" asp-route-id="@item.IdEntidadLicitante">
-                                            <i class="bx bx-user-plus me-1"></i> Asociar Usuario
-                                        </a>
-                                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdEntidadLicitante">
-                                            <i class="bx bx-trash me-1"></i> Eliminar
-                                        </a>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(item.Cuit) && item.Cuit.Length == 11)
-                                {
-                                    @($"{item.Cuit.Substring(0, 2)}-{item.Cuit.Substring(2, 8)}-{item.Cuit.Substring(10, 1)}")
-                                }
-                                else
-                                {
-                                    @item.Cuit
-                                }
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.RazonSocial)
-                            </td>
-                            <td>
-                                @if (item.Enabled)
-                                {
-                                    <span class="badge bg-label-success">Sí</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-label-danger">No</span>
-                                }
-                            </td>
-                            <td>
-                                @item.Provincia.Descripcion
-                            </td>
-                            <td>
-                                @item.Localidad.Descripcion
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.DireccionBarrio)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.DireccionCalle)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.DireccionNumero)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.DireccionPiso)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.DireccionDepto)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.DireccionCodigoPostal)
-                            </td>
+                            <td colspan="12" class="text-center text-muted">No se han encontrado registros</td>
                         </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.IdEntidadLicitante">
+                                                <i class="bx bx-edit-alt me-1"></i> Editar
+                                            </a>
+                                            <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdEntidadLicitante">
+                                                <i class="bx bx-show me-1"></i> Detalles
+                                            </a>
+                                            <a class="dropdown-item" asp-controller="Usuario" asp-action="AssignUsersToEntidad" asp-route-id="@item.IdEntidadLicitante">
+                                                <i class="bx bx-user-plus me-1"></i> Asociar Usuario
+                                            </a>
+                                            <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdEntidadLicitante">
+                                                <i class="bx bx-trash me-1"></i> Eliminar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Cuit) && item.Cuit.Length == 11)
+                                    {
+                                        @($"{item.Cuit.Substring(0, 2)}-{item.Cuit.Substring(2, 8)}-{item.Cuit.Substring(10, 1)}")
+                                    }
+                                    else
+                                    {
+                                        @item.Cuit
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.RazonSocial)
+                                </td>
+                                <td>
+                                    @if (item.Enabled)
+                                    {
+                                        <span class="badge bg-label-success">Sí</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-label-danger">No</span>
+                                    }
+                                </td>
+                                <td>
+                                    @item.Provincia.Descripcion
+                                </td>
+                                <td>
+                                    @item.Localidad.Descripcion
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DireccionBarrio)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DireccionCalle)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DireccionNumero)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DireccionPiso)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DireccionDepto)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DireccionCodigoPostal)
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>

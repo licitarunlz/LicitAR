@@ -1,0 +1,139 @@
+@model IEnumerable<LicitAR.Web.Models.AuditLicitacionViewModel>
+@{
+    ViewData["Title"] = "Auditoría de Licitaciones";
+    var query = Context.Request.Query;
+}
+
+<div class="card">
+    <div class="card-body">
+        <form method="get" asp-action="Licitacion">
+            <div class="row mb-3">
+                <div class="col-md-2">
+                    <input type="text" name="accion" class="form-control form-control-sm" placeholder="Acción" value="@query["accion"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="number" name="usuarioId" class="form-control form-control-sm" placeholder="Usuario ID" value="@query["usuarioId"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="number" name="idLicitacion" class="form-control form-control-sm" placeholder="ID Licitación" value="@query["idLicitacion"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="campo" class="form-control form-control-sm" placeholder="Campo Modificado" value="@query["campo"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="desde" class="form-control form-control-sm" placeholder="Desde" value="@query["desde"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="hasta" class="form-control form-control-sm" placeholder="Hasta" value="@query["hasta"]" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-filter-alt"></i> &nbsp;Filtrar
+                    </button>
+                    <a asp-action="Licitacion" class="btn btn-warning btn-sm" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>&nbsp;
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fecha/Hora</th>
+                    <th>Usuario ID</th>
+                    <th>ID Licitación</th>
+                    <th>Título Licitación</th>
+                    <th>Acción</th>
+                    <th>Campo</th>
+                    <th>Valor Anterior</th>
+                    <th>Valor Nuevo</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">No se han encontrado registros</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.FechaHora.ToString("g")</td>
+                            <td>@item.UsuarioId</td>
+                            <td>@item.IdLicitacion</td>
+                            <td>@item.LicitacionTitulo</td>
+                            <td>@item.Accion</td>
+                            <td>@item.CampoModificado</td>
+                            <td>@item.ValorAnterior</td>
+                            <td>@item.ValorNuevo</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex justify-content-center">
+        <nav>
+            <ul class="pagination pagination-rounded mb-0">
+                @if (ViewBag.Page > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Licitacion"
+                           asp-route-page="@(ViewBag.Page - 1)"
+                           asp-route-pageSize="@ViewBag.PageSize"
+                           asp-route-accion="@query["accion"]"
+                           asp-route-usuarioId="@query["usuarioId"]"
+                           asp-route-idLicitacion="@query["idLicitacion"]"
+                           asp-route-campo="@query["campo"]"
+                           asp-route-desde="@query["desde"]"
+                           asp-route-hasta="@query["hasta"]"
+                        >&laquo;</a>
+                    </li>
+                }
+                @{
+                    int totalPages = (int)Math.Ceiling((double)(ViewBag.Total ?? 0) / (ViewBag.PageSize ?? 20));
+                    for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                            <a class="page-link"
+                               asp-action="Licitacion"
+                               asp-route-page="@i"
+                               asp-route-pageSize="@ViewBag.PageSize"
+                               asp-route-accion="@query["accion"]"
+                               asp-route-usuarioId="@query["usuarioId"]"
+                               asp-route-idLicitacion="@query["idLicitacion"]"
+                               asp-route-campo="@query["campo"]"
+                               asp-route-desde="@query["desde"]"
+                               asp-route-hasta="@query["hasta"]"
+                            >@i</a>
+                        </li>
+                    }
+                }
+                @if (ViewBag.Page < totalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Licitacion"
+                           asp-route-page="@(ViewBag.Page + 1)"
+                           asp-route-pageSize="@ViewBag.PageSize"
+                           asp-route-accion="@query["accion"]"
+                           asp-route-usuarioId="@query["usuarioId"]"
+                           asp-route-idLicitacion="@query["idLicitacion"]"
+                           asp-route-campo="@query["campo"]"
+                           asp-route-desde="@query["desde"]"
+                           asp-route-hasta="@query["hasta"]"
+                        >&raquo;</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

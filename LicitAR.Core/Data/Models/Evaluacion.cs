@@ -25,6 +25,7 @@ namespace LicitAR.Core.Data.Models
         public int IdUsuarioEvaluador { get; set; }
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         public int IdEstadoEvaluacion { get; set; }
+        [Display(Name = "Estado Evaluación")]
         public EstadoEvaluacion EstadoEvaluacion { get; set; }
         public DateTime FechaInicioEvaluacion { get; set; }
         public DateTime? FechaFinEvaluacion { get; set; }

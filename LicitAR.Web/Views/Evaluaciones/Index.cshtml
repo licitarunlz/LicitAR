@@ -1,54 +1,142 @@
 ﻿@model IEnumerable<LicitAR.Core.Data.Models.Evaluacion>
-
+@using LicitAR.Core.Data.Models.Parametros;
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+    ViewData["Title"] = "Licitaciones Evaluadas";
+    var query = Context.Request.Query;
+    IEnumerable<EstadoEvaluacion> estados = ViewBag.EstadosEvalacion;
+
+    var mensaje = TempData["Mensaje"] as string;
+    TempData.Remove("Mensaje");
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IdUsuarioEvaluador)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaInicioEvaluacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaFinEvaluacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Licitacion)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdUsuarioEvaluador)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaInicioEvaluacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaFinEvaluacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdEvaluacion">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdEvaluacion">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdEvaluacion">Delete</a>
-            </td>
-        </tr>
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <div class="alert alert-success alert-dismissible" role="alert">
+        @mensaje
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        </button>
+    </div>
 }
-    </tbody>
-</table>
+<div class="card">
+    <div class="card-body">
+        <form method="get" asp-action="Index">
+            <!-- First row: Filter fields -->
+            <div class="row mb-3">
+                <div class="col-md-2">
+                    <input type="text" name="codigoLicitacion" class="form-control form-control-sm" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
+                </div>
+                <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
+                </div>
+                <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
+                    <select name="idEstadoEvaluacion" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        @if (estados != null)
+                        {
+                            foreach (var estado in estados)
+                            {
+                                bool isSelected = query["idEstadoEvaluacion"] == estado.IdEstadoEvaluacion.ToString();
+                                <option value="@estado.IdEstadoEvaluacion" selected="@(isSelected ? "selected" : null)">
+                                    @estado.Descripcion
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Second row: Action buttons -->
+            <div class="row mb-3">
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-filter-alt"></i> &nbsp;Filtrar
+                    </button>
+                    <a asp-action="Index" class="btn btn-warning btn-sm" title="Limpiar filtros">
+                        <i class="bx bx-reset"></i>&nbsp;
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Licitacion)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.EstadoEvaluacion)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FechaInicioEvaluacion)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FechaFinEvaluacion)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="dropdown">
+                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu">
+
+                                    <a class="dropdown-item" asp-action="Details" asp-route-idEvaluacion="@item.IdEvaluacion">
+                                        <i class="bx bx-show me-1"></i> Detalles
+                                    </a>
+                                    @if (item.IdEstadoEvaluacion == 1)
+                                    { 
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-idEvaluacion="@item.IdEvaluacion">
+                                            <i class="bx bx-edit-alt me-1"></i> Editar
+                                        </a>
+
+                                        <div class="dropdown-divider"></div>
+                                        <h6 class="dropdown-header">Resultados</h6>
+
+                                        @if (item.EvaluacionOfertasDetalles.Count > 0)
+                                        {
+                                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="6">
+                                                <i class="bx bx-error me-1"></i> Licitación Impugnada
+                                            </a>
+
+                                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="9">
+                                                <i class="bx bx-check-circle me-1"></i> Licitación Adjudicada
+                                            </a>
+
+                                        }
+                                        else
+                                        {
+                                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="13">
+                                                <i class="bx bx-block me-1"></i> Licitación Desierta
+                                            </a>
+
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion) - @Html.DisplayFor(modelItem => item.Licitacion.Titulo) - @Html.DisplayFor(modelItem => item.Licitacion.EstadoLicitacion.Descripcion)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EstadoEvaluacion.Descripcion)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FechaInicioEvaluacion)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FechaFinEvaluacion)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
