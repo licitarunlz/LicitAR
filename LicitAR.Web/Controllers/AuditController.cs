@@ -5,9 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using LicitAR.Core.Data.Models;
+using LicitAR.Web.Helpers;
+using LicitAR.Core.Utils;
+using LicitAR.Web.Helpers.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace LicitAR.Web.Controllers
 {
+    [AuthorizeClaim("Auditoria.Ver")]
     public class AuditController : Controller
     {
         private readonly LicitARDbContext _dbContext;
@@ -18,6 +24,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: /Audit/Trail
+        [AuthorizeClaim("Auditoria.Trail")]
         public async Task<IActionResult> Trail(string accion, int? usuarioId, string entidad, DateTime? desde, DateTime? hasta, int page = 1, int pageSize = 20)
         {
             var query = _dbContext.AuditTrails.AsQueryable();
@@ -63,6 +70,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: /Audit/Licitacion
+        [AuthorizeClaim("Auditoria.Licitacion")]
         public async Task<IActionResult> Licitacion(string accion, int? usuarioId, int? idLicitacion, string campo, DateTime? desde, DateTime? hasta, int page = 1, int pageSize = 20)
         {
             var query = _dbContext.AuditLicitaciones

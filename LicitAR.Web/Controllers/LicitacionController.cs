@@ -7,6 +7,7 @@ using LicitAR.Web.Models;
 using LicitAR.Web.Helpers.Authorization;
 using Microsoft.Extensions.Logging;
 using LicitAR.Core.Data;
+using LicitAR.Core.Business.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {
@@ -17,19 +18,22 @@ namespace LicitAR.Web.Controllers
         private readonly IOfertaManager _ofertaManager;
         private readonly IEvaluacionManager _evaluacionManager;
         private readonly LicitARDbContext _dbContext;
+        private readonly IAuditManager _auditManager;
 
         public LicitacionController(
             ILicitacionManager licitacionManager,
             ILogger<LicitacionController> logger,
             IOfertaManager ofertaManager,
             IEvaluacionManager evaluacionManager,
-            LicitARDbContext dbContext)
+            LicitARDbContext dbContext,
+            IAuditManager auditManager)
         {
             _licitacionManager = licitacionManager;
             _logger = logger;
             _ofertaManager = ofertaManager;
             _evaluacionManager = evaluacionManager;
             _dbContext = dbContext;
+            _auditManager = auditManager;
         }
 
         private static string FormatearCuit(string cuit)
@@ -142,6 +146,13 @@ namespace LicitAR.Web.Controllers
             string razon = entidad?.RazonSocial;
             string entidadLicitanteFormateada = FormatearCuitSeguro(cuit, razon);
 
+            await _auditManager.LogLicitacionChange(
+                licitacion.IdLicitacion,
+                IdentityHelper.GetUserLicitARId(User),
+                "Visualización Detalle",
+                null, null, null
+            );
+
             var vm = new LicitacionDetailsViewModel
             {
                 IdLicitacion = licitacion.IdLicitacion,
@@ -203,6 +214,12 @@ namespace LicitAR.Web.Controllers
                 Licitacion licitacion = licitacionModel.GetLicitacion(audit, estadoLicitacion, categoriaLicitacion);
                 licitacion.Items = licitacionModel.GetLicitacionDetalles(audit);
                 await _licitacionManager.CreateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
+                await _auditManager.LogLicitacionChange(
+                    licitacion.IdLicitacion,
+                    IdentityHelper.GetUserLicitARId(User),
+                    "Creación",
+                    null, null, null
+                );
                 TempData["Mensaje"] = "Licitación Creada Exitosamente!";
                 return RedirectToAction(nameof(Index));
             }
@@ -270,6 +287,12 @@ namespace LicitAR.Web.Controllers
                 {
                     return View("NotFound");
                 }
+                await _auditManager.LogLicitacionChange(
+                    licitacion.IdLicitacion,
+                    IdentityHelper.GetUserLicitARId(User),
+                    "Edición",
+                    null, null, null
+                );
                 TempData["Mensaje"] = "Licitación Modificada Exitosamente!";
                 return RedirectToAction(nameof(Index));
             }
@@ -311,6 +334,12 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound");
             }
+            await _auditManager.LogLicitacionChange(
+                id,
+                IdentityHelper.GetUserLicitARId(User),
+                "Eliminación",
+                null, null, null
+            );
             TempData["Mensaje"] = "Licitación Eliminada Exitosamente!";
             return RedirectToAction(nameof(Index));
         }
@@ -345,6 +374,12 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound");
             }
+            await _auditManager.LogLicitacionChange(
+                licitacion.IdLicitacion,
+                IdentityHelper.GetUserLicitARId(User),
+                "Publicación",
+                "FechaCierre", null, licitacion.FechaCierre.ToString()
+            );
             TempData["Mensaje"] = "Licitación Publicada Exitosamente!";
 
             return RedirectToAction(nameof(Index));
@@ -361,12 +396,26 @@ namespace LicitAR.Web.Controllers
 
             var evaluacionExistente = await _evaluacionManager.GetEvaluacionByLicitacionAsync(id.Value);
             if (evaluacionExistente != null)
+            {
+                await _auditManager.LogLicitacionChange(
+                    id.Value,
+                    IdentityHelper.GetUserLicitARId(User),
+                    "Evaluar (redirige a Edit Evaluación)",
+                    null, null, null
+                );
                 return RedirectToAction("Edit", "Evaluaciones", new { idEvaluacion = evaluacionExistente.IdEvaluacion });
+            }
 
             bool iniciarEvaluacion = await _licitacionManager.IniciarEvaluacionLicitacionAsync(id.Value, IdentityHelper.GetUserLicitARId(User));
 
             if (iniciarEvaluacion)
             {
+                await _auditManager.LogLicitacionChange(
+                    id.Value,
+                    IdentityHelper.GetUserLicitARId(User),
+                    "Evaluar (redirige a Crear Evaluación)",
+                    null, null, null
+                );
                 return RedirectToAction("Create", "Evaluaciones", new { idLicitacion = id });
             }
 
@@ -382,6 +431,13 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound");
             }
+
+            await _auditManager.LogLicitacionChange(
+                licitacion.IdLicitacion,
+                IdentityHelper.GetUserLicitARId(User),
+                "Visualización Oferentes",
+                null, null, null
+            );
 
             var oferentes = await _ofertaManager.GetOferentesPorLicitacionAsync(id);
 
@@ -408,6 +464,13 @@ namespace LicitAR.Web.Controllers
                 _logger.LogWarning("No se encontró la licitación con ID {Id}", id);
                 return View("NotFound");
             }
+
+            await _auditManager.LogLicitacionChange(
+                licitacion.IdLicitacion,
+                IdentityHelper.GetUserLicitARId(User),
+                "Visualización Historial",
+                null, null, null
+            );
 
             var historial = await _licitacionManager.GetHistorialEstados(id);
 

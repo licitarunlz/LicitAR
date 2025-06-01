@@ -12,6 +12,7 @@ using LicitAR.Core.Business.Licitaciones;
 using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Utils;
 using LicitAR.Core.Data.Models.Historial;
+using LicitAR.Core.Business.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {
@@ -21,16 +22,19 @@ namespace LicitAR.Web.Controllers
         private ILicitacionManager _licitacionManager;
         private IOfertaManager _ofertaManager;
         private IEvaluacionManager _evaluacionManager;
+        private readonly IAuditManager _auditManager;
 
         public EvaluacionesController(LicitARDbContext context,
                                       ILicitacionManager licitacionManager,
                                       IOfertaManager ofertaManager,
-                                      IEvaluacionManager evaluacionManager)
+                                      IEvaluacionManager evaluacionManager,
+                                      IAuditManager auditManager)
         {
             _context = context;
             _licitacionManager = licitacionManager;
             _ofertaManager = ofertaManager;
             _evaluacionManager = evaluacionManager;
+            _auditManager = auditManager;
         }
 
         // GET: Evaluaciones
@@ -136,6 +140,12 @@ namespace LicitAR.Web.Controllers
                 eval.EvaluacionOfertasDetalles = evaluacion.GetEvaluacionOferta(table).ToList();
 
                 await _evaluacionManager.CreateEvaluacionAsync(eval, IdentityHelper.GetUserLicitARId(User));
+                await _auditManager.LogLicitacionChange(
+                    idLicitacion,
+                    IdentityHelper.GetUserLicitARId(User),
+                    "Creación Evaluación",
+                    null, null, null
+                );
                 TempData["Mensaje"] = "Evaluación Creada Exitosamente!";
                 return RedirectToAction(nameof(Index));
             }
@@ -222,6 +232,12 @@ namespace LicitAR.Web.Controllers
                 {
                     return View("NotFound"); // Updated
                 }
+                await _auditManager.LogLicitacionChange(
+                    evaluacion.IdLicitacion,
+                    IdentityHelper.GetUserLicitARId(User),
+                    "Edición Evaluación",
+                    null, null, null
+                );
                 TempData["Mensaje"] = "Evaluación Modificada Exitosamente!";
                 return RedirectToAction(nameof(Index));
             }

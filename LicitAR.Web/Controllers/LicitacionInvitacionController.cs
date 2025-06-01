@@ -4,6 +4,7 @@ using LicitAR.Web.Models;
 using LicitAR.Core.Data.Models;
 using LicitAR.Web.Helpers;
 using System.Linq;
+using LicitAR.Core.Business.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {
@@ -12,12 +13,18 @@ namespace LicitAR.Web.Controllers
         private readonly ILicitacionInvitacionManager _manager;
         private readonly IPersonaManager _personaManager;
         private readonly ILicitacionManager _licitacionManager;
+        private readonly IAuditManager _auditManager;
 
-        public LicitacionInvitacionController(ILicitacionInvitacionManager manager, IPersonaManager personaManager, ILicitacionManager licitacionManager)
+        public LicitacionInvitacionController(
+            ILicitacionInvitacionManager manager,
+            IPersonaManager personaManager,
+            ILicitacionManager licitacionManager,
+            IAuditManager auditManager)
         {
             _manager = manager;
             _personaManager = personaManager;
             _licitacionManager = licitacionManager;
+            _auditManager = auditManager;
         }
 
         public async Task<IActionResult> Index(int? idLicitacion, string codigoLicitacion, string cuit, string razonSocial, int page = 1, int pageSize = 10)
@@ -119,24 +126,41 @@ namespace LicitAR.Web.Controllers
             int idUsuario = IdentityHelper.GetUserLicitARId(User);
 
             if (SelectedToAdd != null && SelectedToAdd.Any())
+            {
                 await _manager.AddInvitacionesAsync(model.IdLicitacion, SelectedToAdd, idUsuario);
+                foreach (var idPersona in SelectedToAdd)
+                {
+                    var persona = await _personaManager.GetPersonaByIdAsync(idPersona);
+                    await _auditManager.LogLicitacionChange(
+                        model.IdLicitacion,
+                        idUsuario,
+                        "Invitación Persona Agregada",
+                        "Persona",
+                        null,
+                        persona?.RazonSocial ?? $"Id:{idPersona}"
+                    );
+                }
+            }
 
             if (SelectedToRemove != null && SelectedToRemove.Any())
             {
                 foreach (var idPersona in SelectedToRemove)
+                {
                     await _manager.RemoveInvitacionAsync(model.IdLicitacion, idPersona);
+                    var persona = await _personaManager.GetPersonaByIdAsync(idPersona);
+                    await _auditManager.LogLicitacionChange(
+                        model.IdLicitacion,
+                        idUsuario,
+                        "Invitación Persona Eliminada",
+                        "Persona",
+                        persona?.RazonSocial ?? $"Id:{idPersona}",
+                        null
+                    );
+                }
             }
 
             return RedirectToAction("Index", new { idLicitacion = model.IdLicitacion });
         }
     }
 
-    public class AssignPersonaToLicitacionViewModel
-    {
-        public int IdLicitacion { get; set; }
-        public string CodigoLicitacion { get; set; }
-        public string TituloLicitacion { get; set; }
-        public List<Persona> AvailablePersonas { get; set; }
-        public List<Persona> AssignedPersonas { get; set; }
-    }
 }
