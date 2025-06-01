@@ -203,6 +203,7 @@ namespace LicitAR.Web.Controllers
                 Licitacion licitacion = licitacionModel.GetLicitacion(audit, estadoLicitacion, categoriaLicitacion);
                 licitacion.Items = licitacionModel.GetLicitacionDetalles(audit);
                 await _licitacionManager.CreateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
+                TempData["Mensaje"] = "Licitación Creada Exitosamente!";
                 return RedirectToAction(nameof(Index));
             }
             return View(licitacionModel);
@@ -269,6 +270,7 @@ namespace LicitAR.Web.Controllers
                 {
                     return View("NotFound");
                 }
+                TempData["Mensaje"] = "Licitación Modificada Exitosamente!";
                 return RedirectToAction(nameof(Index));
             }
             return View(licitacionModel);
@@ -309,7 +311,7 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound");
             }
-
+            TempData["Mensaje"] = "Licitación Eliminada Exitosamente!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -343,6 +345,7 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound");
             }
+            TempData["Mensaje"] = "Licitación Publicada Exitosamente!";
 
             return RedirectToAction(nameof(Index));
         }

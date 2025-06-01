@@ -4,8 +4,19 @@
     ViewData["Title"] = "Mis Ofertas";
     var query = Context.Request.Query;
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+
+    var mensaje = TempData["Mensaje"] as string;
+    TempData.Remove("Mensaje");
 }
 
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <div class="alert alert-success alert-dismissible" role="alert">
+        @mensaje
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        </button>
+    </div>
+}
 <div class="card">
     <div class="card-body">
         <form method="get" asp-action="Index">
@@ -48,13 +59,13 @@
                         @Html.DisplayNameFor(model => model.CodigoOfertaLicitacion)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.FechaOferta)
+                        @Html.DisplayNameFor(model => model.Licitacion)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.EstadoOferta.Descripcion)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Licitacion)
+                        @Html.DisplayNameFor(model => model.FechaOferta)
                     </th>
                 </tr>
             </thead>
@@ -91,13 +102,13 @@
                             @Html.DisplayFor(modelItem => item.CodigoOfertaLicitacion)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.FechaOferta)
+                            @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion) - @Html.DisplayFor(modelItem => item.Licitacion.Titulo)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.EstadoOferta.Descripcion)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion) - @Html.DisplayFor(modelItem => item.Licitacion.Titulo)
+                            @Html.DisplayFor(modelItem => item.FechaOferta)
                         </td>
                     </tr>
                 }
@@ -115,8 +126,7 @@
                            asp-route-page="@(ViewBag.CurrentPage - 1)"
                            asp-route-pageSize="10"
                            asp-route-codigoLicitacion="@query["codigoLicitacion"]"
-                           asp-route-titulo="@query["titulo"]"
-                        >&laquo;</a>
+                           asp-route-titulo="@query["titulo"]">&laquo;</a>
                     </li>
                 }
                 @for (int i = 1; i <= ViewBag.TotalPages; i++)
@@ -127,8 +137,7 @@
                            asp-route-page="@i"
                            asp-route-pageSize="10"
                            asp-route-codigoLicitacion="@query["codigoLicitacion"]"
-                           asp-route-titulo="@query["titulo"]"
-                        >@i</a>
+                           asp-route-titulo="@query["titulo"]">@i</a>
                     </li>
                 }
                 @if (ViewBag.CurrentPage < ViewBag.TotalPages)
@@ -139,8 +148,7 @@
                            asp-route-page="@(ViewBag.CurrentPage + 1)"
                            asp-route-pageSize="10"
                            asp-route-codigoLicitacion="@query["codigoLicitacion"]"
-                           asp-route-titulo="@query["titulo"]"
-                        >&raquo;</a>
+                           asp-route-titulo="@query["titulo"]">&raquo;</a>
                     </li>
                 }
             </ul>

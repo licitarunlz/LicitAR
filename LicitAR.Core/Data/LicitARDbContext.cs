@@ -37,6 +37,7 @@ namespace LicitAR.Core.Data
         public DbSet<Evaluacion> Evaluaciones { get; set; }
         public DbSet<EvaluacionOferta> EvaluacionOfertas { get; set; }
         public DbSet<EvaluacionOfertaDetalle> EvaluacionOfertasDetalle { get; set; }
+        public DbSet<EstadoEvaluacion> EstadoEvaluacion { get; set; }
         public DbSet<LicitacionEstadoHistorial> LicitacionEstadoHistorial { get; set; }
         public DbSet<LicitacionInvitacion> LicitacionInvitacion { get; set; }
         public DbSet<AuditTrail> AuditTrails { get; set; }

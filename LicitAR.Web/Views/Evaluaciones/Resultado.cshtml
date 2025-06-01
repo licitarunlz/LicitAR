@@ -1,7 +1,6 @@
 ﻿@model EvaluacionModel
 
 @using LicitAR.Core.Data.Models
-@using Newtonsoft.Json
 
 @{
     ViewData["Title"] = "Evaluación de licitación";
@@ -9,10 +8,39 @@
     Licitacion licitacion = ViewBag.licitacion;
     IEnumerable<Oferta> ofertas = ViewBag.ofertas;
     decimal importeTotal = 0;
+    int idEstadoResultado = ViewBag.IdEstadoResultado;
+    string badgeAlertClass = "";
+    string buttonClass = "";
+    string buttonMessage = "";
+    string messageResultado = "";
+
+    switch (idEstadoResultado)
+    {
+
+        case 6: //Si está Impugnada
+            badgeAlertClass = "alert alert-danger";
+            buttonMessage = "Licitación Impugnada";
+            buttonClass = "btn btn-danger";
+            messageResultado = "Al marcar la licitación como Impugnada, la misma quedará descartada y no tendrá ningún ganador asignado";
+            break;
+        case 9: //Si está Adjudicada
+            badgeAlertClass = "alert alert-success";
+            buttonMessage = "Licitación Adjudicada";
+            buttonClass = "btn btn-success";
+            messageResultado = "Al marcar la licitación como Adjudicada, la misma tendrá los siguientes ganadores";
+            break;
+        case 13: //Si está desierta
+            badgeAlertClass = "alert alert-warning";
+            buttonMessage = "Licitación Desierta";
+            buttonClass = "btn btn-warning";
+            messageResultado = "Esta asignación quedará marcada como Desierta, puesto que no hubieron propuestas por parte de ningún oferente";
+            break;
+    }
+    
 }
 
 
-<div  >
+<div>
     <!-- Card: Información general de la licitación -->
     <div class="card mb-4">
         <div class="card-body">
@@ -32,13 +60,15 @@
             </div>
         </div>
     </div>
-
+    <div class="@badgeAlertClass" role="alert">
+        @messageResultado
+    </div>
     <div class="card mb-6">
         <div class="card-header">
             <b>Ofertas por Item</b>
         </div>
         <div class="card-body">
-            <form method="post" asp-action="Create"> 
+            <form method="post" asp-action="">
 
                 <input asp-for="IdEvaluacion" type="hidden" />
                 <input asp-for="IdLicitacion" type="hidden" />
@@ -86,18 +116,18 @@
 
 
                                         <tr>
-                                            <td>  
+                                            <td>
                                                 <input type="radio"
-                                                name="Ofertas[@item.IdLicitacionDetalle]"
-                                                value="@ofertaDetalleProv.IdOfertaDetalle"
-                                                class="oferta-radio"
-                                                data-item="@item.IdLicitacionDetalle"
-                                                data-itemnombre="@item.Item"
-                                                disabled
+                                                       name="Ofertas[@item.IdLicitacionDetalle]"
+                                                       value="@ofertaDetalleProv.IdOfertaDetalle"
+                                                       class="oferta-radio"
+                                                       data-item="@item.IdLicitacionDetalle"
+                                                       data-itemnombre="@item.Item"
+                                                       disabled
                                                 @(Model.Ofertas != null && Model.Ofertas.ContainsKey(item.IdLicitacionDetalle) &&
-                                                 Model.Ofertas[item.IdLicitacionDetalle] == ofertaDetalleProv.IdOfertaDetalle ? "checked" : "")
-                                                data-proveedor="@ofertaProv.Persona?.RazonSocial"
-                                                data-subtotal="@ofertaDetalleProv.ImporteSubtotal" />
+                                                    Model.Ofertas[item.IdLicitacionDetalle] == ofertaDetalleProv.IdOfertaDetalle ? "checked" : "")
+                                                       data-proveedor="@ofertaProv.Persona?.RazonSocial"
+                                                       data-subtotal="@ofertaDetalleProv.ImporteSubtotal" />
                                             </td>
                                             <td>@ofertaProv.Persona?.Cuit - @ofertaProv.Persona?.RazonSocial </td>
 
@@ -148,35 +178,14 @@
             </form>
 
             <div class="text-start mt-8 btn-group dropup">
-                <a asp-action="Index" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-                    <i class="bx bx-cog"></i>&nbsp;Acciones
-                </a>
-                <div class="dropdown-menu dropup">
-                    @if (Model.IdEstadoEvaluacion == 1)
-                    {
-                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.IdEvaluacion">
-                            <i class="bx bx-edit-alt me-1"></i> Editar
-                        </a>
-                   
-                        <div class="dropdown-divider"></div>
-                        <h6 class="dropdown-header">Resultados</h6>
+                <form asp-action="Resultado">
+                    <input type="hidden" id="IdEvaluacion" name="IdEvaluacion" value="@Model.IdEvaluacion" />
+                    <input type="hidden" id="idEstadoResultado" name="idEstadoResultado" value="@idEstadoResultado" />
+                    <input type="submit" value="@buttonMessage" class="@buttonClass" />
 
-                        <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@Model.IdEvaluacion" asp-route-idEstadoResultado="6">
-                            <i class="bx bx-error me-1"></i> Licitación Impugnada
-                        </a>
-
-                        <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@Model.IdEvaluacion" asp-route-idEstadoResultado="9">
-                            <i class="bx bx-check-circle me-1"></i> Licitación Adjudicada
-                        </a>
-
-                        <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@Model.IdEvaluacion" asp-route-idEstadoResultado="13">
-                            <i class="bx bx-block me-1"></i> Licitación Desierta
-                        </a>
-                    }
-                   
-                </div>
-                <a asp-action="Index" class="btn btn-secondary">
-                    <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
+                </form>
+                <a asp-action="Details" asp-route-idEvaluacion="@Model.IdEvaluacion" class="btn btn-secondary">
+                    <i class="bx bx-arrow-back"></i>&nbsp;Volver al detalle
                 </a>
             </div>
         </div>

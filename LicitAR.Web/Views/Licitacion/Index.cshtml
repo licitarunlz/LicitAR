@@ -6,8 +6,17 @@
     var categorias = ViewBag.CategoriasLicitacion as IEnumerable<LicitAR.Core.Data.Models.Parametros.CategoriaLicitacion>;
     var estados = ViewBag.EstadosLicitacion as IEnumerable<LicitAR.Core.Data.Models.Parametros.EstadoLicitacion>;
 
+    var mensaje = TempData["Mensaje"] as string;
+    TempData.Remove("Mensaje");
 }
-
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <div class="alert alert-success alert-dismissible" role="alert">
+        @mensaje
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        </button>
+    </div>
+}
 <div class="card">
     <div class="card-body">
         <form method="get" asp-action="Index">
@@ -152,8 +161,8 @@
                                 @(item.CategoriaLicitacion?.Descripcion ?? "N/A")
                             </span>
                         </td>
-                        <td>@(item.FechaPublicacion.HasValue ? item.FechaPublicacion.Value.ToShortDateString() : "-")</td>
-                        <td>@(item.FechaCierre.HasValue ? item.FechaCierre.Value.ToShortDateString() : "-")</td>
+                        <td>@(item.FechaPublicacion.HasValue ? item.FechaPublicacion.Value : "-")</td>
+                        <td>@(item.FechaCierre.HasValue ? item.FechaCierre.Value : "-")</td>
 
                     </tr>
                 }

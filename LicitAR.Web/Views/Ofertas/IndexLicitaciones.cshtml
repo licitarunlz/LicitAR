@@ -97,8 +97,8 @@
                                 @(item.CategoriaLicitacion?.Descripcion ?? "N/A")
                             </span>
                         </td>
-                        <td>@(item.FechaPublicacion.HasValue ? item.FechaPublicacion.Value.ToShortDateString() : "-")</td>
-                        <td>@(item.FechaCierre.HasValue ? item.FechaCierre.Value.ToShortDateString() : "-")</td>
+                        <td>@(item.FechaPublicacion.HasValue ? item.FechaPublicacion.Value : "-")</td>
+                        <td>@(item.FechaCierre.HasValue ? item.FechaCierre.Value : "-")</td>
 
                     </tr>
                 }
