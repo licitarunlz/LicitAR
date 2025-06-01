@@ -116,6 +116,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 licitacionFromDdbb.IdCategoriaLicitacion = licitacion.IdCategoriaLicitacion;
                 licitacionFromDdbb.FechaPublicacion = licitacion.FechaPublicacion;
                 licitacionFromDdbb.FechaCierre = licitacion.FechaCierre;
+                licitacionFromDdbb.IdEntidadLicitante = licitacion.IdEntidadLicitante; // <-- Agrega esta línea
 
                 licitacionFromDdbb.Audit = AuditHelper.SetModificationData(licitacionFromDdbb.Audit, userId);
 

@@ -17,8 +17,16 @@
 
                     <input type="hidden" asp-for="IdLicitacion" value="1" class="form-control" />
                     <input type="hidden" asp-for="IdEstadoLicitacion" value="1" class="form-control" />
-                    <input type="hidden" asp-for="IdEntidadLicitante" value="1" class="form-control" />
                     <input type="hidden" asp-for="CodigoLicitacion" value="1" class="form-control" />
+
+                    <div class="mb-3">
+                        <label asp-for="IdEntidadLicitante" class="form-label">Entidad Licitante</label>
+                        <select asp-for="IdEntidadLicitante" class="form-select"
+                                asp-items="@(new SelectList(ViewBag.EntidadesLicitantes, "IdEntidadLicitante", "Texto"))">
+                            <option value="">Seleccione una entidad...</option>
+                        </select>
+                        <span asp-validation-for="IdEntidadLicitante" class="text-danger"></span>
+                    </div>
 
                     <div class="mb-3">
                         <label asp-for="Titulo" class="form-label"></label>
@@ -38,12 +46,12 @@
 
                         <div class="form-check">
                             <input class="form-check-input" type="radio" asp-for="IdCategoriaLicitacion" value="1" id="publica" />
-                            <label class="form-check-label" for="privada">Pública</label>
+                            <label class="form-check-label" for="publica">Pública</label>
                         </div>
 
                         <div class="form-check">
                             <input class="form-check-input" type="radio" asp-for="IdCategoriaLicitacion" value="2" id="privada" />
-                            <label class="form-check-label" for="publica">Privada</label>
+                            <label class="form-check-label" for="privada">Privada</label>
                         </div>
 
                         <span asp-validation-for="IdCategoriaLicitacion" class="text-danger"></span>
