@@ -281,6 +281,7 @@ namespace LicitAR.Core.Business.Licitaciones
 
             _dbContext.Licitaciones.Update(licitacion);
 
+            _ = await this.CancelarTodasOfertasBorradorDeLicitacion(idLicitacion, idUsuario);
             // Registrar historial de cambio de estado
             _dbContext.LicitacionEstadoHistorial.Add(new LicitacionEstadoHistorial
             {
@@ -310,5 +311,35 @@ namespace LicitAR.Core.Business.Licitaciones
 
             return historial;
         }
+
+        private async Task<bool> CancelarTodasOfertasBorradorDeLicitacion(int idLicitacion, int idUsuario)
+        {
+            var connection = _dbContext.Database.GetDbConnection();
+            if (connection.State != ConnectionState.Open)
+                await connection.OpenAsync();
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "sp_CancelarTodasOfertasBorradorDeLicitacion";
+                command.CommandType = CommandType.StoredProcedure;
+
+                var param = command.CreateParameter();
+                param.ParameterName = "@pIdLicitacion";
+                param.Value = idLicitacion;
+                param.DbType = DbType.Int32;
+                command.Parameters.Add(param);
+
+                var param2 = command.CreateParameter();
+                param2.ParameterName = "@pIdUsuario";
+                param2.Value = idUsuario;
+                param2.DbType = DbType.Int32;
+
+                command.Parameters.Add(param2);
+                var result = await command.ExecuteNonQueryAsync();
+                // No cierres la conexi�n manualmente
+                return result > 0;
+            }
+        }
+
     }
 }

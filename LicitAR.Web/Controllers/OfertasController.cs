@@ -209,6 +209,8 @@ namespace LicitAR.Web.Controllers
                 Oferta oferta = ofertaModel.GetOferta(audit);
                 oferta.Items = ofertaModel.GetOfertaDetalles(audit);
                 await _ofertaManager.CreateOfertaAsync(oferta, IdentityHelper.GetUserLicitARId(User));
+
+                TempData["Mensaje"] = "Oferta Creada Exitosamente!";
                 return RedirectToAction(nameof(Index));
             }
             return View(ofertaModel);
@@ -256,6 +258,7 @@ namespace LicitAR.Web.Controllers
                 oferta = ofertaModel.GetOferta(audit);
                 oferta.Items = ofertaModel.GetOfertaDetalles(audit);
                 await _ofertaManager.UpdateOfertaAsync(oferta, IdentityHelper.GetUserLicitARId(User));
+                TempData["Mensaje"] = "Oferta Editada Exitosamente!";
                 return RedirectToAction(nameof(Index));
             }
             return View(oferta);
@@ -290,8 +293,9 @@ namespace LicitAR.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelarConfirmed(int id)
         {
-            var result = _ofertaManager.CancelarOfertaAsync(id, IdentityHelper.GetUserLicitARId(User));
-             
+            var result = await _ofertaManager.CancelarOfertaAsync(id, IdentityHelper.GetUserLicitARId(User));
+
+            TempData["Mensaje"] = "Oferta Cancelada Exitosamente!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -325,12 +329,9 @@ namespace LicitAR.Web.Controllers
         {
             var result = await _ofertaManager.PublicarOfertaAsync(idOferta, IdentityHelper.GetUserLicitARId(User));
 
+            TempData["Mensaje"] = "Oferta Publicada Exitosamente!";
             return RedirectToAction(nameof(Index));
         }
 
-        private bool OfertaExists(int id)
-        {
-            return _context.Ofertas.Any(e => e.IdOferta == id);
-        }
     }
 }
