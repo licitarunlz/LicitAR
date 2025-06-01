@@ -6,6 +6,7 @@ using LicitAR.Core.Utils;
 using LicitAR.Web.Models;
 using LicitAR.Web.Helpers.Authorization;
 using Microsoft.Extensions.Logging;
+using LicitAR.Core.Data;
 
 namespace LicitAR.Web.Controllers
 {
@@ -15,14 +16,51 @@ namespace LicitAR.Web.Controllers
         private readonly ILogger<LicitacionController> _logger;
         private readonly IOfertaManager _ofertaManager;
         private readonly IEvaluacionManager _evaluacionManager;
+        private readonly LicitARDbContext _dbContext;
 
-        public LicitacionController(ILicitacionManager licitacionManager, ILogger<LicitacionController> logger, IOfertaManager ofertaManager,
-                                    IEvaluacionManager evaluacionManager)
+        public LicitacionController(
+            ILicitacionManager licitacionManager,
+            ILogger<LicitacionController> logger,
+            IOfertaManager ofertaManager,
+            IEvaluacionManager evaluacionManager,
+            LicitARDbContext dbContext)
         {
             _licitacionManager = licitacionManager;
             _logger = logger;
             _ofertaManager = ofertaManager;
             _evaluacionManager = evaluacionManager;
+            _dbContext = dbContext;
+        }
+
+        private static string FormatearCuit(string cuit)
+        {
+            if (string.IsNullOrEmpty(cuit) || cuit.Length != 11)
+                return cuit;
+            return $"{cuit.Substring(0, 2)}-{cuit.Substring(2, 8)}-{cuit.Substring(10, 1)}";
+        }
+
+        private static string FormatearCuitSeguro(string cuit, string razonSocial)
+        {
+            if (string.IsNullOrWhiteSpace(cuit) && string.IsNullOrWhiteSpace(razonSocial))
+                return "[S/D] - S/D";
+
+            string cuitFormateado;
+            if (string.IsNullOrWhiteSpace(cuit))
+            {
+                cuitFormateado = "S/D";
+            }
+            else if (cuit.Length == 11 && long.TryParse(cuit, out _))
+            {
+                cuitFormateado = $"{cuit.Substring(0, 2)}-{cuit.Substring(2, 8)}-{cuit.Substring(10, 1)}";
+            }
+            else
+            {
+                cuitFormateado = cuit;
+            }
+
+            string razon = string.IsNullOrWhiteSpace(razonSocial) ? "S/D" : razonSocial;
+
+            return $"[{cuitFormateado}] - {razon}";
         }
 
         // GET: Licitacion
@@ -31,9 +69,11 @@ namespace LicitAR.Web.Controllers
         {
             var licitacionesList = await _licitacionManager.GetAllLicitacionesAsync();
             var categorias = await _licitacionManager.GetAllCategoriasLicitacionAsync();
-            var estados = await _licitacionManager.GetAllEstadosLicitacionAsync(); // NUEVO
+            var estados = (await _licitacionManager.GetAllEstadosLicitacionAsync())
+                .Where(e => e.Enabled)
+                .ToList();
             ViewBag.CategoriasLicitacion = categorias;
-            ViewBag.EstadosLicitacion = estados; // NUEVO
+            ViewBag.EstadosLicitacion = estados;
 
             var query = licitacionesList.AsQueryable();
 
@@ -62,7 +102,7 @@ namespace LicitAR.Web.Controllers
                 query = query.Where(l => l.IdCategoriaLicitacion == idCategoriaLicitacion.Value);
             }
 
-            if (idEstadoLicitacion.HasValue) // NUEVO
+            if (idEstadoLicitacion.HasValue)
             {
                 query = query.Where(l => l.IdEstadoLicitacion == idEstadoLicitacion.Value);
             }
@@ -87,22 +127,64 @@ namespace LicitAR.Web.Controllers
         {
             if (id == null)
             {
-                return View("NotFound"); // Updated
+                return View("NotFound");
             }
 
             var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id.Value);
             if (licitacion == null)
             {
-                return View("NotFound"); // Updated
+                return View("NotFound");
             }
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
-            return View(licitacion);
+
+            var entidad = _dbContext.EntidadesLicitantes.FirstOrDefault(e => e.IdEntidadLicitante == licitacion.IdEntidadLicitante);
+            string cuit = entidad?.Cuit;
+            string razon = entidad?.RazonSocial;
+            string entidadLicitanteFormateada = FormatearCuitSeguro(cuit, razon);
+
+            var vm = new LicitacionDetailsViewModel
+            {
+                IdLicitacion = licitacion.IdLicitacion,
+                IdEntidadLicitante = licitacion.IdEntidadLicitante,
+                CodigoLicitacion = licitacion.CodigoLicitacion,
+                Titulo = licitacion.Titulo,
+                Descripcion = licitacion.Descripcion,
+                FechaPublicacion = licitacion.FechaPublicacion,
+                FechaCierre = licitacion.FechaCierre,
+                IdEstadoLicitacion = licitacion.IdEstadoLicitacion,
+                IdCategoriaLicitacion = licitacion.IdCategoriaLicitacion,
+                EntidadLicitanteFormateada = entidadLicitanteFormateada,
+                Items = licitacion.Items.Select(x => new LicitacionDetalleModel
+                {
+                    IdLicitacionDetalle = x.IdLicitacionDetalle,
+                    IdLicitacion = x.IdLicitacion,
+                    NroItem = x.NroItem,
+                    Item = x.Item,
+                    Descripcion = x.Descripcion,
+                    Cantidad = x.Cantidad,
+                    PrecioEstimadoUnitario = x.PrecioEstimadoUnitario,
+                    Eliminado = false
+                }).ToList(),
+                EstadoLicitacion = licitacion.EstadoLicitacion
+            };
+
+            return View(vm);
         }
 
         // GET: Licitacion/Create
         [AuthorizeClaim("Licitaciones.Crear")]
         public IActionResult Create()
         {
+            var entidades = _dbContext.EntidadesLicitantes
+                .Where(e => e.Enabled)
+                .ToList()
+                .Select(e => new
+                {
+                    e.IdEntidadLicitante,
+                    Texto = FormatearCuitSeguro(e.Cuit, e.RazonSocial)
+                }).ToList();
+
+            ViewBag.EntidadesLicitantes = entidades;
             return View();
         }
 
@@ -147,6 +229,17 @@ namespace LicitAR.Web.Controllers
                 return View("NotFound");
             }
 
+            var entidades = _dbContext.EntidadesLicitantes
+                .Where(e => e.Enabled)
+                .ToList()
+                .Select(e => new
+                {
+                    e.IdEntidadLicitante,
+                    Texto = FormatearCuitSeguro(e.Cuit, e.RazonSocial)
+                }).ToList();
+
+            ViewBag.EntidadesLicitantes = entidades;
+
             var lic = new LicitacionModel();
             lic.SetLicitacionData(licitacion);
             return View(lic);
@@ -158,9 +251,9 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Licitaciones.Editar")]
         public async Task<IActionResult> Edit(int id, LicitacionModel licitacionModel)
         {
-            if (id != licitacionModel.IdLicitacion) // Fix comparison to match IdLicitacion
+            if (id != licitacionModel.IdLicitacion)
             {
-                return View("NotFound"); // Updated
+                return View("NotFound");
             }
 
             if (ModelState.IsValid)
@@ -175,7 +268,7 @@ namespace LicitAR.Web.Controllers
                 var result = await _licitacionManager.UpdateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
                 if (!result)
                 {
-                    return View("NotFound"); // Updated
+                    return View("NotFound");
                 }
                 TempData["Mensaje"] = "Licitación Modificada Exitosamente!";
                 return RedirectToAction(nameof(Index));
@@ -189,20 +282,19 @@ namespace LicitAR.Web.Controllers
         {
             if (id == null)
             {
-                return View("NotFound"); // Updated
+                return View("NotFound");
             }
 
             var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id.Value);
             if (licitacion == null)
             {
-                return View("NotFound"); // Updated
+                return View("NotFound");
             }
 
             if (licitacion.IdEstadoLicitacion != 1)
             {
                 return View("NotFound");
             }
-
 
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             return View(licitacion);
@@ -217,7 +309,7 @@ namespace LicitAR.Web.Controllers
             var result = await _licitacionManager.DeleteLicitacionAsync(id, IdentityHelper.GetUserLicitARId(User));
             if (!result)
             {
-                return View("NotFound"); // Updated
+                return View("NotFound");
             }
             TempData["Mensaje"] = "Licitación Eliminada Exitosamente!";
             return RedirectToAction(nameof(Index));
@@ -229,13 +321,13 @@ namespace LicitAR.Web.Controllers
         {
             if (id == null)
             {
-                return View("NotFound"); // Updated
+                return View("NotFound");
             }
 
             var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id.Value);
             if (licitacion == null)
             {
-                return View("NotFound"); // Updated
+                return View("NotFound");
             }
 
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
@@ -251,7 +343,7 @@ namespace LicitAR.Web.Controllers
             var result = await _licitacionManager.PublicarLicitacionAsync(licitacion.IdLicitacion, licitacion.FechaCierre, IdentityHelper.GetUserLicitARId(User));
             if (!result)
             {
-                return View("NotFound"); // Updated
+                return View("NotFound");
             }
             TempData["Mensaje"] = "Licitación Publicada Exitosamente!";
 
@@ -262,24 +354,20 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Licitaciones.Crear")]
         public async Task<IActionResult> Evaluar(int? id)
         {
-
-            
-
             if (id == null)
             {
-                return View("NotFound"); // Updated
+                return View("NotFound");
             }
 
             var evaluacionExistente = await _evaluacionManager.GetEvaluacionByLicitacionAsync(id.Value);
             if (evaluacionExistente != null)
                 return RedirectToAction("Edit", "Evaluaciones", new { idEvaluacion = evaluacionExistente.IdEvaluacion });
 
-
             bool iniciarEvaluacion = await _licitacionManager.IniciarEvaluacionLicitacionAsync(id.Value, IdentityHelper.GetUserLicitARId(User));
-            
+
             if (iniciarEvaluacion)
             {
-                return RedirectToAction("Create", "Evaluaciones",new { idLicitacion = id});
+                return RedirectToAction("Create", "Evaluaciones", new { idLicitacion = id });
             }
 
             return View("index");
@@ -314,8 +402,6 @@ namespace LicitAR.Web.Controllers
         // GET: Licitacion/History/5
         public async Task<IActionResult> History(int id)
         {
-            //_logger.LogInformation("Accediendo al historial de la licitación con ID {Id}", id);
-
             var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id);
             if (licitacion == null)
             {
@@ -326,7 +412,6 @@ namespace LicitAR.Web.Controllers
             var historial = await _licitacionManager.GetHistorialEstados(id);
 
             ViewBag.Licitacion = licitacion;
-            //_logger.LogInformation("Historial obtenido para la licitación con ID {Id}. Estados encontrados: {Count}", id, historial?.Count ?? 0);
             return View(historial);
         }
     }

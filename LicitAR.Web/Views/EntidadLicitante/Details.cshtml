@@ -6,100 +6,120 @@
     var usuariosAsociados = ViewBag.UsuariosAsociados as List<(string IdUsuario, string Nombre, string Apellido, string Email)>;
 }
 
-<div class="row">
-    <div class="col-xl">
-        <div class="card mb-6">
+<div class="row" id="PantallaEntidadLicitante">
+    <div class="col-md-4">
+        <!-- Columna A: Detalle de la Entidad Licitante -->
+        <div class="card mb-4 shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><b>@Html.DisplayFor(model => model.RazonSocial)</b></h5>
+                <h5 class="mb-0">
+                    <b>@Html.DisplayFor(model => model.RazonSocial)</b>
+                </h5>
             </div>
             <div class="card-body">
-                <dl class="row">
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Cuit)</b></dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Cuit)</dd>
+                <table class="table table-borderless align-middle mb-4">
+                    <tbody>
+                        <tr>
+                            <th class="w-25 text-end">@Html.DisplayNameFor(model => model.Cuit):</th>
+                            <td>@Html.DisplayFor(model => model.Cuit)</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Provincia)</b></dt>
-                    <dd class="col-sm-9">@Model.Provincia?.Descripcion</dd>
-
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Localidad)</b></dt>
-                    <dd class="col-sm-9">@Model.Localidad?.Descripcion</dd>
-
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionBarrio)</b></dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionBarrio)</dd>
-
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionCalle)</b></dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionCalle)</dd>
-
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionNumero)</b></dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionNumero)</dd>
-
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionPiso)</b></dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionPiso)</dd>
-
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionDepto)</b></dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionDepto)</dd>
-
-                    <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.DireccionCodigoPostal)</b></dt>
-                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DireccionCodigoPostal)</dd>
-                </dl>
+                <h6 class="fw-bold mt-4 mb-2">Domicilio</h6>
+                <table class="table table-borderless align-middle">
+                    <tbody>
+                        <tr>
+                            <th class="w-25 text-end">@Html.DisplayNameFor(model => model.Provincia):</th>
+                            <td>@Model.Provincia?.Descripcion</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.Localidad):</th>
+                            <td>@Model.Localidad?.Descripcion</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionBarrio):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionBarrio)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionCalle):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionCalle)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionNumero):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionNumero)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionPiso):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionPiso)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionDepto):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionDepto)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionCodigoPostal):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionCodigoPostal)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model?.IdEntidadLicitante" class="btn btn-primary">
+                    <i class="bx bx-edit"></i>&nbsp;Editar
+                </a>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
+                </a>
             </div>
         </div>
     </div>
-</div>
-
-<div class="card mt-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Usuarios Asociados</h5>
-        <a href="@Url.Action("AssignUsersToEntidad", "Usuario", new { id = Model.IdEntidadLicitante })" class="btn btn-success btn-sm">
-            <i class="bx bx-user-plus"></i>&nbsp;Asignar Usuarios
-        </a>
-    </div>
-    <div class="table-responsive text-nowrap">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Email</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (usuariosAsociados != null && usuariosAsociados.Any())
-                {
-                    foreach (var usuario in usuariosAsociados)
-                    {
+    <div class="col-md-8">
+        <!-- Columna B: Usuarios Asociados -->
+        <div class="card mb-4" id="UsuariosAsociados">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Usuarios Asociados</h5>
+                <a href="@Url.Action("AssignUsersToEntidad", "Usuario", new { id = Model.IdEntidadLicitante })" class="btn btn-success btn-sm">
+                    <i class="bx bx-user-plus"></i>&nbsp;Asignar Usuarios
+                </a>
+            </div>
+            <div class="table-responsive text-nowrap">
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
                         <tr>
-                            <td>@usuario.Nombre</td>
-                            <td>@usuario.Apellido</td>
-                            <td>@usuario.Email</td>
-                            <td>
-                                <form asp-action="DesasociarUsuario" method="post" style="display:inline;" onsubmit="return confirm('¿Está seguro que desea desasociar este usuario?');">
-                                    <input type="hidden" name="idEntidadLicitante" value="@Model.IdEntidadLicitante" />
-                                    <input type="hidden" name="idUsuario" value="@usuario.IdUsuario" />
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="bx bx-user-minus"></i>&nbsp;Desasociar
-                                    </button>
-                                </form>
-                            </td>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Acciones</th>
                         </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="4" class="text-center">No hay usuarios asociados.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                    </thead>
+                    <tbody>
+                        @if (usuariosAsociados != null && usuariosAsociados.Any())
+                        {
+                            foreach (var usuario in usuariosAsociados)
+                            {
+                                <tr>
+                                    <td>@($"{usuario.Apellido}, {usuario.Nombre}")</td>
+                                    <td>@usuario.Email</td>
+                                    <td>
+                                        <form asp-action="DesasociarUsuario" method="post" style="display:inline;" onsubmit="return confirm('¿Está seguro que desea desasociar este usuario?');">
+                                            <input type="hidden" name="idEntidadLicitante" value="@Model.IdEntidadLicitante" />
+                                            <input type="hidden" name="idUsuario" value="@usuario.IdUsuario" />
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="bx bx-user-minus"></i>&nbsp;Desasociar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center">No hay usuarios asociados.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-</div>
-
-<div class="text-start mt-8">
-    <a asp-action="Edit" asp-route-id="@Model?.IdEntidadLicitante" class="btn btn-primary">
-        <i class="bx bx-edit"></i>&nbsp;Editar
-    </a>
-    <a asp-action="Index" class="btn btn-secondary">
-        <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
-    </a>
 </div>
