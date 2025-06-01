@@ -2,6 +2,7 @@
 using LicitAR.Core.Business.Licitaciones;
 using LicitAR.Core.Business.Parametros;
 using LicitAR.Core.Utils;
+using LicitAR.Core.Business.Auditoria;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,6 +26,7 @@ namespace LicitAR.Core.DI
             services.AddScoped<IParametrosManager, ParametrosManager>();
             services.AddScoped<IEvaluacionManager, EvaluacionManager>();
             services.AddScoped<ILicitacionInvitacionManager, LicitacionInvitacionManager>();
+            services.AddScoped<IAuditManager, AuditManager>();
 
             return services;
         }
