@@ -140,6 +140,9 @@
                                     <a class="dropdown-item" asp-action="History" asp-route-id="@item.IdLicitacion">
                                         <i class="bx bx-history me-1"></i>&nbsp;Historial
                                     </a>
+                                    <a class="dropdown-item" asp-controller="Audit" asp-action="Licitacion" asp-route-idLicitacion="@item.IdLicitacion">
+                                        <i class="bx bx-search-alt me-1"></i>&nbsp;Auditoría 
+                                    </a>
                                     @if (item.IdEstadoLicitacion == 1)
                                     {
                                         <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.IdLicitacion">
