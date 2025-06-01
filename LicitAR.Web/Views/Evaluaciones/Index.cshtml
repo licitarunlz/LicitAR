@@ -91,19 +91,39 @@
                                         <i class="bx bx-show me-1"></i> Detalles
                                     </a>
                                     @if (item.IdEstadoEvaluacion == 1)
-                                    {
-                                        <a class="dropdown-item" asp-action="Edit" asp-controller="Evaluaciones" asp-route-idEvaluacion="@item?.IdEvaluacion">
-                                            <i class="bx bx-edit me-1"></i> Editar
+                                    { 
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-idEvaluacion="@item.IdEvaluacion">
+                                            <i class="bx bx-edit-alt me-1"></i> Editar
                                         </a>
-                                        <a class="dropdown-item" asp-action="Publicar" asp-route-idEvaluacion="@item?.IdEvaluacion">
-                                            <i class="bx bx-upload me-1"></i> Publicar
-                                        </a> 
+
+                                        <div class="dropdown-divider"></div>
+                                        <h6 class="dropdown-header">Resultados</h6>
+
+                                        @if (item.EvaluacionOfertasDetalles.Count > 0)
+                                        {
+                                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="6">
+                                                <i class="bx bx-error me-1"></i> Licitación Impugnada
+                                            </a>
+
+                                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="9">
+                                                <i class="bx bx-check-circle me-1"></i> Licitación Adjudicada
+                                            </a>
+
+                                        }
+                                        else
+                                        {
+                                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="13">
+                                                <i class="bx bx-block me-1"></i> Licitación Desierta
+                                            </a>
+
+                                        }
                                     }
+
                                 </div>
                             </div>
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion) - @Html.DisplayFor(modelItem => item.Licitacion.Titulo)
+                            @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion) - @Html.DisplayFor(modelItem => item.Licitacion.Titulo) - @Html.DisplayFor(modelItem => item.Licitacion.EstadoLicitacion.Descripcion)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.EstadoEvaluacion.Descripcion)

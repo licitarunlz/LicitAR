@@ -95,7 +95,7 @@
                                                 data-itemnombre="@item.Item"
                                                 disabled
                                                 @(Model.Ofertas != null && Model.Ofertas.ContainsKey(item.IdLicitacionDetalle) &&
-                                                 Model.Ofertas[item.IdLicitacionDetalle] == ofertaDetalleProv.IdOfertaDetalle ? "checked" : "")
+                                                         Model.Ofertas[item.IdLicitacionDetalle] == ofertaDetalleProv.IdOfertaDetalle ? "checked" : "")
                                                 data-proveedor="@ofertaProv.Persona?.RazonSocial"
                                                 data-subtotal="@ofertaDetalleProv.ImporteSubtotal" />
                                             </td>
@@ -115,35 +115,42 @@
                     </div>
                 }
 
+                @if (Model.Ofertas.Count > 0){ 
+                    <div class="alert alert-success alert-dismissible" role="alert">
 
-                <div class="alert alert-success alert-dismissible" role="alert">
+                        <h4><b>Resumen de Selección</b></h4>
+                        <ul id="resumen-seleccion" class="list-group mb-3">
 
-                    <h4><b>Resumen de Selección</b></h4>
-                    <ul id="resumen-seleccion" class="list-group mb-3">
+                            @foreach (var kvp in Model.Ofertas)
+                            {
+                                var detalle = licitacion.Items.FirstOrDefault(i => i.IdLicitacionDetalle == kvp.Key);
+                                var oferta = ofertas.SelectMany(o => o.Items)
+                                .FirstOrDefault(oi => oi.IdOfertaDetalle == kvp.Value);
 
-                        @foreach (var kvp in Model.Ofertas)
-                        {
-                            var detalle = licitacion.Items.FirstOrDefault(i => i.IdLicitacionDetalle == kvp.Key);
-                            var oferta = ofertas.SelectMany(o => o.Items)
-                            .FirstOrDefault(oi => oi.IdOfertaDetalle == kvp.Value);
+                                <li class="list-group-item">
+                                    <b>Item:</b> @detalle?.Item |
+                                    <b>Oferente:</b> @oferta?.Oferta.Persona?.RazonSocial |
+                                    <b>Subtotal:</b> $@oferta?.ImporteSubtotal
+                                </li>
 
-                            <li class="list-group-item">
-                                <b>Item:</b> @detalle?.Item |
-                                <b>Oferente:</b> @oferta?.Oferta.Persona?.RazonSocial |
-                                <b>Subtotal:</b> $@oferta?.ImporteSubtotal
-                            </li>
+                                importeTotal += oferta.ImporteSubtotal;
+                            }
 
-                            importeTotal += oferta.ImporteSubtotal;
-                        }
-
-                    </ul>
-                    <p><strong>Subtotal total: $<span id="total-suma">@importeTotal</span></strong></p>
-                </div>
-
-                <!--<div class="row">
-                    <div class="text-end">
-                        <button type="submit" id="btnGuardarEvaluacion" class="btn btn-primary">Guardar Evaluación</button>
+                        </ul>
+                        <p><strong>Subtotal total: $<span id="total-suma">@importeTotal</span></strong></p>
                     </div>
+                }else
+                {
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        No se registraron ofertas para esta licitación
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                        </button>
+                    </div>
+                }
+                <!--<div class="row">
+                <div class="text-end">
+                <button type="submit" id="btnGuardarEvaluacion" class="btn btn-primary">Guardar Evaluación</button>
+                </div>
                 </div> -->
             </form>
 
@@ -157,21 +164,27 @@
                         <a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.IdEvaluacion">
                             <i class="bx bx-edit-alt me-1"></i> Editar
                         </a>
-                   
+
                         <div class="dropdown-divider"></div>
                         <h6 class="dropdown-header">Resultados</h6>
 
-                        <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@Model.IdEvaluacion" asp-route-idEstadoResultado="6">
-                            <i class="bx bx-error me-1"></i> Licitación Impugnada
-                        </a>
+                        @if(Model.Ofertas.Count > 0){ 
+                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@Model.IdEvaluacion" asp-route-idEstadoResultado="6">
+                                <i class="bx bx-error me-1"></i> Licitación Impugnada
+                            </a>
 
-                        <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@Model.IdEvaluacion" asp-route-idEstadoResultado="9">
-                            <i class="bx bx-check-circle me-1"></i> Licitación Adjudicada
-                        </a>
+                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@Model.IdEvaluacion" asp-route-idEstadoResultado="9">
+                                <i class="bx bx-check-circle me-1"></i> Licitación Adjudicada
+                            </a>
 
-                        <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@Model.IdEvaluacion" asp-route-idEstadoResultado="13">
-                            <i class="bx bx-block me-1"></i> Licitación Desierta
-                        </a>
+                        }
+                        else
+                        {
+                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@Model.IdEvaluacion" asp-route-idEstadoResultado="13">
+                                <i class="bx bx-block me-1"></i> Licitación Desierta
+                            </a>
+
+                        }
                     }
                    
                 </div>

@@ -41,6 +41,7 @@ namespace LicitAR.Core.Business.Licitaciones
             return await _dbContext.Evaluaciones
                 .Include(e=> e.EstadoEvaluacion)
                 .Include(e=> e.Licitacion)
+                .Include(e=> e.Licitacion.EstadoLicitacion)
                 .Include(l => l.EvaluacionOfertasDetalles) // Include EstadoLicitacion
                 .ToListAsync();
         }
