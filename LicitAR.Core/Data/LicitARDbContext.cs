@@ -40,6 +40,8 @@ namespace LicitAR.Core.Data
         public DbSet<EstadoEvaluacion> EstadoEvaluacion { get; set; }
         public DbSet<LicitacionEstadoHistorial> LicitacionEstadoHistorial { get; set; }
         public DbSet<LicitacionInvitacion> LicitacionInvitacion { get; set; }
+        public DbSet<AuditTrail> AuditTrails { get; set; }
+        public DbSet<AuditLicitacion> AuditLicitaciones { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -242,6 +244,32 @@ namespace LicitAR.Core.Data
                 .Property(u => u.IdUsuario)
                 .ValueGeneratedOnAdd()
                 .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore);
+
+            // Configuración directa de AuditTrail
+            modelBuilder.Entity<AuditTrail>(builder =>
+            {
+                builder.HasKey(a => a.Id);
+                builder.Property(a => a.Accion).HasMaxLength(100).IsRequired();
+                builder.Property(a => a.Entidad).HasMaxLength(100).IsRequired();
+                builder.Property(a => a.Descripcion).HasMaxLength(2000);
+                builder.Property(a => a.IpCliente).HasMaxLength(50);
+                builder.Property(a => a.UserAgent).HasMaxLength(512);
+            });
+
+            // Configuración directa de AuditLicitacion
+            modelBuilder.Entity<AuditLicitacion>(builder =>
+            {
+                builder.HasKey(a => a.Id);
+                builder.Property(a => a.Accion).HasMaxLength(100).IsRequired();
+                builder.Property(a => a.CampoModificado).HasMaxLength(100);
+                builder.Property(a => a.ValorAnterior).HasMaxLength(2000);
+                builder.Property(a => a.ValorNuevo).HasMaxLength(2000);
+
+                builder.HasOne(a => a.Licitacion)
+                    .WithMany()
+                    .HasForeignKey(a => a.IdLicitacion)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }
