@@ -76,6 +76,12 @@
                                     <a class="dropdown-item" asp-action="Edit" asp-route-id="@user.IdUsuario">
                                         <i class="bx bx-edit-alt me-1"></i> Editar
                                     </a>
+                                    <a class="dropdown-item" asp-controller="Audit" asp-action="Trail" asp-route-UsuarioId="@user.IdUsuario">
+                                        <i class="bx bx-history me-1"></i> Auditoría General
+                                    </a>
+                                    <a class="dropdown-item" asp-controller="Audit" asp-action="Licitacion" asp-route-UsuarioId="@user.IdUsuario">
+                                        <i class="bx bx-file-find me-1"></i> Auditoría Licitación
+                                    </a>
                                     <a class="dropdown-item" href="javascript:void(0);" onclick="confirmToggleEnabled('@user.IdUsuario', @(user.Enabled ? "false" : "true"))">
                                         <i class="bx bx-trash me-1"></i> @(user.Enabled ? "Deshabilitar" : "Habilitar")
                                     </a>
