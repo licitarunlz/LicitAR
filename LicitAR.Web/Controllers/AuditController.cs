@@ -33,9 +33,11 @@ namespace LicitAR.Web.Controllers
             if (hasta.HasValue)
                 query = query.Where(x => x.FechaHora <= hasta.Value);
 
+            // Siempre ordenar por FechaHora descendente antes de paginar
+            query = query.OrderByDescending(x => x.FechaHora);
+
             var total = await query.CountAsync();
             var items = await query
-                .OrderByDescending(x => x.FechaHora)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -80,9 +82,11 @@ namespace LicitAR.Web.Controllers
             if (hasta.HasValue)
                 query = query.Where(x => x.FechaHora <= hasta.Value);
 
+            // Siempre ordenar por FechaHora descendente antes de paginar
+            query = query.OrderByDescending(x => x.FechaHora);
+
             var total = await query.CountAsync();
             var items = await query
-                .OrderByDescending(x => x.FechaHora)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
