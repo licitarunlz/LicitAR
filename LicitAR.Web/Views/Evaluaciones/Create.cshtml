@@ -109,17 +109,27 @@
                     </div>
                 }
 
+                @if (ofertas.ToList().Count > 0)
+                  { 
+                    <div class="alert alert-success alert-dismissible" role="alert">
 
-                <div class="alert alert-success alert-dismissible" role="alert">
-
-                    <h4><b>Resumen de Selección</b></h4>
-                    <ul id="resumen-seleccion" class="list-group mb-3"></ul>
-                    <p><strong>Subtotal total: $<span id="total-suma">0.00</span></strong></p>
-                </div>
+                        <h4><b>Resumen de Selección</b></h4>
+                        <ul id="resumen-seleccion" class="list-group mb-3"></ul>
+                        <p><strong>Subtotal total: $<span id="total-suma">0.00</span></strong></p>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        No se registraron ofertas para esta licitación
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                        </button>
+                    </div>
+                }
 
                 <div class="row">
                     <div class="text-start">
-                        <button type="submit" id="btnGuardarEvaluacion" class="btn btn-primary">Guardar Evaluación</button>
+                        <button type="submit" id="btnGuardarEvaluacion" class="btn btn-primary">Iniciar Evaluación</button>
                     </div>
                 </div>
             </form>
