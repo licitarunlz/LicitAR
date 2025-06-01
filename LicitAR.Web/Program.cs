@@ -23,11 +23,18 @@ public partial class Program
         builder.Services.AddServicesRegistrations(builder.Configuration);
         builder.Services.AddFileStorageRegistrations(builder.Configuration);
 
-
         // Add services to the container.
         builder.Services.AddControllersWithViews(options =>
         {
             options.Filters.Add(new AuthorizeFilter());
+        });
+
+        // Add session services
+        builder.Services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromMinutes(30);
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true;
         });
 
         var app = builder.Build();
@@ -42,6 +49,9 @@ public partial class Program
 
         app.UseHttpsRedirection();
         app.UseRouting();
+
+        // Use session BEFORE authentication/authorization
+        app.UseSession();
 
         app.UseAuthentication();
         app.UseAuthorization();

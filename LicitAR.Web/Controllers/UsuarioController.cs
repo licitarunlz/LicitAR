@@ -13,6 +13,7 @@ using System.Text;
 using Microsoft.AspNetCore.WebUtilities;
 using LicitAR.Core.Business.Licitaciones;
 using System.Security.Claims;
+using LicitAR.Web.Helpers.Auditoria;
 
 namespace LicitAR.Web.Controllers;
 
@@ -134,6 +135,7 @@ public class UsuarioController : Controller
     [Authorize]
     [AuthorizeClaim("Roles.Editar")]
     [ValidateAntiForgeryToken]
+    [AuditarEvento("UsuarioController - AssignUsersToRole", "Usuario", "Asignación de usuarios a rol", "RoleId")]
     public async Task<IActionResult> AssignUsersToRole(AssignUsersToRoleViewModel model)
     {
         _logger.LogInformation("AssignUsersToRole POST called for RoleId: {RoleId}, RoleName: {RoleName}", model.RoleId, model.RoleName);
@@ -222,6 +224,7 @@ public class UsuarioController : Controller
     [Authorize]
     [AuthorizeClaim("EntidadLicitante.Editar")]
     [ValidateAntiForgeryToken]
+    [AuditarEvento("UsuarioController - AssignUsersToEntidad", "EntidadLicitante", "Asignación de usuarios a entidad", "IdEntidadLicitante")]
     public async Task<IActionResult> AssignUsersToEntidad(AssignUsersToEntidadViewModel model)
     {
         if (!ModelState.IsValid)
@@ -306,6 +309,32 @@ public class UsuarioController : Controller
                 if (vinculacion != null)
                 {
                     claims.Add(new System.Security.Claims.Claim("IdPersona", vinculacion.IdPersona.ToString()));
+                }
+
+                // (2) Agregar IdUsuario como claim si no está
+                if (!claims.Any(c => c.Type == "IdUsuario"))
+                {
+                    claims.Add(new Claim("IdUsuario", user.IdUsuario.ToString()));
+                }
+
+                // (3) Obtener IP y guardarla en sesión
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
+                HttpContext.Session.SetString("IpCliente", ip);
+
+                // (1) Registrar evento de login en AuditTrail
+                var auditManager = HttpContext.RequestServices.GetService(typeof(LicitAR.Core.Business.Auditoria.IAuditManager)) as LicitAR.Core.Business.Auditoria.IAuditManager;
+                var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
+                if (auditManager != null)
+                {
+                    await auditManager.LogSystemEvent(
+                        user.IdUsuario,
+                        "UsuarioController - Login",
+                        "Usuario",
+                        user.IdUsuario,
+                        "Login exitoso",
+                        ip,
+                        userAgent
+                    );
                 }
 
                 // Create new identity with all claims
@@ -517,6 +546,7 @@ public class UsuarioController : Controller
     [ValidateAntiForgeryToken] // Ensure Anti-Forgery Token validation
     [Authorize]
     [AuthorizeClaim("Perfil.Editar")]
+    [AuditarEvento("UsuarioController - EditMyProfile", "Usuario", "Edición de mi perfil", "IdUsuario")]
     public async Task<IActionResult> EditMyProfile(UsuarioModel model)
     {
         if (!ModelState.IsValid)
@@ -579,6 +609,7 @@ public class UsuarioController : Controller
     [ValidateAntiForgeryToken] // Ensure AntiForgeryToken validation is enabled
     [Authorize]
     [AuthorizeClaim("Usuarios.Editar")]
+    [AuditarEvento("UsuarioController - Edit", "Usuario", "Edición de usuario", "IdUsuario")]
     public async Task<IActionResult> Edit(UsuarioModel model)
     {
         if (!ModelState.IsValid)
@@ -646,6 +677,7 @@ public class UsuarioController : Controller
     [HttpPost]
     [Authorize]
     [AuthorizeClaim("Usuarios.Eliminar")] 
+    [AuditarEvento("UsuarioController - ToggleEnabled", "Usuario", "Habilitar/Deshabilitar usuario", "id")]
     public async Task<IActionResult> ToggleEnabled(int id, bool enabled)
     {
         _logger.LogInformation("ToggleEnabled called with id: {id}, enabled: {enabled}", id, enabled);

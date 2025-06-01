@@ -8,6 +8,7 @@ using LicitAR.Web.Helpers.Authorization;
 using Microsoft.Extensions.Logging;
 using LicitAR.Core.Data;
 using LicitAR.Core.Business.Auditoria;
+using LicitAR.Web.Helpers.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {
@@ -127,6 +128,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Licitacion/Details/5
         [AuthorizeClaim("Licitaciones.Ver")]
+        [AuditarEvento("LicitacionController - Details", "Licitacion", "Visualización de detalle de licitación", "id")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -184,6 +186,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Licitacion/Create
         [AuthorizeClaim("Licitaciones.Crear")]
+        [AuditarEvento("LicitacionController - Create", "Licitacion", "Inicio creación de licitación")]
         public IActionResult Create()
         {
             var entidades = _dbContext.EntidadesLicitantes
@@ -203,6 +206,7 @@ namespace LicitAR.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("Licitaciones.Crear")]
+        [AuditarEvento("LicitacionController - Create", "Licitacion", "Creación de licitación")]
         public async Task<IActionResult> Create(LicitacionModel licitacionModel)
         {
             if (ModelState.IsValid)
@@ -228,6 +232,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Licitacion/Edit/5
         [AuthorizeClaim("Licitaciones.Editar")]
+        [AuditarEvento("LicitacionController - Edit", "Licitacion", "Inicio edición de licitación", "id")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -266,6 +271,7 @@ namespace LicitAR.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("Licitaciones.Editar")]
+        [AuditarEvento("LicitacionController - Edit", "Licitacion", "Edición de licitación", "id")]
         public async Task<IActionResult> Edit(int id, LicitacionModel licitacionModel)
         {
             if (id != licitacionModel.IdLicitacion)
@@ -301,6 +307,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Licitacion/Delete/5
         [AuthorizeClaim("Licitaciones.Eliminar")]
+        [AuditarEvento("LicitacionController - Delete", "Licitacion", "Inicio eliminación de licitación", "id")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -327,6 +334,7 @@ namespace LicitAR.Web.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("Licitaciones.Eliminar")]
+        [AuditarEvento("LicitacionController - DeleteConfirmed", "Licitacion", "Confirmación de eliminación de licitación", "id")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var result = await _licitacionManager.DeleteLicitacionAsync(id, IdentityHelper.GetUserLicitARId(User));
@@ -344,8 +352,9 @@ namespace LicitAR.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Licitacion/Delete/5
+        // GET: Licitacion/Publicar/5
         [AuthorizeClaim("Licitaciones.Editar")]
+        [AuditarEvento("LicitacionController - Publicar", "Licitacion", "Inicio publicación de licitación", "id")]
         public async Task<IActionResult> Publicar(int? id)
         {
             if (id == null)
@@ -363,10 +372,11 @@ namespace LicitAR.Web.Controllers
             return View(licitacion);
         }
 
-        // POST: Licitacion/Delete/5
+        // POST: Licitacion/Publicar/5
         [HttpPost, ActionName("Publicar")]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("Licitaciones.Crear")]
+        [AuditarEvento("LicitacionController - PublicarConfirmed", "Licitacion", "Confirmación de publicación de licitación", "IdLicitacion")]
         public async Task<IActionResult> PublicarConfirmed(LicitacionPublicarConfirmModel licitacion)
         {
             var result = await _licitacionManager.PublicarLicitacionAsync(licitacion.IdLicitacion, licitacion.FechaCierre, IdentityHelper.GetUserLicitARId(User));
@@ -385,7 +395,7 @@ namespace LicitAR.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Licitacion/Delete/5
+        // GET: Licitacion/Evaluar/5
         [AuthorizeClaim("Licitaciones.Crear")]
         public async Task<IActionResult> Evaluar(int? id)
         {
@@ -456,6 +466,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Licitacion/History/5
+        [AuditarEvento("LicitacionController - History", "Licitacion", "Visualización historial de licitación", "id")]
         public async Task<IActionResult> History(int id)
         {
             var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id);

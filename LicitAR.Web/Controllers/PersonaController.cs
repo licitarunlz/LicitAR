@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using LicitAR.Core.Business.Identidad;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using LicitAR.Web.Helpers.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {
@@ -84,6 +85,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Persona/Details/5
         [AuthorizeClaim("Persona.Ver")]
+        [AuditarEvento("PersonaController - Details", "Persona", "Visualización de detalle de persona", "id")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -103,6 +105,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Persona/Create
         [AuthorizeClaim("Persona.Crear")]
+        [AuditarEvento("PersonaController - Create", "Persona", "Inicio creación de persona")]
         public IActionResult Create()
         {
             var items = _context.Provincias
@@ -126,8 +129,9 @@ namespace LicitAR.Web.Controllers
             ViewBag.ComboTiposPersona = tiposPersonas;
             return View();
         }
-        // GET: Persona/Create
+        // GET: Persona/CreatePersonaUsuario
         [AuthorizeClaim("Persona.Crear")]
+        [AuditarEvento("PersonaController - CreatePersonaUsuario", "Persona", "Inicio creación de persona usuario")]
         public IActionResult CreatePersonaUsuario()
         {
             PersonaModel personaModel = new PersonaModel();
@@ -163,10 +167,11 @@ namespace LicitAR.Web.Controllers
             return View(personaModel);
         }
 
-        // POST: Persona/Create
+        // POST: Persona/CreatePersonaUsuario
         [AuthorizeClaim("Persona.Crear")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("PersonaController - CreatePersonaUsuario", "Persona", "Creación de persona usuario")]
         public async Task<IActionResult> CreatePersonaUsuario(PersonaModel personaModel)
         {
             if (ModelState.IsValid)
@@ -223,6 +228,7 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Persona.Crear")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("PersonaController - Create", "Persona", "Creación de persona")]
         public async Task<IActionResult> Create(PersonaModel personaModel)
         {
             if (ModelState.IsValid)
@@ -250,6 +256,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Persona/Edit/5
         [AuthorizeClaim("Persona.Editar")]
+        [AuditarEvento("PersonaController - Edit", "Persona", "Inicio edición de persona", "id")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -300,6 +307,7 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Persona.Editar")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("PersonaController - Edit", "Persona", "Edición de persona", "id")]
         public async Task<IActionResult> Edit(int id, PersonaModel personaModel)
         {
             if (id != personaModel.IdPersona)
@@ -336,6 +344,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Persona/Delete/5
         [AuthorizeClaim("Persona.Eliminar")]
+        [AuditarEvento("PersonaController - Delete", "Persona", "Inicio eliminación de persona", "id")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -359,6 +368,7 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Persona.Eliminar")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("PersonaController - DeleteConfirmed", "Persona", "Confirmación de eliminación de persona", "id")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             int idUser = IdentityHelper.GetUserLicitARId(User);

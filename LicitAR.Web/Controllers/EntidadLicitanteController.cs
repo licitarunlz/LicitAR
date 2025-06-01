@@ -10,6 +10,7 @@ using LicitAR.Core.Business.Identidad;
 using LicitAR.Web.Models;
 using LicitAR.Web.Helpers;
 using LicitAR.Web.Helpers.Authorization;
+using LicitAR.Web.Helpers.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {
@@ -91,6 +92,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: EntidadLicitante/Details/5
         [AuthorizeClaim("EntidadLicitante.Ver")]
+        [AuditarEvento("EntidadLicitanteController - Details", "EntidadLicitante", "Visualización de detalle de entidad licitante", "id")]
         public async Task<IActionResult> Details(int id)
         {
             var entidad = await _entidadLicitanteManager.GetEntidadLicitanteByIdAsync(id);
@@ -105,6 +107,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: EntidadLicitante/Create
         [AuthorizeClaim("EntidadLicitante.Crear")]
+        [AuditarEvento("EntidadLicitanteController - Create", "EntidadLicitante", "Inicio creación de entidad licitante")]
         public IActionResult Create()
         {
             var items = _context.Provincias
@@ -128,6 +131,7 @@ namespace LicitAR.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("EntidadLicitante.Crear")]
+        [AuditarEvento("EntidadLicitanteController - Create", "EntidadLicitante", "Creación de entidad licitante")]
         public async Task<IActionResult> Create(EntidadLicitanteModel entidadLicitanteModel)
         {
             if (ModelState.IsValid)
@@ -156,6 +160,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: EntidadLicitante/Edit/5
         [AuthorizeClaim("EntidadLicitante.Editar")]
+        [AuditarEvento("EntidadLicitanteController - Edit", "EntidadLicitante", "Inicio edición de entidad licitante", "id")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -197,6 +202,7 @@ namespace LicitAR.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("EntidadLicitante.Editar")]
+        [AuditarEvento("EntidadLicitanteController - Edit", "EntidadLicitante", "Edición de entidad licitante", "id")]
         public async Task<IActionResult> Edit(int id, EntidadLicitanteModel entidadLicitanteModel)
         {
             if (id != entidadLicitanteModel.IdEntidadLicitante)
@@ -236,6 +242,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: EntidadLicitante/Delete/5
         [AuthorizeClaim("EntidadLicitante.Eliminar")]
+        [AuditarEvento("EntidadLicitanteController - Delete", "EntidadLicitante", "Inicio eliminación de entidad licitante", "id")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -256,6 +263,7 @@ namespace LicitAR.Web.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("EntidadLicitante.Eliminar")]
+        [AuditarEvento("EntidadLicitanteController - DeleteConfirmed", "EntidadLicitante", "Confirmación de eliminación de entidad licitante", "id")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
 
