@@ -10,6 +10,7 @@ using LicitAR.Web.Helpers;
 using LicitAR.Core.Utils;
 using LicitAR.Web.Helpers.Authorization;
 using Microsoft.Extensions.Logging;
+using LicitAR.Core.Business.Identidad;
 
 namespace LicitAR.Web.Controllers
 {
@@ -17,15 +18,17 @@ namespace LicitAR.Web.Controllers
     public class AuditController : Controller
     {
         private readonly LicitARDbContext _dbContext;
+        private readonly IUsuarioManager _usuarioManager;
 
-        public AuditController(LicitARDbContext dbContext)
+        public AuditController(LicitARDbContext dbContext, IUsuarioManager usuarioManager)
         {
             _dbContext = dbContext;
+            _usuarioManager = usuarioManager;
         }
 
         // GET: /Audit/Trail
         [AuthorizeClaim("Auditoria.Trail")]
-        public async Task<IActionResult> Trail(string accion, int? usuarioId, string entidad, DateTime? desde, DateTime? hasta, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Trail(string accion, int? usuarioId, string entidad, DateTime? desde, DateTime? hasta, string usuarioMail, string usuarioNombreCompleto, int page = 1, int pageSize = 20)
         {
             var query = _dbContext.AuditTrails.AsQueryable();
 
@@ -49,6 +52,30 @@ namespace LicitAR.Web.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
+            // Obtener los usuarioIds únicos
+            var usuarioIds = items.Select(x => x.UsuarioId).Distinct().ToList();
+
+            // Obtener los datos de usuario usando UsuarioManager
+            var usuariosDict = await _usuarioManager.GetUsuariosInfoByIdsAsync(usuarioIds);
+
+            // Filtro por mail y nombre completo (case-insensitive, contains)
+            if (!string.IsNullOrWhiteSpace(usuarioMail))
+            {
+                var idsFiltrados = usuariosDict
+                    .Where(u => (u.Value.Email ?? "").ToLower().Contains(usuarioMail.ToLower()))
+                    .Select(u => u.Key)
+                    .ToHashSet();
+                items = items.Where(x => idsFiltrados.Contains(x.UsuarioId)).ToList();
+            }
+            if (!string.IsNullOrWhiteSpace(usuarioNombreCompleto))
+            {
+                var idsFiltrados = usuariosDict
+                    .Where(u => ((u.Value.Nombre + " " + u.Value.Apellido).Trim().ToLower()).Contains(usuarioNombreCompleto.ToLower()))
+                    .Select(u => u.Key)
+                    .ToHashSet();
+                items = items.Where(x => idsFiltrados.Contains(x.UsuarioId)).ToList();
+            }
+
             var vms = items.Select(x => new AuditTrailViewModel
             {
                 Id = x.Id,
@@ -60,10 +87,14 @@ namespace LicitAR.Web.Controllers
                 Descripcion = x.Descripcion,
                 IpCliente = x.IpCliente,
                 UserAgent = x.UserAgent,
-                UsuarioNombre = "" // Completar si tienes acceso a usuarios
+                UsuarioNombre = "", // Si quieres mantenerlo
+                UsuarioMail = usuariosDict.ContainsKey(x.UsuarioId) ? usuariosDict[x.UsuarioId].Email : "",
+                UsuarioNombreCompleto = usuariosDict.ContainsKey(x.UsuarioId)
+                    ? (usuariosDict[x.UsuarioId].Nombre + " " + usuariosDict[x.UsuarioId].Apellido).Trim()
+                    : ""
             }).ToList();
 
-            ViewBag.Total = total;
+            ViewBag.Total = items.Count;
             ViewBag.Page = page;
             ViewBag.PageSize = pageSize;
             return View(vms);
@@ -71,7 +102,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: /Audit/Licitacion
         [AuthorizeClaim("Auditoria.Licitacion")]
-        public async Task<IActionResult> Licitacion(string accion, int? usuarioId, int? idLicitacion, string campo, DateTime? desde, DateTime? hasta, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Licitacion(string accion, int? usuarioId, int? idLicitacion, string campo, DateTime? desde, DateTime? hasta, string usuarioMail, string usuarioNombreCompleto, int page = 1, int pageSize = 20)
         {
             var query = _dbContext.AuditLicitaciones
                 .Include(x => x.Licitacion)
@@ -99,6 +130,30 @@ namespace LicitAR.Web.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
+            // Obtener los usuarioIds únicos
+            var usuarioIds = items.Select(x => x.UsuarioId).Distinct().ToList();
+
+            // Obtener los datos de usuario usando UsuarioManager
+            var usuariosDict = await _usuarioManager.GetUsuariosInfoByIdsAsync(usuarioIds);
+
+            // Filtro por mail y nombre completo (case-insensitive, contains)
+            if (!string.IsNullOrWhiteSpace(usuarioMail))
+            {
+                var idsFiltrados = usuariosDict
+                    .Where(u => (u.Value.Email ?? "").ToLower().Contains(usuarioMail.ToLower()))
+                    .Select(u => u.Key)
+                    .ToHashSet();
+                items = items.Where(x => idsFiltrados.Contains(x.UsuarioId)).ToList();
+            }
+            if (!string.IsNullOrWhiteSpace(usuarioNombreCompleto))
+            {
+                var idsFiltrados = usuariosDict
+                    .Where(u => ((u.Value.Nombre + " " + u.Value.Apellido).Trim().ToLower()).Contains(usuarioNombreCompleto.ToLower()))
+                    .Select(u => u.Key)
+                    .ToHashSet();
+                items = items.Where(x => idsFiltrados.Contains(x.UsuarioId)).ToList();
+            }
+
             var vms = items.Select(x => new AuditLicitacionViewModel
             {
                 Id = x.Id,
@@ -109,11 +164,15 @@ namespace LicitAR.Web.Controllers
                 CampoModificado = x.CampoModificado,
                 ValorAnterior = x.ValorAnterior,
                 ValorNuevo = x.ValorNuevo,
-                UsuarioNombre = "", // Completar si tienes acceso a usuarios
+                UsuarioNombre = "", // Si quieres mantenerlo
+                UsuarioMail = usuariosDict.ContainsKey(x.UsuarioId) ? usuariosDict[x.UsuarioId].Email : "",
+                UsuarioNombreCompleto = usuariosDict.ContainsKey(x.UsuarioId)
+                    ? (usuariosDict[x.UsuarioId].Nombre + " " + usuariosDict[x.UsuarioId].Apellido).Trim()
+                    : "",
                 LicitacionTitulo = x.Licitacion?.Titulo
             }).ToList();
 
-            ViewBag.Total = total;
+            ViewBag.Total = items.Count;
             ViewBag.Page = page;
             ViewBag.PageSize = pageSize;
             return View(vms);
