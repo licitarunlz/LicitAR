@@ -23,12 +23,17 @@ namespace LicitAR.Web.Controllers
     {
         private readonly ILicitacionManager _licitacionManager;
         private readonly IOfertaManager _ofertaManager;
+        private readonly ILicitacionInvitacionManager _licitacionInvitacionManager;
         private readonly LicitARDbContext _context;
 
-        public OfertasController(LicitARDbContext context, ILicitacionManager licitacionManager, IOfertaManager ofertaManager)
+        public OfertasController(LicitARDbContext context, 
+                                 ILicitacionManager licitacionManager, 
+                                 IOfertaManager ofertaManager,
+                                 ILicitacionInvitacionManager licitacionInvitacionManager)
         {
             _licitacionManager = licitacionManager;
             _ofertaManager = ofertaManager;
+            _licitacionInvitacionManager = licitacionInvitacionManager;
             _context = context;
         }
 
@@ -44,13 +49,35 @@ namespace LicitAR.Web.Controllers
             //      y que no estén dadas de baja
             licitaciones = licitaciones.Where(x =>
                                            x.IdEstadoLicitacion == 3
+                                        && x.IdCategoriaLicitacion == 1
                                         && x.FechaCierre > DateTime.Now
                                         && x.FechaPublicacion < DateTime.Now
                                         && x.Audit.FechaBaja == null)?.ToList();
+
+
             if (licitaciones == null)
                 return View(licitaciones);
 
+            var invitacionLicitaciones = await _licitacionInvitacionManager.GetInvitacionesByPersonaAsync(int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona").ToString()));
+
+            if (invitacionLicitaciones != null)
+            {
+                foreach(var invitacion in invitacionLicitaciones)
+                {
+                    var licit = invitacion.Licitacion;
+                    if (licit.FechaPublicacion < DateTime.Now 
+                        && licit.FechaCierre > DateTime.Now 
+                        && licit.Audit.FechaBaja == null)
+                    {
+                        if (!licitaciones.Any(x=> x.IdLicitacion == licit.IdLicitacion))
+                            licitaciones.Add(licit);
+                    }
+                }
+            }
+
             var query = licitaciones.AsQueryable();
+
+            
 
             if (!string.IsNullOrEmpty(codigoLicitacion))
             {

@@ -57,6 +57,8 @@ namespace LicitAR.Core.Data.Models
         [ForeignKey("IdCategoriaLicitacion")]
         public required CategoriaLicitacion CategoriaLicitacion { get; set; }
 
+        [ForeignKey("IdEntidadLicitante")]
+        public EntidadLicitante EntidadLicitante { get; set; }
         public bool Enabled { get; set; } = true; // Por defecto, habilitado
                                                   // Navegación hacia los ítems (detalle)
         public virtual ICollection<LicitacionDetalle> Items { get; set; } = new List<LicitacionDetalle>();

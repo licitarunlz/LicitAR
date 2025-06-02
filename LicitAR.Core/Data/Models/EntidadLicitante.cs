@@ -47,6 +47,8 @@ namespace LicitAR.Core.Data.Models
         public required AuditTable Audit { get; set; }
 
         public ICollection<EntidadLicitanteUsuario> Usuarios { get; set; }
+
+        public ICollection<Licitacion> Licitaciones { get; set; } = new List<Licitacion>();
     }
 
 

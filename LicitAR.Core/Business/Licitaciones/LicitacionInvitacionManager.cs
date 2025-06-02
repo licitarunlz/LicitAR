@@ -11,6 +11,7 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<List<LicitacionInvitacion>> GetByLicitacionAsync(int idLicitacion);
         Task AddInvitacionesAsync(int idLicitacion, List<int> idPersonas, int idUsuario);
         Task RemoveInvitacionAsync(int idLicitacion, int idPersona);
+        Task<List<LicitacionInvitacion>> GetInvitacionesByPersonaAsync(int idPersona);
     }
 
     public class LicitacionInvitacionManager : ILicitacionInvitacionManager
@@ -39,6 +40,14 @@ namespace LicitAR.Core.Business.Licitaciones
                 .ToListAsync();
         }
 
+        public async Task<List<LicitacionInvitacion>> GetInvitacionesByPersonaAsync(int idPersona)
+        {
+            return await _dbContext.LicitacionInvitacion
+                .Include(x => x.Licitacion)
+                .Include(x => x.Persona)
+                .Where(x => x.IdPersona == idPersona)
+                .ToListAsync();
+        }
         public async Task AddInvitacionesAsync(int idLicitacion, List<int> idPersonas, int idUsuario)
         {
             var existentes = await _dbContext.LicitacionInvitacion

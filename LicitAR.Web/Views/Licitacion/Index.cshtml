@@ -1,4 +1,5 @@
-﻿@model IEnumerable<LicitAR.Core.Data.Models.Licitacion>
+﻿@using LicitAR.Web.Helpers
+@model IEnumerable<LicitAR.Core.Data.Models.Licitacion>
 
 @{
     ViewData["Title"] = "Licitaciones";
@@ -139,7 +140,7 @@
                                                 <i class="bx bx-group me-1"></i>&nbsp;Ver Oferentes
                                             </a>
                                         }
-                                        @if (item.IdEstadoLicitacion > 1)
+                                        @if (item.IdEstadoLicitacion == 3)
                                         {
                                             <a class="dropdown-item" asp-controller="LicitacionInvitacion" asp-action="AssignPersonaToLicitacion" asp-route-idLicitacion="@item.IdLicitacion">
                                                 <i class="bx bx-user-plus me-1"></i>&nbsp;Invitar Oferentes
@@ -163,7 +164,7 @@
                             <td>@item.CodigoLicitacion</td>
                             <td>@item.Titulo</td>
                             <td>
-                                <span class="@(item.IdEstadoLicitacion == 1? "badge bg-label-secondary":(item.IdEstadoLicitacion == 3? "badge bg-label-success":"badge bg-label-primary") )">
+                                <span class="@(CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(item.IdEstadoLicitacion))">
                                     @(item.EstadoLicitacion?.Descripcion ?? "N/A")
                                 </span>
                             </td>
