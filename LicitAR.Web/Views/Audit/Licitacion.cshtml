@@ -12,13 +12,13 @@
                     <input type="text" name="accion" class="form-control form-control-sm" placeholder="Acción" value="@query["accion"]" />
                 </div>
                 <div class="col-md-2">
-                    <input type="number" name="usuarioId" class="form-control form-control-sm" placeholder="Usuario ID" value="@query["usuarioId"]" />
-                </div>
-                <div class="col-md-2">
                     <input type="number" name="idLicitacion" class="form-control form-control-sm" placeholder="ID Licitación" value="@query["idLicitacion"]" />
                 </div>
                 <div class="col-md-2">
-                    <input type="text" name="campo" class="form-control form-control-sm" placeholder="Campo Modificado" value="@query["campo"]" />
+                    <input type="text" name="usuarioMail" class="form-control form-control-sm" placeholder="Mail" value="@query["usuarioMail"]" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="usuarioNombreCompleto" class="form-control form-control-sm" placeholder="Nombre completo" value="@query["usuarioNombreCompleto"]" />
                 </div>
                 <div class="col-md-2">
                     <input type="date" name="desde" class="form-control form-control-sm" placeholder="Desde" value="@query["desde"]" />
@@ -45,6 +45,8 @@
                 <tr>
                     <th>Fecha/Hora</th>
                     <th>Usuario ID</th>
+                    <th>Mail</th>
+                    <th>Nombre completo</th>
                     <th>ID Licitación</th>
                     <th>Título Licitación</th>
                     <th>Acción</th>
@@ -57,7 +59,7 @@
                 @if (!Model.Any())
                 {
                     <tr>
-                        <td colspan="8" class="text-center text-muted">No se han encontrado registros</td>
+                        <td colspan="10" class="text-center text-muted">No se han encontrado registros</td>
                     </tr>
                 }
                 else
@@ -67,6 +69,8 @@
                         <tr>
                             <td>@item.FechaHora.ToString("g")</td>
                             <td>@item.UsuarioId</td>
+                            <td>@item.UsuarioMail</td>
+                            <td>@item.UsuarioNombreCompleto</td>
                             <td>@item.IdLicitacion</td>
                             <td>@item.LicitacionTitulo</td>
                             <td>@item.Accion</td>
@@ -90,9 +94,9 @@
                            asp-route-page="@(ViewBag.Page - 1)"
                            asp-route-pageSize="@ViewBag.PageSize"
                            asp-route-accion="@query["accion"]"
-                           asp-route-usuarioId="@query["usuarioId"]"
                            asp-route-idLicitacion="@query["idLicitacion"]"
-                           asp-route-campo="@query["campo"]"
+                           asp-route-usuarioMail="@query["usuarioMail"]"
+                           asp-route-usuarioNombreCompleto="@query["usuarioNombreCompleto"]"
                            asp-route-desde="@query["desde"]"
                            asp-route-hasta="@query["hasta"]"
                         >&laquo;</a>
@@ -108,9 +112,9 @@
                                asp-route-page="@i"
                                asp-route-pageSize="@ViewBag.PageSize"
                                asp-route-accion="@query["accion"]"
-                               asp-route-usuarioId="@query["usuarioId"]"
                                asp-route-idLicitacion="@query["idLicitacion"]"
-                               asp-route-campo="@query["campo"]"
+                               asp-route-usuarioMail="@query["usuarioMail"]"
+                               asp-route-usuarioNombreCompleto="@query["usuarioNombreCompleto"]"
                                asp-route-desde="@query["desde"]"
                                asp-route-hasta="@query["hasta"]"
                             >@i</a>
@@ -125,9 +129,9 @@
                            asp-route-page="@(ViewBag.Page + 1)"
                            asp-route-pageSize="@ViewBag.PageSize"
                            asp-route-accion="@query["accion"]"
-                           asp-route-usuarioId="@query["usuarioId"]"
                            asp-route-idLicitacion="@query["idLicitacion"]"
-                           asp-route-campo="@query["campo"]"
+                           asp-route-usuarioMail="@query["usuarioMail"]"
+                           asp-route-usuarioNombreCompleto="@query["usuarioNombreCompleto"]"
                            asp-route-desde="@query["desde"]"
                            asp-route-hasta="@query["hasta"]"
                         >&raquo;</a>
