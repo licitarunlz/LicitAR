@@ -1,4 +1,5 @@
-﻿@model LicitAR.Core.Data.Models.Oferta
+﻿@using LicitAR.Web.Helpers
+@model LicitAR.Core.Data.Models.Oferta
 
 @{
     ViewData["Title"] = "Detalle de Postulación de Oferta";
@@ -7,9 +8,9 @@
     string backgroundClass = Model.EstadoOferta?.IdEstadoOferta == 1 ? "bg-label-warning" : Model.EstadoOferta?.IdEstadoOferta == 2 ? "bg-label-primary" : "bg-label-danger";
 }
  
-<div class="card mb-6">
+<div class="card mb-0">
     <div class="card-header">
-        <div class="d-flex align-items-center mb-3">
+        <div class="d-flex align-items-center mb-0">
             <!-- Sección izquierda: Código -->
             <div class="flex-grow-1">
                 <h5 class="mb-0">Cod. Oferta: <b>@Html.DisplayFor(model => model.CodigoOfertaLicitacion)</b></h5>
@@ -25,26 +26,62 @@
                 </h5>
             </div>
         </div>
+    </div> 
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Cod. Licitación: <b>@Html.DisplayFor(model => model.Licitacion.CodigoLicitacion)</b> - @Html.DisplayFor(model => model.Licitacion.Titulo) </h4>
+
     </div>
     <hr />
+  
     <div class="card-body">
-        <dl class="row">
-
-            <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Licitacion.CodigoLicitacion)</b></dt>
-            <dd class="col-sm-9">@Html.DisplayFor(model => model.Licitacion.CodigoLicitacion)</dd>
-
-            <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Licitacion.Titulo)</b></dt>
-            <dd class="col-sm-9">@Html.DisplayFor(model => model.Licitacion.Titulo)</dd>
-
-            <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Licitacion.Descripcion)</b></dt>
-            <dd class="col-sm-9">@Html.DisplayFor(model => model.Licitacion.Descripcion)</dd>
 
 
-            <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Licitacion.IdCategoriaLicitacion)</b></dt>
-            <dd class="col-sm-9">@Html.Raw(Model.Licitacion.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")</dd>
+        <table class="table table-borderless align-middle mb-4">
+            <tbody>
+                <tr>
+                    <th class="w-25 text-end">Descripción:</th>
+                    <td>@Html.DisplayFor(model => model.Licitacion.Descripcion)</td>
+                </tr>
+                <tr>
+                    <th class="text-end">Entidad Licitante:</th>
+                    <td>@StringFormatHelper.FormatearCuitSeguro(Model.Licitacion.EntidadLicitante.Cuit, Model.Licitacion.EntidadLicitante.RazonSocial)</td>
+                </tr>
+                <tr>
+                    <th class="text-end">Estado Licitación:</th>
+                    <td>
+                        <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(Model.Licitacion.IdEstadoLicitacion)" data-bs-toggle="tooltip" title="@Model.Licitacion.EstadoLicitacion.Descripcion">
+                            @Html.DisplayFor(model => model.Licitacion.EstadoLicitacion.Descripcion)
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-end">Categoría Licitación:</th>
+                    <td>
+                        <span class="badge bg-label-info">
+                            @Html.Raw(Model.Licitacion.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-end">Fecha Publicación:</th>
+                    <td>
+                        <i class="bx bx-calendar"></i>
+                        @Html.DisplayFor(model => model.Licitacion.FechaPublicacion)
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-end">Fecha Cierre:</th>
+                    <td>
+                        <i class="bx bx-calendar"></i>
+                        @Html.DisplayFor(model => model.Licitacion.FechaCierre)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-            <dt class="col-sm-3"><b>Detalle</b></dt>
-            <dd class="col-sm-9"></dd>
+         
+            <h5><b>Detalle</b></h5>
+             
             <div class="mb-3 mt-3">
 
                 <table class="table">
@@ -88,12 +125,6 @@
             </div>
 
 
-            <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Licitacion.FechaPublicacion)</b></dt>
-            <dd class="col-sm-9">@Html.DisplayFor(model => model.Licitacion.FechaPublicacion)</dd>
-
-            <dt class="col-sm-3"><b>@Html.DisplayNameFor(model => model.Licitacion.FechaCierre)</b></dt>
-            <dd class="col-sm-9">@Html.DisplayFor(model => model.Licitacion.FechaCierre)</dd>
-        </dl>
     </div>
     <div class="card-footer text-start">
         @if (Model.IdEstadoOferta == 1)

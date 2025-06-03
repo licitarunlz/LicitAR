@@ -14,5 +14,7 @@ namespace LicitAR.Web.Models
         public string IpCliente { get; set; }
         public string UserAgent { get; set; }
         public string UsuarioNombre { get; set; } // Opcional, para mostrar nombre de usuario
+        public string UsuarioMail { get; set; } // Nuevo: mail del usuario
+        public string UsuarioNombreCompleto { get; set; } // Nuevo: nombre + apellido
     }
 }

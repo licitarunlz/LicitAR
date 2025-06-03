@@ -18,6 +18,7 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<bool> PublicarOfertaAsync(int idOferta, int userId);
         Task<bool> CancelarOfertaAsync(int id, int idUsuario);
         Task<List<Oferta>> GetAllOfertasPorLicitacionAsync(int IdLicitacion);
+        Task<List<Oferta>> GetAllOfertasExistentesPorPersonaYLicitacionAsync(int IdPersona, int IdLicitacion);
         Task<List<Oferta>> GetAllOfertasPorPersonaAsync(int IdPersona);
         Task<Oferta?> GetOfertaByIdAsync(int idOferta);
         Task<List<OferenteResumen>> GetOferentesPorLicitacionAsync(int idLicitacion);
@@ -36,6 +37,17 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             return await _dbContext.Ofertas
                 .Where(o => o.IdPersona == IdPersona && o.Audit.FechaBaja == null)
+                .Include(o => o.EstadoOferta) // Include EstadoLicitacion
+                .Include(o => o.Licitacion)
+                .Include(o => o.Persona)
+                .ToListAsync();
+
+        }
+
+        public async Task<List<Oferta>> GetAllOfertasExistentesPorPersonaYLicitacionAsync(int IdPersona, int IdLicitacion)
+        {
+            return await _dbContext.Ofertas
+                .Where(o => o.IdPersona == IdPersona && o.IdLicitacion == IdLicitacion && o.IdEstadoOferta !=3  && o.Audit.FechaBaja == null)
                 .Include(o => o.EstadoOferta) // Include EstadoLicitacion
                 .Include(o => o.Licitacion)
                 .Include(o => o.Persona)
@@ -71,7 +83,7 @@ namespace LicitAR.Core.Business.Licitaciones
 
                 oferta.CodigoOfertaLicitacion = await this.ObtenerProximoCodigoOfertaAsync(oferta.IdLicitacion);
                 oferta.IdEstadoOferta = 1;
-                oferta.FechaOferta = DateTime.Now;
+                oferta.FechaOferta = DateTime.UtcNow;
                 
                 oferta.Audit = AuditHelper.GetCreationData(userId);
                 _dbContext.Ofertas.Add(oferta);
@@ -124,7 +136,7 @@ namespace LicitAR.Core.Business.Licitaciones
                     return false;
 
                 ofertaFromDdbb.IdEstadoOferta = 2;
-                ofertaFromDdbb.FechaOferta = DateTime.Now;
+                ofertaFromDdbb.FechaOferta = DateTime.UtcNow;
 
                 ofertaFromDdbb.Audit = AuditHelper.SetModificationData(ofertaFromDdbb.Audit, userId);
                                 

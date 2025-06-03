@@ -67,7 +67,7 @@
                         }
                         @if (user.HasClaim("permission", "Licitaciones.Ver"))
                         {
-                            <li class='menu-item@(currentPage == "/Evaluaciones/Index" ? " active" : "")'>
+                            <li class='menu-item@(currentPage == "/Licitacion/Evaluaciones" ? " active" : "")'>
                                 <a asp-action="Index" asp-controller="Evaluaciones" class="menu-link">
                                     <div>Evaluaciones</div>
                                 </a>

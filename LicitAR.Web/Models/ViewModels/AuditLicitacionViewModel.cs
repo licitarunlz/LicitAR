@@ -13,6 +13,8 @@ namespace LicitAR.Web.Models
         public string? ValorAnterior { get; set; }
         public string? ValorNuevo { get; set; }
         public string UsuarioNombre { get; set; }
+        public string UsuarioMail { get; set; } // Nuevo: mail del usuario
+        public string UsuarioNombreCompleto { get; set; } // Nuevo: nombre + apellido
         public string LicitacionTitulo { get; set; }
     }
 }

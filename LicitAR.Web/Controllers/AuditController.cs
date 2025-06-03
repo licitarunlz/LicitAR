@@ -10,44 +10,59 @@ using LicitAR.Web.Helpers;
 using LicitAR.Core.Utils;
 using LicitAR.Web.Helpers.Authorization;
 using Microsoft.Extensions.Logging;
+using LicitAR.Core.Business.Identidad;
 
 namespace LicitAR.Web.Controllers
 {
     [AuthorizeClaim("Auditoria.Ver")]
     public class AuditController : Controller
     {
-        private readonly LicitARDbContext _dbContext;
+        private readonly IAuditManager _auditManager;
+        private readonly IUsuarioManager _usuarioManager;
 
-        public AuditController(LicitARDbContext dbContext)
+        public AuditController(IAuditManager auditManager, IUsuarioManager usuarioManager)
         {
-            _dbContext = dbContext;
+            _auditManager = auditManager;
+            _usuarioManager = usuarioManager;
         }
 
         // GET: /Audit/Trail
         [AuthorizeClaim("Auditoria.Trail")]
-        public async Task<IActionResult> Trail(string accion, int? usuarioId, string entidad, DateTime? desde, DateTime? hasta, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Trail(string accion, int? usuarioId, string entidad, DateTime? desde, DateTime? hasta, string usuarioMail, string usuarioNombreCompleto, int page = 1, int pageSize = 20)
         {
-            var query = _dbContext.AuditTrails.AsQueryable();
+            // 1. Obtener los IDs de usuario de los registros filtrados (sin paginar)
+            var (allItems, _) = await _auditManager.GetAuditTrailsAsync(
+                accion, usuarioId, entidad, desde, hasta, null, 1, int.MaxValue);
+            var usuarioIdsFiltrados = allItems.Select(x => x.UsuarioId).Distinct().ToList();
 
-            if (!string.IsNullOrEmpty(accion))
-                query = query.Where(x => x.Accion.Contains(accion));
-            if (usuarioId.HasValue)
-                query = query.Where(x => x.UsuarioId == usuarioId.Value);
-            if (!string.IsNullOrEmpty(entidad))
-                query = query.Where(x => x.Entidad.Contains(entidad));
-            if (desde.HasValue)
-                query = query.Where(x => x.FechaHora >= desde.Value);
-            if (hasta.HasValue)
-                query = query.Where(x => x.FechaHora <= hasta.Value);
+            // 2. Obtener info de esos usuarios
+            var usuariosDict = await _usuarioManager.GetUsuariosInfoByIdsAsync(usuarioIdsFiltrados);
 
-            // Siempre ordenar por FechaHora descendente antes de paginar
-            query = query.OrderByDescending(x => x.FechaHora);
+            // 3. Filtrar por mail/nombre si corresponde
+            HashSet<int>? usuarioIdsFilter = null;
+            if (!string.IsNullOrWhiteSpace(usuarioMail))
+            {
+                var idsFiltrados = usuariosDict
+                    .Where(u => (u.Value.Email ?? "").ToLower().Contains(usuarioMail.ToLower()))
+                    .Select(u => u.Key)
+                    .ToHashSet();
+                usuarioIdsFilter = idsFiltrados;
+            }
+            if (!string.IsNullOrWhiteSpace(usuarioNombreCompleto))
+            {
+                var idsFiltrados = usuariosDict
+                    .Where(u => ((u.Value.Nombre + " " + u.Value.Apellido).Trim().ToLower()).Contains(usuarioNombreCompleto.ToLower()))
+                    .Select(u => u.Key)
+                    .ToHashSet();
+                usuarioIdsFilter = usuarioIdsFilter == null ? idsFiltrados : usuarioIdsFilter.Intersect(idsFiltrados).ToHashSet();
+            }
 
-            var total = await query.CountAsync();
-            var items = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            // 4. Obtener los registros paginados con el filtro de usuarioIds si corresponde
+            var (items, total) = await _auditManager.GetAuditTrailsAsync(
+                accion, usuarioId, entidad, desde, hasta, usuarioIdsFilter, page, pageSize);
+
+            var usuarioIds = items.Select(x => x.UsuarioId).Distinct().ToList();
+            var usuariosDictPage = await _usuarioManager.GetUsuariosInfoByIdsAsync(usuarioIds);
 
             var vms = items.Select(x => new AuditTrailViewModel
             {
@@ -60,7 +75,11 @@ namespace LicitAR.Web.Controllers
                 Descripcion = x.Descripcion,
                 IpCliente = x.IpCliente,
                 UserAgent = x.UserAgent,
-                UsuarioNombre = "" // Completar si tienes acceso a usuarios
+                UsuarioNombre = "",
+                UsuarioMail = usuariosDictPage.ContainsKey(x.UsuarioId) ? usuariosDictPage[x.UsuarioId].Email : "",
+                UsuarioNombreCompleto = usuariosDictPage.ContainsKey(x.UsuarioId)
+                    ? (usuariosDictPage[x.UsuarioId].Nombre + " " + usuariosDictPage[x.UsuarioId].Apellido).Trim()
+                    : ""
             }).ToList();
 
             ViewBag.Total = total;
@@ -71,33 +90,41 @@ namespace LicitAR.Web.Controllers
 
         // GET: /Audit/Licitacion
         [AuthorizeClaim("Auditoria.Licitacion")]
-        public async Task<IActionResult> Licitacion(string accion, int? usuarioId, int? idLicitacion, string campo, DateTime? desde, DateTime? hasta, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Licitacion(string accion, int? usuarioId, int? idLicitacion, string campo, DateTime? desde, DateTime? hasta, string usuarioMail, string usuarioNombreCompleto, int page = 1, int pageSize = 20)
         {
-            var query = _dbContext.AuditLicitaciones
-                .Include(x => x.Licitacion)
-                .AsQueryable();
+            // 1. Obtener los IDs de usuario de los registros filtrados (sin paginar)
+            var (allItems, _) = await _auditManager.GetAuditLicitacionesAsync(
+                accion, usuarioId, idLicitacion, campo, desde, hasta, null, 1, int.MaxValue);
+            var usuarioIdsFiltrados = allItems.Select(x => x.UsuarioId).Distinct().ToList();
 
-            if (!string.IsNullOrEmpty(accion))
-                query = query.Where(x => x.Accion.Contains(accion));
-            if (usuarioId.HasValue)
-                query = query.Where(x => x.UsuarioId == usuarioId.Value);
-            if (idLicitacion.HasValue)
-                query = query.Where(x => x.IdLicitacion == idLicitacion.Value);
-            if (!string.IsNullOrEmpty(campo))
-                query = query.Where(x => x.CampoModificado.Contains(campo));
-            if (desde.HasValue)
-                query = query.Where(x => x.FechaHora >= desde.Value);
-            if (hasta.HasValue)
-                query = query.Where(x => x.FechaHora <= hasta.Value);
+            // 2. Obtener info de esos usuarios
+            var usuariosDict = await _usuarioManager.GetUsuariosInfoByIdsAsync(usuarioIdsFiltrados);
 
-            // Siempre ordenar por FechaHora descendente antes de paginar
-            query = query.OrderByDescending(x => x.FechaHora);
+            // 3. Filtrar por mail/nombre si corresponde
+            HashSet<int>? usuarioIdsFilter = null;
+            if (!string.IsNullOrWhiteSpace(usuarioMail))
+            {
+                var idsFiltrados = usuariosDict
+                    .Where(u => (u.Value.Email ?? "").ToLower().Contains(usuarioMail.ToLower()))
+                    .Select(u => u.Key)
+                    .ToHashSet();
+                usuarioIdsFilter = idsFiltrados;
+            }
+            if (!string.IsNullOrWhiteSpace(usuarioNombreCompleto))
+            {
+                var idsFiltrados = usuariosDict
+                    .Where(u => ((u.Value.Nombre + " " + u.Value.Apellido).Trim().ToLower()).Contains(usuarioNombreCompleto.ToLower()))
+                    .Select(u => u.Key)
+                    .ToHashSet();
+                usuarioIdsFilter = usuarioIdsFilter == null ? idsFiltrados : usuarioIdsFilter.Intersect(idsFiltrados).ToHashSet();
+            }
 
-            var total = await query.CountAsync();
-            var items = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            // 4. Obtener los registros paginados con el filtro de usuarioIds si corresponde
+            var (items, total) = await _auditManager.GetAuditLicitacionesAsync(
+                accion, usuarioId, idLicitacion, campo, desde, hasta, usuarioIdsFilter, page, pageSize);
+
+            var usuarioIds = items.Select(x => x.UsuarioId).Distinct().ToList();
+            var usuariosDictPage = await _usuarioManager.GetUsuariosInfoByIdsAsync(usuarioIds);
 
             var vms = items.Select(x => new AuditLicitacionViewModel
             {
@@ -109,7 +136,11 @@ namespace LicitAR.Web.Controllers
                 CampoModificado = x.CampoModificado,
                 ValorAnterior = x.ValorAnterior,
                 ValorNuevo = x.ValorNuevo,
-                UsuarioNombre = "", // Completar si tienes acceso a usuarios
+                UsuarioNombre = "",
+                UsuarioMail = usuariosDictPage.ContainsKey(x.UsuarioId) ? usuariosDictPage[x.UsuarioId].Email : "",
+                UsuarioNombreCompleto = usuariosDictPage.ContainsKey(x.UsuarioId)
+                    ? (usuariosDictPage[x.UsuarioId].Nombre + " " + usuariosDictPage[x.UsuarioId].Apellido).Trim()
+                    : "",
                 LicitacionTitulo = x.Licitacion?.Titulo
             }).ToList();
 

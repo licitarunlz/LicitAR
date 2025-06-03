@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<LicitAR.Core.Data.Models.Evaluacion>
 @using LicitAR.Core.Data.Models.Parametros;
+@using LicitAR.Web.Helpers
 @{
-    ViewData["Title"] = "Licitaciones Evaluadas";
+    ViewData["Title"] = "Evaluación de Licitaciones";
     var query = Context.Request.Query;
     IEnumerable<EstadoEvaluacion> estados = ViewBag.EstadosEvalacion;
 
@@ -22,10 +23,8 @@
         <form method="get" asp-action="Index">
             <!-- First row: Filter fields -->
             <div class="row mb-3">
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <input type="text" name="codigoLicitacion" class="form-control form-control-sm" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
-                </div>
-                <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
                 </div>
                 <div class="col-md" style="flex: 0 0 15%; max-width: 15%;">
                     <select name="idEstadoEvaluacion" class="form-select form-select-sm">
@@ -56,87 +55,153 @@
                 </div>
             </div>
         </form>
-    </div>
-    <div class="table-responsive text-nowrap">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Licitacion)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.EstadoEvaluacion)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.FechaInicioEvaluacion)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.FechaFinEvaluacion)
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
+        <div class="table-responsive text-nowrap">
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>
-                            <div class="dropdown">
-                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                </button>
-                                <div class="dropdown-menu">
+                        <th></th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Licitacion)
+                        </th>
 
-                                    <a class="dropdown-item" asp-action="Details" asp-route-idEvaluacion="@item.IdEvaluacion">
-                                        <i class="bx bx-show me-1"></i> Detalles
-                                    </a>
-                                    @if (item.IdEstadoEvaluacion == 1)
-                                    { 
-                                        <a class="dropdown-item" asp-action="Edit" asp-route-idEvaluacion="@item.IdEvaluacion">
-                                            <i class="bx bx-edit-alt me-1"></i> Editar
-                                        </a>
-
-                                        <div class="dropdown-divider"></div>
-                                        <h6 class="dropdown-header">Resultados</h6>
-
-                                        @if (item.EvaluacionOfertasDetalles.Count > 0)
-                                        {
-                                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="6">
-                                                <i class="bx bx-error me-1"></i> Licitación Impugnada
-                                            </a>
-
-                                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="9">
-                                                <i class="bx bx-check-circle me-1"></i> Licitación Adjudicada
-                                            </a>
-
-                                        }
-                                        else
-                                        {
-                                            <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="13">
-                                                <i class="bx bx-block me-1"></i> Licitación Desierta
-                                            </a>
-
-                                        }
-                                    }
-
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion) - @Html.DisplayFor(modelItem => item.Licitacion.Titulo) - @Html.DisplayFor(modelItem => item.Licitacion.EstadoLicitacion.Descripcion)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.EstadoEvaluacion.Descripcion)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.FechaInicioEvaluacion)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.FechaFinEvaluacion)
-                        </td>
+                        <th>
+                            Estado Licitación
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.EstadoEvaluacion)
+                        </th>
+                        <th>
+                            Fecha Inicio
+                        </th>
+                        <th>
+                            Fecha Fin
+                        </th>
                     </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+
+                                        <a class="dropdown-item" asp-action="Details" asp-route-idEvaluacion="@item.IdEvaluacion">
+                                            <i class="bx bx-show me-1"></i> Detalles
+                                        </a>
+                                        @if (item.IdEstadoEvaluacion == 1)
+                                        {
+                                            <a class="dropdown-item" asp-action="Edit" asp-route-idEvaluacion="@item.IdEvaluacion">
+                                                <i class="bx bx-edit-alt me-1"></i> Editar
+                                            </a>
+
+                                            <div class="dropdown-divider"></div>
+                                            <h6 class="dropdown-header">Resultados</h6>
+
+                                            @if (item.EvaluacionOfertasDetalles.Count > 0)
+                                            {
+                                                <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="6">
+                                                    <i class="bx bx-error me-1"></i> Licitación Impugnada
+                                                </a>
+
+                                                <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="9">
+                                                    <i class="bx bx-check-circle me-1"></i> Licitación Adjudicada
+                                                </a>
+
+                                            }
+                                            else
+                                            {
+                                                <a class="dropdown-item" asp-action="Resultado" asp-route-idEvaluacion="@item.IdEvaluacion" asp-route-idEstadoResultado="13">
+                                                    <i class="bx bx-block me-1"></i> Licitación Desierta
+                                                </a>
+
+                                            }
+                                        }
+
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <b>@Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion)</b> - @Html.DisplayFor(modelItem => item.Licitacion.Titulo)
+
+                            </td>
+                            <td>
+                                <span class="@(CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(item.Licitacion.IdEstadoLicitacion))">
+                                    @Html.DisplayFor(modelItem => item.Licitacion.EstadoLicitacion.Descripcion)
+                                </span>
+                            </td>
+                            <td>
+                                <span class="@(CssClassHelper.GetEvaluacionBagdeCssClassByIdEstado(item.IdEstadoEvaluacion))">
+
+                                    @Html.DisplayFor(modelItem => item.EstadoEvaluacion.Descripcion)
+                                </span>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FechaInicioEvaluacion)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FechaFinEvaluacion)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+   
+    <div class="card-footer d-flex justify-content-center">
+        <nav>
+            <ul class="pagination pagination-rounded mb-0">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-idCategoriaLicitacion="@query["idCategoriaLicitacion"]"
+                           asp-route-idEstadoLicitacion="@query["idEstadoLicitacion"]"
+                           asp-route-fechaPublicacion="@query["fechaPublicacion"]"
+                           asp-route-fechaCierre="@query["fechaCierre"]">&laquo;</a>
+                    </li>
                 }
-            </tbody>
-        </table>
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-idCategoriaLicitacion="@query["idCategoriaLicitacion"]"
+                           asp-route-idEstadoLicitacion="@query["idEstadoLicitacion"]"
+                           asp-route-fechaPublicacion="@query["fechaPublicacion"]"
+                           asp-route-fechaCierre="@query["fechaCierre"]">@i</a>
+                    </li>
+                }
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           asp-route-pageSize="10"
+                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-idCategoriaLicitacion="@query["idCategoriaLicitacion"]"
+                           asp-route-idEstadoLicitacion="@query["idEstadoLicitacion"]"
+                           asp-route-fechaPublicacion="@query["fechaPublicacion"]"
+                           asp-route-fechaCierre="@query["fechaCierre"]">&raquo;</a>
+                    </li>
+                }
+            </ul>
+        </nav>
     </div>
 </div>

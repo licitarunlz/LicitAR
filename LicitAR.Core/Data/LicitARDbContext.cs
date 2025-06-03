@@ -125,6 +125,12 @@ namespace LicitAR.Core.Data
                         .HasForeignKey(i => i.IdLicitacion)
                         .OnDelete(DeleteBehavior.Cascade); // Borra ítems si se borra la licitación
 
+            modelBuilder.Entity<Licitacion>()
+                        .HasOne(l => l.EntidadLicitante)
+                        .WithMany(e => e.Licitaciones)
+                        .HasForeignKey(l => l.IdEntidadLicitante)
+                        .OnDelete(DeleteBehavior.NoAction); // o Cascade, según tu lógica
+
             modelBuilder.Entity<LicitacionDetalle>().OwnsOne(p => p.Audit);
 
             modelBuilder.Entity<Oferta>().OwnsOne(p => p.Audit);

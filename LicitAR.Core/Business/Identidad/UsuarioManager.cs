@@ -31,6 +31,7 @@ namespace LicitAR.Core.Business.Identidad
         bool IsEmailConfirmed(LicitArUser user);
         Task<UsuarioModel?> GetUsuarioModelAsync(int userId);
         Task<IEnumerable<UsuarioModel>> GetAllUsuarioModelsAsync();
+        Task<Dictionary<int, (string Email, string Nombre, string Apellido)>> GetUsuariosInfoByIdsAsync(IEnumerable<int> idsUsuario);
     }
 
     public class UsuarioManager : IUsuarioManager
@@ -215,6 +216,20 @@ namespace LicitAR.Core.Business.Identidad
         {
             var users = await GetAllUsersAsync();
             return users.Select(MapToUsuarioModel);
+        }
+
+        /// <summary>
+        /// Devuelve un diccionario idUsuario -> (Email, Nombre, Apellido)
+        /// </summary>
+        public async Task<Dictionary<int, (string Email, string Nombre, string Apellido)>> GetUsuariosInfoByIdsAsync(IEnumerable<int> idsUsuario)
+        {
+            return await _dbContext.Users
+                .Where(u => idsUsuario.Contains(u.IdUsuario))
+                .Select(u => new { u.IdUsuario, u.Email, u.Nombre, u.Apellido })
+                .ToDictionaryAsync(
+                    u => u.IdUsuario,
+                    u => (u.Email ?? "", u.Nombre ?? "", u.Apellido ?? "")
+                );
         }
 
         private UsuarioModel MapToUsuarioModel(LicitArUser user)
