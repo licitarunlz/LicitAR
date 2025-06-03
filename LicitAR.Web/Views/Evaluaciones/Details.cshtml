@@ -1,6 +1,7 @@
 ﻿@model EvaluacionModel
 
 @using LicitAR.Core.Data.Models
+@using LicitAR.Web.Helpers
 @using Newtonsoft.Json
 
 @{
@@ -15,21 +16,57 @@
 <div  >
     <!-- Card: Información general de la licitación -->
     <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center ">
+            <h5 class="mb-0">
+                <b>@licitacion.CodigoLicitacion</b> - @licitacion.Titulo
+            </h5>
+        </div>
+
         <div class="card-body">
-            <h5 class="card-title">Cod. Licitación  <b>@licitacion.CodigoLicitacion</b></h5>
-            <div class="row">
-                <div class="col-md-3"><strong>Título:</strong> </div>
-                <div class="col-md-9">@licitacion.Titulo</div>
-                <br />
-                <div class="col-md-3"><strong>Descripción:</strong> </div>
-                <div class="col-md-9">@licitacion.Descripcion</div>
-                <div class="col-md-3"><strong>Fecha Publicacion:</strong> </div>
-                <div class="col-md-9">@licitacion.FechaPublicacion.Value</div>
-                <div class="col-md-3"><strong>Fecha Cierre de Ofertas:</strong> </div>
-                <div class="col-md-9">@licitacion.FechaCierre.Value</div>
-                <div class="col-md-3"><strong>Categoría:</strong> </div>
-                <div class="col-md-9">@licitacion.CategoriaLicitacion.Descripcion</div>
-            </div>
+            <table class="table table-borderless align-middle mb-4">
+                <tbody>
+                    <tr>
+                        <th class="w-25 text-end">Descripción:</th>
+                        <td>@licitacion.Descripcion</td>
+                    </tr>
+                    <tr>
+                        <th class="text-end">Entidad Licitante:</th>
+                        <td>@StringFormatHelper.FormatearCuitSeguro(licitacion.EntidadLicitante.Cuit, licitacion.EntidadLicitante.RazonSocial)</td>
+                    </tr>
+                    <tr>
+                        <th class="text-end">Estado Licitación:</th>
+                        <td>
+                            <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(licitacion.IdEstadoLicitacion)" data-bs-toggle="tooltip" title="@licitacion.EstadoLicitacion.Descripcion">
+                                @licitacion.EstadoLicitacion.Descripcion
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-end">Categoría Licitación:</th>
+                        <td>
+                            <span class="badge bg-info">
+                                @Html.Raw(licitacion.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-end">Fecha Publicación:</th>
+                        <td>
+                            <i class="bx bx-calendar"></i>
+                            @licitacion.FechaPublicacion
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-end">Fecha Cierre:</th>
+                        <td>
+                            <i class="bx bx-calendar"></i>
+                            @licitacion.FechaCierre
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            
         </div>
     </div>
 

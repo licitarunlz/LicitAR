@@ -133,8 +133,11 @@ namespace LicitAR.Web.Helpers
             string result = "";
             switch (idEstadoEvaluacion)
             {
-                case 1:
-                    result = "";
+                case 1: //Planificación
+                    result = "alert alert-secondary";
+                    break;
+                case 2: //Publicado
+                    result = "alert alert-success";
                     break;
                 default:
                     result = "";
@@ -148,8 +151,11 @@ namespace LicitAR.Web.Helpers
             string result = "";
             switch (idEstadoEvaluacion)
             {
-                case 1:
-                    result = "";
+                case 1: //Planificación
+                    result = "badge bg-label-secondary";
+                    break;
+                case 2: //Publicado
+                    result = "badge bg-label-success";
                     break;
                 default:
                     result = "";

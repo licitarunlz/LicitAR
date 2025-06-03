@@ -13,6 +13,8 @@ using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Utils;
 using LicitAR.Core.Data.Models.Historial;
 using LicitAR.Core.Business.Auditoria;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using LicitAR.Core.Data.Models.Parametros;
 
 namespace LicitAR.Web.Controllers
 {
@@ -37,14 +39,39 @@ namespace LicitAR.Web.Controllers
             _auditManager = auditManager;
         }
 
+        [HttpGet("/Licitacion/Evaluaciones")]
         // GET: Evaluaciones
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string codigoLicitacion, int? idEstadoEvaluacion, int page = 1, int pageSize = 10)
         {
             ViewBag.EstadosEvalacion = _context.EstadoEvaluacion.ToList();
 
             var licitaciones = await _evaluacionManager.GetAllEvaluacionesAsync();
 
-            return View(licitaciones);
+            licitaciones = licitaciones.OrderByDescending(x => x.Licitacion.CodigoLicitacion).ToList();
+
+            var query = licitaciones.AsQueryable();
+            if (!string.IsNullOrEmpty(codigoLicitacion))
+            {
+                query = query.Where(l => l.Licitacion.CodigoLicitacion != null && l.Licitacion.CodigoLicitacion.Contains(codigoLicitacion, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (idEstadoEvaluacion.HasValue)
+            {
+                query = query.Where(l => l.IdEstadoEvaluacion == idEstadoEvaluacion.Value);
+            }
+
+            var totalItems = query.Count();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var licitacionesList = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            return View(licitacionesList);
         }
 
         // GET: Evaluaciones/Details/5
@@ -294,7 +321,7 @@ namespace LicitAR.Web.Controllers
 
             model.Ofertas = ofertasGanadorasModel;
 
-            return View(model);
+            return View(model); 
         }
 
         // POST: Evaluaciones/Delete/5
