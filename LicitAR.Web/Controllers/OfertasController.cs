@@ -51,8 +51,8 @@ namespace LicitAR.Web.Controllers
             licitaciones = licitaciones.Where(x =>
                                            x.IdEstadoLicitacion == 3
                                         && x.IdCategoriaLicitacion == 1
-                                        && x.FechaCierre > DateTime.Now
-                                        && x.FechaPublicacion < DateTime.Now
+                                        && x.FechaCierre > DateTime.UtcNow
+                                        && x.FechaPublicacion < DateTime.UtcNow
                                         && x.Audit.FechaBaja == null)?.ToList();
 
 
@@ -66,8 +66,8 @@ namespace LicitAR.Web.Controllers
                 foreach(var invitacion in invitacionLicitaciones)
                 {
                     var licit = invitacion.Licitacion;
-                    if (licit.FechaPublicacion < DateTime.Now 
-                        && licit.FechaCierre > DateTime.Now 
+                    if (licit.FechaPublicacion < DateTime.UtcNow 
+                        && licit.FechaCierre > DateTime.UtcNow 
                         && licit.Audit.FechaBaja == null)
                     {
                         if (!licitaciones.Any(x=> x.IdLicitacion == licit.IdLicitacion))
@@ -223,7 +223,7 @@ namespace LicitAR.Web.Controllers
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             OfertaModel oferta = new OfertaModel
             {
-                FechaOferta = DateTime.Now,
+                FechaOferta = DateTime.UtcNow,
                 IdEstadoOferta = 1,
                 IdLicitacion = idlicitacion.Value,
                 IdPersona = int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona"))
