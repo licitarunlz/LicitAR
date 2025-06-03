@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using LicitAR.Core.Utils;
 using LicitAR.Core.Data.Models.Parametros;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Humanizer;
 
 namespace LicitAR.Web.Controllers
 {
@@ -23,12 +24,17 @@ namespace LicitAR.Web.Controllers
     {
         private readonly ILicitacionManager _licitacionManager;
         private readonly IOfertaManager _ofertaManager;
+        private readonly ILicitacionInvitacionManager _licitacionInvitacionManager;
         private readonly LicitARDbContext _context;
 
-        public OfertasController(LicitARDbContext context, ILicitacionManager licitacionManager, IOfertaManager ofertaManager)
+        public OfertasController(LicitARDbContext context, 
+                                 ILicitacionManager licitacionManager, 
+                                 IOfertaManager ofertaManager,
+                                 ILicitacionInvitacionManager licitacionInvitacionManager)
         {
             _licitacionManager = licitacionManager;
             _ofertaManager = ofertaManager;
+            _licitacionInvitacionManager = licitacionInvitacionManager;
             _context = context;
         }
 
@@ -44,13 +50,35 @@ namespace LicitAR.Web.Controllers
             //      y que no estén dadas de baja
             licitaciones = licitaciones.Where(x =>
                                            x.IdEstadoLicitacion == 3
+                                        && x.IdCategoriaLicitacion == 1
                                         && x.FechaCierre > DateTime.Now
                                         && x.FechaPublicacion < DateTime.Now
                                         && x.Audit.FechaBaja == null)?.ToList();
+
+
             if (licitaciones == null)
                 return View(licitaciones);
 
+            var invitacionLicitaciones = await _licitacionInvitacionManager.GetInvitacionesByPersonaAsync(int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona").ToString()));
+
+            if (invitacionLicitaciones != null)
+            {
+                foreach(var invitacion in invitacionLicitaciones)
+                {
+                    var licit = invitacion.Licitacion;
+                    if (licit.FechaPublicacion < DateTime.Now 
+                        && licit.FechaCierre > DateTime.Now 
+                        && licit.Audit.FechaBaja == null)
+                    {
+                        if (!licitaciones.Any(x=> x.IdLicitacion == licit.IdLicitacion))
+                            licitaciones.Add(licit);
+                    }
+                }
+            }
+
             var query = licitaciones.AsQueryable();
+
+            
 
             if (!string.IsNullOrEmpty(codigoLicitacion))
             {
@@ -158,6 +186,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Persona)
                 .Include(o=> o.Items)
                 .Include(o=> o.Licitacion.Items)
+                .Include(o=> o.Licitacion.EntidadLicitante)
+                .Include(o=> o.Licitacion.EstadoLicitacion)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {
@@ -182,6 +212,14 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound"); // Updated
             }
+
+            var ofertas = await _ofertaManager.GetAllOfertasExistentesPorPersonaYLicitacionAsync(int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona").ToString()), idlicitacion.Value);
+
+            if (ofertas.Count > 0)
+            {
+                return RedirectToAction("Edit", new { idOferta = ofertas.FirstOrDefault().IdOferta });
+            }
+
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             OfertaModel oferta = new OfertaModel
             {
@@ -233,6 +271,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Persona)
                 .Include(o => o.Items)
                 .Include(o => o.Licitacion.Items)
+                .Include(o => o.Licitacion.EntidadLicitante)
+                .Include(o => o.Licitacion.EstadoLicitacion)
                 .FirstOrDefaultAsync(m => m.IdOferta == idOferta);
             if (oferta == null)
             {
@@ -279,6 +319,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Persona)
                 .Include(o=> o.Items)
                 .Include(o => o.Licitacion.Items)
+                .Include(o => o.Licitacion.EntidadLicitante)
+                .Include(o => o.Licitacion.EstadoLicitacion)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {
@@ -313,6 +355,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Persona)
                 .Include(o => o.Items)
                 .Include(o => o.Licitacion.Items)
+                .Include(o => o.Licitacion.EntidadLicitante)
+                .Include(o => o.Licitacion.EstadoLicitacion)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {

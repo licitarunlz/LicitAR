@@ -44,35 +44,12 @@ namespace LicitAR.Web.Controllers
             return $"{cuit.Substring(0, 2)}-{cuit.Substring(2, 8)}-{cuit.Substring(10, 1)}";
         }
 
-        private static string FormatearCuitSeguro(string cuit, string razonSocial)
-        {
-            if (string.IsNullOrWhiteSpace(cuit) && string.IsNullOrWhiteSpace(razonSocial))
-                return "[S/D] - S/D";
-
-            string cuitFormateado;
-            if (string.IsNullOrWhiteSpace(cuit))
-            {
-                cuitFormateado = "S/D";
-            }
-            else if (cuit.Length == 11 && long.TryParse(cuit, out _))
-            {
-                cuitFormateado = $"{cuit.Substring(0, 2)}-{cuit.Substring(2, 8)}-{cuit.Substring(10, 1)}";
-            }
-            else
-            {
-                cuitFormateado = cuit;
-            }
-
-            string razon = string.IsNullOrWhiteSpace(razonSocial) ? "S/D" : razonSocial;
-
-            return $"[{cuitFormateado}] - {razon}";
-        }
-
         // GET: Licitacion
         [AuthorizeClaim("Licitaciones.Ver")]
         public async Task<IActionResult> Index(string codigoLicitacion, string titulo, DateTime? fechaPublicacion, DateTime? fechaCierre, int? idCategoriaLicitacion, int? idEstadoLicitacion, int page = 1, int pageSize = 10)
         {
             var licitacionesList = await _licitacionManager.GetAllLicitacionesAsync();
+            licitacionesList = licitacionesList.OrderByDescending(x => x.CodigoLicitacion).ToList();
             var categorias = await _licitacionManager.GetAllCategoriasLicitacionAsync();
             var estados = (await _licitacionManager.GetAllEstadosLicitacionAsync())
                 .Where(e => e.Enabled)
@@ -146,7 +123,7 @@ namespace LicitAR.Web.Controllers
             var entidad = _dbContext.EntidadesLicitantes.FirstOrDefault(e => e.IdEntidadLicitante == licitacion.IdEntidadLicitante);
             string cuit = entidad?.Cuit;
             string razon = entidad?.RazonSocial;
-            string entidadLicitanteFormateada = FormatearCuitSeguro(cuit, razon);
+            string entidadLicitanteFormateada = StringFormatHelper.FormatearCuitSeguro(cuit, razon);
 
             await _auditManager.LogLicitacionChange(
                 licitacion.IdLicitacion,
@@ -195,7 +172,7 @@ namespace LicitAR.Web.Controllers
                 .Select(e => new
                 {
                     e.IdEntidadLicitante,
-                    Texto = FormatearCuitSeguro(e.Cuit, e.RazonSocial)
+                    Texto = StringFormatHelper.FormatearCuitSeguro(e.Cuit, e.RazonSocial)
                 }).ToList();
 
             ViewBag.EntidadesLicitantes = entidades;
@@ -257,7 +234,7 @@ namespace LicitAR.Web.Controllers
                 .Select(e => new
                 {
                     e.IdEntidadLicitante,
-                    Texto = FormatearCuitSeguro(e.Cuit, e.RazonSocial)
+                    Texto = StringFormatHelper.FormatearCuitSeguro(e.Cuit, e.RazonSocial)
                 }).ToList();
 
             ViewBag.EntidadesLicitantes = entidades;

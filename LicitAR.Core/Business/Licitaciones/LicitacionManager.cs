@@ -62,6 +62,7 @@ namespace LicitAR.Core.Business.Licitaciones
             return await _dbContext.Licitaciones
                 .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
                 .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
+                .Include(l=> l.EntidadLicitante)
                 .Include(d => d.Items)  // Include Los items
                 .FirstOrDefaultAsync(l => l.IdLicitacion == id);
         }

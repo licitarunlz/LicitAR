@@ -1,27 +1,72 @@
-﻿@model LicitAR.Core.Data.Models.Licitacion
+﻿@using LicitAR.Web.Helpers
+@model LicitAR.Core.Data.Models.Licitacion
 
 @{
-    ViewData["Title"] = "Eliminar licitacion";
+    ViewData["Title"] = "Eliminar licitación";
 }
 
 
 <div class="row mb-12 g-6">
     <div class="col-md-12 col-lg-12">
         <div class="card">
-            <div class="card-header">
-                Confirmar eliminación de la Licitacion:
+            <div class="card-header d-flex justify-content-between align-items-center ">
+                <h5 class="mb-0">
+                    <b>@Model.CodigoLicitacion</b> - @Model.Titulo
+                </h5>
             </div>
+
             <div class="card-body">
-                <h5 class="card-title">@Model.Titulo</h5>
-                <p class="card-text">
-                    <strong>Código:</strong> @Model.CodigoLicitacion <br /><br />
-                    <strong>Descripción:</strong> @Model.Descripcion <br /><br />
-                    <strong>Tipo de Licitación:</strong> @(Model.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")<br /><br />
-                    <strong>Detalles</strong>
+                <table class="table table-borderless align-middle mb-4">
+                    <tbody>
+                        <tr>
+                            <th class="w-25 text-end">Descripción:</th>
+                            <td>@Model.Descripcion</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Entidad Licitante:</th>
+                            <td>@StringFormatHelper.FormatearCuitSeguro(Model.EntidadLicitante.Cuit, Model.EntidadLicitante.RazonSocial)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Estado Licitación:</th>
+                            <td>
+                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(Model.IdEstadoLicitacion)" data-bs-toggle="tooltip" title="@Model.EstadoLicitacion.Descripcion">
+                                    @Model.EstadoLicitacion.Descripcion
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Categoría Licitación:</th>
+                            <td>
+                                <span class="badge bg-info">
+                                    @Html.Raw(Model.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")
+                                </span>
+                            </td>
+                        </tr>
 
-                    <div class="mb-3 mt-3">
+                        @if (Model.FechaPublicacion.HasValue)
+                        {
+                            <tr>
+                                <th class="text-end">Fecha Publicación:</th>
+                                <td>
+                                    <i class="bx bx-calendar"></i>
+                                    @Model.FechaPublicacion
+                                </td>
+                            </tr> 
+                        }
+                        @if(Model.FechaCierre.HasValue) { 
+                            <tr>
+                                <th class="text-end">Fecha Cierre:</th>
+                                <td>
+                                    <i class="bx bx-calendar"></i>
+                                    @Model.FechaCierre
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
 
-                        <table class="table">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
                             <thead>
                                 <tr>
                                     <td><b>NRO ITEM</b></td>
@@ -50,14 +95,6 @@
                         </table>
                     </div><br />
                     
-                    @if(Model.FechaPublicacion.HasValue) { 
-                    <strong>Fecha de Publicación:</strong> @Model.FechaPublicacion.Value.ToShortDateString() <br /><br />
-                    
-                    }
-                    @if(Model.FechaCierre.HasValue) { 
-                        <strong>Fecha de Cierre:</strong> @Model.FechaCierre.Value.ToShortDateString()<br />
-                    }
-                </p>
                 <form asp-action="Delete">
                     <input type="hidden" asp-for="IdLicitacion" />
 

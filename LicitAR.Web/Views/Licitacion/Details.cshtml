@@ -1,32 +1,10 @@
-﻿@model LicitAR.Web.Models.LicitacionDetailsViewModel
+﻿@using LicitAR.Web.Helpers
+@model LicitAR.Web.Models.LicitacionDetailsViewModel
 
 @{
     ViewData["Title"] = "Detalle de la licitacion";
-    string classEstado = Model.IdEstadoLicitacion == 1 ? "badge bg-label-secondary" : (Model.IdEstadoLicitacion == 3 ? "badge bg-label-success" : "badge bg-label-primary");
-
-    string FormatearCuitSeguro(string cuit, string razonSocial)
-    {
-        if (string.IsNullOrWhiteSpace(cuit) && string.IsNullOrWhiteSpace(razonSocial))
-            return "[S/D] - S/D";
-
-        string cuitFormateado;
-        if (string.IsNullOrWhiteSpace(cuit))
-        {
-            cuitFormateado = "S/D";
-        }
-        else if (cuit.Length == 11 && long.TryParse(cuit, out _))
-        {
-            cuitFormateado = $"{cuit.Substring(0, 2)}-{cuit.Substring(2, 8)}-{cuit.Substring(10, 1)}";
-        }
-        else
-        {
-            cuitFormateado = cuit;
-        }
-
-        string razon = string.IsNullOrWhiteSpace(razonSocial) ? "S/D" : razonSocial;
-
-        return $"[{cuitFormateado}] - {razon}";
-    }
+    string classEstado = CssClassHelper.GetEvaluacionBagdeCssClassByIdEstado(Model.IdEstadoLicitacion);
+ 
 }
 
 <div class="row">
