@@ -76,7 +76,7 @@ jobs:
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
             /d:sonar.host.url="https://sonarcloud.io" `
             /d:sonar.coverage.exclusions="**" `
-            /d:sonar.cpd.exclusions="**/*.cs"
+            /d:sonar.cpd.exclusions="**/*.cs,**/*.cshtml"
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
