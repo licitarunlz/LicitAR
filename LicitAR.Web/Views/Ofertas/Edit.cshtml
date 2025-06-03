@@ -1,10 +1,13 @@
-﻿@model LicitAR.Core.Data.Models.Oferta
+﻿@using LicitAR.Web.Helpers
+@model LicitAR.Core.Data.Models.Oferta
 
 @{
-    ViewData["Title"] = "Editar Postulación a Licitación a licitación";
+    ViewData["Title"] = "Editar Postulación a Licitación";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
     var licitacion = Model.Licitacion;
     var subtotal = Model.Items.Sum(x => x.ImporteSubtotal);
+    string backgroundClass = Model.EstadoOferta?.IdEstadoOferta == 1 ? "bg-label-warning" : Model.EstadoOferta?.IdEstadoOferta == 2 ? "bg-label-primary" : "bg-label-danger";
+
 }
 
 <form asp-action="Edit" id="form-licitacion">
@@ -19,114 +22,162 @@
     <div class="row">
         <div class="col-xl">
             <div class="card mb-6">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><b> @(licitacion.CodigoLicitacion)</b> - @(licitacion.Titulo) </h5>
-                </div>
-
-                <div class="card-body">
-                    <dl class="row">
-
-                        <dt class="col-sm-3"><b>Descripción</b></dt>
-                        <dd class="col-sm-9">@(licitacion.Descripcion)</dd>
-
-
-                        <dt class="col-sm-3"><b>Tipo de Licitación</b></dt>
-                        <dd class="col-sm-9">@(licitacion.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")</dd>
-
-                        <hr />
-                        <dt class="col-sm-3"><b>Nro. Oferta</b></dt>
-                        <dd class="col-sm-9">@(Model.CodigoOfertaLicitacion )</dd>
-
-                        <dt class="col-sm-3"><b>Detalle</b></dt>
-                        <dd class="col-sm-9"></dd>
-                        <div class="mb-3 mt-3">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <td><b>NRO ITEM</b></td>
-                                        <td><b>ITEM</b></td>
-                                        <td><b>DESCRIPCIÓN</b></td>
-                                        <td><b>CANTIDAD</b></td>
-                                        <td><b>PRECIO UNITARIO</b></td>
-                                        <td><b>SUBTOTAL</b></td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (int i = 0; i < licitacion.Items.Count; i++)
-                                    {
-                                        var item = licitacion.Items.ToArray()[i];
-                                        var itemOferta = Model.Items.FirstOrDefault(x => x.IdLicitacionDetalle == item.IdLicitacionDetalle);
-                                        <tr>
-                                            <td>
-                                                #@(item.NroItem + 1)
-                                                <input name="Items[@i].IdLicitacionDetalle" type="hidden" class="form-control" value="@item.IdLicitacionDetalle" />
-
-                                            </td>
-
-                                            <td>
-                                                @(item.Item)
-                                                <input name="Items[@i].IdOfertaDetalle" type="hidden" class="form-control" value="@itemOferta.IdOfertaDetalle" />
-
-
-                                            </td>
-
-
-
-
-                                            <td>
-                                                @(item.Descripcion)
-
-                                                <input name="Items[@i].IdOferta" type="hidden" class="form-control" value="@itemOferta.IdOferta" />
-
-                                            </td>
-
-                                            <td>@(item.Cantidad)</td>
-                                            <input name="Items[@i].Cantidad" disabled type="hidden" class="form-control" value="@item.Cantidad" />
-
-                                            <td>
-                                                <input name="Items[@i].ImporteUnitario"
-                                                       type="number"
-                                                       step="0.01"
-                                                       class="form-control item-precio"
-                                                       data-index="@i"
-                                                       value="@itemOferta.ImporteUnitario" />
-                                                <span data-valmsg-for="Items[@i].ImporteUnitario" class="text-danger"></span>
-                                            </td>
-                                            <td>
-                                                <span class="item-subtotal" id="subtotal-@i">@itemOferta.ImporteSubtotal</span>
-                                                <input name="Items[@i].ImporteSubtotal" type="hidden" class="form-control" value="@itemOferta.ImporteSubtotal" />
-
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="5" class="text-start"><strong>TOTAL GENERAL:</strong></td>
-                                        <td><strong><span id="total-general">@subtotal</span></strong></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-
-
-                            <div class="alert alert-danger alert-dismissible fade show py-6 mt-2" role="alert" id="validacion-errores" style="display:none">
-                            </div>
+                <div class="card-header">
+                    <div class="d-flex align-items-center mb-3">
+                        <!-- Sección izquierda: Código -->
+                        <div class="flex-grow-1">
+                            <h5 class="mb-0">Cod. Oferta: <b>@Html.DisplayFor(model => model.CodigoOfertaLicitacion)</b></h5>
                         </div>
 
+                        <!-- Sección derecha: Fecha + Estado -->
+                        <div class="text-start">
+                            <h5 class="mb-0">
+                                <b>@Html.DisplayFor(model => model.FechaOferta)</b>
+                                <span class="badge @(backgroundClass)">
+                                    @(Model.EstadoOferta?.Descripcion ?? "N/A")
+                                </span>
+                            </h5>
+                        </div>
+                    </div>
 
-                        <dt class="col-sm-3"><b>Fecha de Publicación</b></dt>
-                        <dd class="col-sm-9">@(licitacion.FechaPublicacion)</dd>
+                </div>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Cod. Licitación: <b> @licitacion.CodigoLicitacion</b> - @licitacion.Titulo </h4>
 
-                        <dt class="col-sm-3"><b>Fecha de Cierre</b></dt>
-                        <dd class="col-sm-9">@(licitacion.FechaCierre)</dd>
-                    </dl>
+                </div>
+                <hr />
+                <div class="card-body">
+
+
+                    <table class="table table-borderless align-middle mb-4">
+                        <tbody>
+                            <tr>
+                                <th class="w-25 text-end">Descripción:</th>
+                                <td>@licitacion.Descripcion</td>
+                            </tr>
+                            <tr>
+                                <th class="text-end">Entidad Licitante:</th>
+                                <td>@StringFormatHelper.FormatearCuitSeguro(licitacion.EntidadLicitante.Cuit, licitacion.EntidadLicitante.RazonSocial)</td>
+                            </tr>
+                            <tr>
+                                <th class="text-end">Estado Licitación:</th>
+                                <td>
+                                    <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(licitacion.IdEstadoLicitacion)" data-bs-toggle="tooltip" title="@licitacion.EstadoLicitacion.Descripcion">
+                                        @licitacion.EstadoLicitacion.Descripcion
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-end">Categoría Licitación:</th>
+                                <td>
+                                    <span class="badge bg-label-info">
+                                        @Html.Raw(licitacion.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")
+                                    </span>
+                                </td>
+                            </tr> 
+                            <tr>
+                                <th class="text-end">Fecha Publicación:</th>
+                                <td>
+                                    <i class="bx bx-calendar"></i>
+                                    @licitacion.FechaPublicacion
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-end">Fecha Cierre:</th>
+                                <td>
+                                    <i class="bx bx-calendar"></i>
+                                    @licitacion.FechaCierre
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+
+                    <h4 class="col-sm-3"><b>Detalle</b></h4>
+
+                    <div class="mb-3 mt-3">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td><b>NRO ITEM</b></td>
+                                    <td><b>ITEM</b></td>
+                                    <td><b>DESCRIPCIÓN</b></td>
+                                    <td><b>CANTIDAD</b></td>
+                                    <td><b>PRECIO UNITARIO</b></td>
+                                    <td><b>SUBTOTAL</b></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < licitacion.Items.Count; i++)
+                                {
+                                    var item = licitacion.Items.ToArray()[i];
+                                    var itemOferta = Model.Items.FirstOrDefault(x => x.IdLicitacionDetalle == item.IdLicitacionDetalle);
+                                    <tr>
+                                        <td>
+                                            #@(item.NroItem + 1)
+                                            <input name="Items[@i].IdLicitacionDetalle" type="hidden" class="form-control" value="@item.IdLicitacionDetalle" />
+
+                                        </td>
+
+                                        <td>
+                                            @(item.Item)
+                                            <input name="Items[@i].IdOfertaDetalle" type="hidden" class="form-control" value="@itemOferta.IdOfertaDetalle" />
+
+
+                                        </td>
+
+
+
+
+                                        <td>
+                                            @(item.Descripcion)
+
+                                            <input name="Items[@i].IdOferta" type="hidden" class="form-control" value="@itemOferta.IdOferta" />
+
+                                        </td>
+
+                                        <td>@(item.Cantidad)</td>
+                                        <input name="Items[@i].Cantidad" disabled type="hidden" class="form-control" value="@item.Cantidad" />
+
+                                        <td>
+                                            <input name="Items[@i].ImporteUnitario"
+                                                   type="number"
+                                                   step="0.01"
+                                                   class="form-control item-precio"
+                                                   data-index="@i"
+                                                   value="@itemOferta.ImporteUnitario" />
+                                            <span data-valmsg-for="Items[@i].ImporteUnitario" class="text-danger"></span>
+                                        </td>
+                                        <td>
+                                            <span class="item-subtotal" id="subtotal-@i">@itemOferta.ImporteSubtotal</span>
+                                            <input name="Items[@i].ImporteSubtotal" type="hidden" class="form-control" value="@itemOferta.ImporteSubtotal" />
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5" class="text-start"><strong>TOTAL GENERAL:</strong></td>
+                                    <td><strong><span id="total-general">@subtotal</span></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+
+                        <div class="alert alert-danger alert-dismissible fade show py-6 mt-2" role="alert" id="validacion-errores" style="display:none">
+                        </div>
+                    </div>
+
+
                 </div>
                 <div class="card-footer text-start">
                     <button type="submit" class="btn btn-primary">
                         <i class="bx bx-edit"></i>&nbsp;Editar
                     </button>
                     <a asp-action="Details" asp-route-id="@Model.IdOferta" class="btn btn-secondary">
-                        <i class="bx bx-arrow-back"></i>&nbsp;Volver 
+                        <i class="bx bx-arrow-back"></i>&nbsp;Volver
                     </a>
                 </div>
             </div>

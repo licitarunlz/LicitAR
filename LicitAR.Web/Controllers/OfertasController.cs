@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using LicitAR.Core.Utils;
 using LicitAR.Core.Data.Models.Parametros;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Humanizer;
 
 namespace LicitAR.Web.Controllers
 {
@@ -185,6 +186,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Persona)
                 .Include(o=> o.Items)
                 .Include(o=> o.Licitacion.Items)
+                .Include(o=> o.Licitacion.EntidadLicitante)
+                .Include(o=> o.Licitacion.EstadoLicitacion)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {
@@ -209,6 +212,14 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound"); // Updated
             }
+
+            var ofertas = await _ofertaManager.GetAllOfertasExistentesPorPersonaYLicitacionAsync(int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona").ToString()), idlicitacion.Value);
+
+            if (ofertas.Count > 0)
+            {
+                return RedirectToAction("Edit", new { idOferta = ofertas.FirstOrDefault().IdOferta });
+            }
+
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             OfertaModel oferta = new OfertaModel
             {
@@ -260,6 +271,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Persona)
                 .Include(o => o.Items)
                 .Include(o => o.Licitacion.Items)
+                .Include(o => o.Licitacion.EntidadLicitante)
+                .Include(o => o.Licitacion.EstadoLicitacion)
                 .FirstOrDefaultAsync(m => m.IdOferta == idOferta);
             if (oferta == null)
             {
@@ -306,6 +319,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Persona)
                 .Include(o=> o.Items)
                 .Include(o => o.Licitacion.Items)
+                .Include(o => o.Licitacion.EntidadLicitante)
+                .Include(o => o.Licitacion.EstadoLicitacion)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {
@@ -340,6 +355,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Persona)
                 .Include(o => o.Items)
                 .Include(o => o.Licitacion.Items)
+                .Include(o => o.Licitacion.EntidadLicitante)
+                .Include(o => o.Licitacion.EstadoLicitacion)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {

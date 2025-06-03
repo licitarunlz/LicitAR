@@ -111,17 +111,17 @@ namespace LicitAR.Web.Helpers
             {
 
                 case 1: //Borrador
-                    result = "alert alert-secondary";
+                    result = "badge bg-label-secondary";
                     break;
                 case 2: //Publicado
-                    result = "alert alert-success";
+                    result = "badge bg-label-success";
                     break;
                 case 3: //Cancelado
-                    result = "alert alert-danger";
+                    result = "badge bg-label-danger";
                     break;
 
                 default:
-                    result = "alert alert-secondary";
+                    result = "badge bg-label-secondary";
                     break;
             }
 
