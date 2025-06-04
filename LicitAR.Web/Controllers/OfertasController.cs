@@ -17,6 +17,7 @@ using LicitAR.Core.Utils;
 using LicitAR.Core.Data.Models.Parametros;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Humanizer;
+using LicitAR.Web.Helpers.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {
@@ -40,6 +41,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Ofertas
         [HttpGet("/Proveedor/Licitaciones")]
+        [AuditarEvento("OfertasController - Tabla", "Oferta", "Visualización de licitaciones para proveedor")]
         public async Task<IActionResult> IndexLicitaciones(string codigoLicitacion, string titulo, int? idCategoriaLicitacion, int page = 1, int pageSize = 10)
         {
             var licitaciones = await _licitacionManager.GetAllLicitacionesAsync();
@@ -114,6 +116,7 @@ namespace LicitAR.Web.Controllers
 
         [AuthorizeClaim("Licitaciones.Ver")]
         [HttpGet("/Proveedor/Licitaciones/Detalle")]
+        [AuditarEvento("OfertasController - Detalle", "Oferta", "Visualización de detalle de licitación para proveedor", "id")]
         public async Task<IActionResult> DetalleLicitaciones(int? id)
         {
             if (id == null)
@@ -130,6 +133,7 @@ namespace LicitAR.Web.Controllers
             return View(licitacion);
         }
         // GET: Ofertas
+        [AuditarEvento("OfertasController - Tabla", "Oferta", "Visualización de ofertas del proveedor")]
         public async Task<IActionResult> Index(string codigoLicitacion, string titulo,   int page = 1, int pageSize = 10)
         {
 
@@ -172,6 +176,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Ofertas/Details/5
+        [AuditarEvento("OfertasController - Detalle", "Oferta", "Visualización de detalle de oferta", "id")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -236,6 +241,7 @@ namespace LicitAR.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("/Proveedor/Licitaciones/Postularse")]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("OfertasController - Crear", "Oferta", "Creación de oferta")]
         public async Task<IActionResult> Create(OfertaModel ofertaModel)
         {
 
@@ -286,6 +292,7 @@ namespace LicitAR.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("OfertasController - Editar", "Oferta", "Edición de oferta", "id")]
         public async Task<IActionResult> Edit(int id,  OfertaModel ofertaModel)
         {
             Oferta oferta = null;
@@ -332,6 +339,7 @@ namespace LicitAR.Web.Controllers
         // POST: Ofertas/Delete/5
         [HttpPost, ActionName("Cancelar")]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("OfertasController - Cancelar", "Oferta", "Cancelación de oferta", "id")]
         public async Task<IActionResult> CancelarConfirmed(int id)
         {
             var result = await _ofertaManager.CancelarOfertaAsync(id, IdentityHelper.GetUserLicitARId(User));
@@ -368,6 +376,7 @@ namespace LicitAR.Web.Controllers
         // POST: Ofertas/Delete/5
         [HttpPost, ActionName("Publicar")]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("OfertasController - Publicar", "Oferta", "Publicación de oferta", "idOferta")]
         public async Task<IActionResult> PublicarConfirmed(int idOferta)
         {
             var result = await _ofertaManager.PublicarOfertaAsync(idOferta, IdentityHelper.GetUserLicitARId(User));

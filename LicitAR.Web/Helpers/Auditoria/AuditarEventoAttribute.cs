@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using LicitAR.Core.Business.Auditoria;
-using LicitAR.Web.Helpers;
-using System;
-using System.Threading.Tasks;
+using LicitAR.Web.Helpers.Auditoria;
 
 namespace LicitAR.Web.Helpers.Auditoria
 {

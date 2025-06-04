@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using LicitAR.Core.Business.Parametros;
 using LicitAR.Core.Data.Models.Parametros;
 using LicitAR.Web.Helpers.Authorization;
+using LicitAR.Web.Helpers.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {
@@ -16,6 +17,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Parametro/Provincias
         [AuthorizeClaim("Parametro.Ver")]
+        [AuditarEvento("ParametroController - Provincias", "Parametro", "Visualización de provincias")]
         public async Task<IActionResult> Provincias(string descripcion, int page = 1, int pageSize = 10)
         {
             var provinciasList = await _parametrosManager.GetAllProvinciasAsync();
@@ -54,6 +56,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Parametro/Localidades
         [AuthorizeClaim("Parametro.Ver")]
+        [AuditarEvento("ParametroController - Localidades", "Parametro", "Visualización de localidades")]
         public async Task<IActionResult> Localidades(string descripcion, int page = 1, int pageSize = 10)
         {
             Console.WriteLine("Entering Localidades action...");

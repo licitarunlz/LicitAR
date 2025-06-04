@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using LicitAR.Web.Helpers.Authorization;
+using LicitAR.Web.Helpers.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {

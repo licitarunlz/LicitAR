@@ -11,6 +11,7 @@ using LicitAR.Core.Utils;
 using LicitAR.Web.Helpers.Authorization;
 using Microsoft.Extensions.Logging;
 using LicitAR.Core.Business.Identidad;
+using LicitAR.Web.Helpers.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {
@@ -28,6 +29,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: /Audit/Trail
         [AuthorizeClaim("Auditoria.Trail")]
+        [AuditarEvento("AuditController - Trazos", "Auditoria", "Visualización de trail de auditoría")]
         public async Task<IActionResult> Trail(string accion, int? usuarioId, string entidad, DateTime? desde, DateTime? hasta, string usuarioMail, string usuarioNombreCompleto, int page = 1, int pageSize = 20)
         {
             // 1. Obtener los IDs de usuario de los registros filtrados (sin paginar)
@@ -90,6 +92,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: /Audit/Licitacion
         [AuthorizeClaim("Auditoria.Licitacion")]
+        [AuditarEvento("AuditController - Licitacion", "Auditoria", "Visualización de auditoría de licitación")]
         public async Task<IActionResult> Licitacion(string accion, int? usuarioId, int? idLicitacion, string campo, DateTime? desde, DateTime? hasta, string usuarioMail, string usuarioNombreCompleto, int page = 1, int pageSize = 20)
         {
             // 1. Obtener los IDs de usuario de los registros filtrados (sin paginar)
