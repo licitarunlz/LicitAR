@@ -55,8 +55,7 @@ namespace LicitAR.Web.Controllers
                                         && x.FechaPublicacion < DateTime.UtcNow
                                         && x.Audit.FechaBaja == null)?.ToList();
 
-
-            if (licitaciones == null)
+            if (licitaciones == null || !licitaciones.Any())
                 return View(licitaciones);
 
             var invitacionLicitaciones = await _licitacionInvitacionManager.GetInvitacionesByPersonaAsync(int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona").ToString()));
