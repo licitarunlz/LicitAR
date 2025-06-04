@@ -106,7 +106,7 @@ namespace LicitAR.Core.Business.Licitaciones
 
                 evaluacionFromDdbb.Audit = AuditHelper.SetModificationData(evaluacionFromDdbb.Audit, userId);
                 //Con esto se combinan las listas para guardar solo las ofertas cargadas.
-                evaluacionFromDdbb.EvaluacionOfertasDetalles.Zip(evaluacion.EvaluacionOfertasDetalles, (a, b) =>
+                var _ = evaluacionFromDdbb.EvaluacionOfertasDetalles.Zip(evaluacion.EvaluacionOfertasDetalles, (a, b) =>
                 { 
                     a.IdOfertaDetalle = b.IdOfertaDetalle;
                     return 0;
