@@ -10,13 +10,13 @@ namespace LicitAR.Web.Helpers.Auditoria
         private readonly string _accion;
         private readonly string _entidad;
         private readonly string _descripcion;
-        private readonly string _entidadIdParam;
+        private readonly string? _entidadIdParam;
 
         /// <param name="accion">Descripción de la acción (ej: "UsuarioController - Edit")</param>
         /// <param name="entidad">Nombre de la entidad (ej: "Usuario")</param>
         /// <param name="descripcion">Breve descripción de la acción</param>
         /// <param name="entidadIdParam">Nombre del parámetro de ruta/query que representa el Id de la entidad (opcional)</param>
-        public AuditarEventoAttribute(string accion, string entidad, string descripcion = "", string entidadIdParam = null)
+        public AuditarEventoAttribute(string accion, string entidad, string descripcion = "", string? entidadIdParam = null)
         {
             _accion = accion;
             _entidad = entidad;
