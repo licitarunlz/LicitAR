@@ -128,7 +128,7 @@
                                                 <i class="bx bx-upload me-1"></i>&nbsp;Publicar
                                             </a>
                                         }
-                                        @if ((item.IdEstadoLicitacion == 3 || item.IdEstadoLicitacion == 7) && item.FechaCierre.HasValue && item.FechaCierre.Value < DateTime.Now)
+                                        @if ((item.IdEstadoLicitacion == 3 || item.IdEstadoLicitacion == 7) && item.FechaCierre.HasValue && item.FechaCierre.Value < DateTime.UtcNow)
                                         {
                                             <a class="dropdown-item" asp-action="Evaluar" asp-route-id="@item.IdLicitacion">
                                                 <i class="bx bx-upload me-1"></i>&nbsp;Evaluar

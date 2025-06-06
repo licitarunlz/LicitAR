@@ -100,12 +100,12 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <td><b>NRO ITEM</b></td>
-                                    <td><b>ITEM</b></td>
-                                    <td><b>DESCRIPCIÓN</b></td>
-                                    <td><b>CANTIDAD</b></td>
-                                    <td><b>PRECIO UNITARIO</b></td>
-                                    <td><b>SUBTOTAL</b></td>
+                                    <th><b>NRO ITEM</b></th>
+                                    <th><b>ITEM</b></th>
+                                    <th><b>DESCRIPCIÓN</b></th>
+                                    <th><b>CANTIDAD</b></th>
+                                    <th><b>PRECIO UNITARIO</b></th>
+                                    <th><b>SUBTOTAL</b></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -122,9 +122,7 @@
 
                                         <td>
                                             @(item.Item)
-                                            <input name="Items[@i].IdOfertaDetalle" type="hidden" class="form-control" value="@itemOferta.IdOfertaDetalle" />
-
-
+                                            <input name="Items[@i].IdOfertaDetalle" type="hidden" class="form-control" value="@(itemOferta != null ? itemOferta.IdOfertaDetalle : "")" />
                                         </td>
 
 
@@ -133,7 +131,7 @@
                                         <td>
                                             @(item.Descripcion)
 
-                                            <input name="Items[@i].IdOferta" type="hidden" class="form-control" value="@itemOferta.IdOferta" />
+                                            <input name="Items[@i].IdOferta" type="hidden" class="form-control" value="@(itemOferta != null ? itemOferta.IdOferta : "")" />
 
                                         </td>
 
@@ -146,12 +144,12 @@
                                                    step="0.01"
                                                    class="form-control item-precio"
                                                    data-index="@i"
-                                                   value="@itemOferta.ImporteUnitario" />
+                                                   value="@(itemOferta != null ? itemOferta.ImporteUnitario : "")" />
                                             <span data-valmsg-for="Items[@i].ImporteUnitario" class="text-danger"></span>
                                         </td>
                                         <td>
-                                            <span class="item-subtotal" id="subtotal-@i">@itemOferta.ImporteSubtotal</span>
-                                            <input name="Items[@i].ImporteSubtotal" type="hidden" class="form-control" value="@itemOferta.ImporteSubtotal" />
+                                            <span class="item-subtotal" id="subtotal-@i">@(itemOferta != null ? itemOferta.ImporteSubtotal : "")</span>
+                                            <input name="Items[@i].ImporteSubtotal" type="hidden" class="form-control" value="@(itemOferta != null ? itemOferta.ImporteSubtotal : "")" />
 
                                         </td>
                                     </tr>

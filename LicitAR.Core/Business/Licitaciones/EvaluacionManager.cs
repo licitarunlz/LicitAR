@@ -75,7 +75,7 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             try
             {
-                evaluacion.FechaInicioEvaluacion = DateTime.Now;
+                evaluacion.FechaInicioEvaluacion = DateTime.UtcNow;
                 evaluacion.FechaFinEvaluacion = null;//las primeras arrancan en estado "Borrador" y dps se confirman
                 evaluacion.IdEstadoEvaluacion = 1; // Default state: Planificación
                 evaluacion.Audit = AuditHelper.GetCreationData(userId);
@@ -106,7 +106,7 @@ namespace LicitAR.Core.Business.Licitaciones
 
                 evaluacionFromDdbb.Audit = AuditHelper.SetModificationData(evaluacionFromDdbb.Audit, userId);
                 //Con esto se combinan las listas para guardar solo las ofertas cargadas.
-                evaluacionFromDdbb.EvaluacionOfertasDetalles.Zip(evaluacion.EvaluacionOfertasDetalles, (a, b) =>
+                var _ = evaluacionFromDdbb.EvaluacionOfertasDetalles.Zip(evaluacion.EvaluacionOfertasDetalles, (a, b) =>
                 { 
                     a.IdOfertaDetalle = b.IdOfertaDetalle;
                     return 0;
@@ -148,7 +148,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 return false;
 
             evaluacion.IdEstadoEvaluacion = 2;
-            evaluacion.FechaFinEvaluacion = DateTime.Now;
+            evaluacion.FechaFinEvaluacion = DateTime.UtcNow;
 
             evaluacion.Audit = AuditHelper.SetModificationData(evaluacion.Audit, idUsuario);
 
@@ -166,7 +166,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 IdLicitacion = licitacion.IdLicitacion,
                 IdEstadoAnterior = estadoAnterior,
                 IdEstadoNuevo = idEstadoResultado,
-                FechaCambio = DateTime.Now,
+                FechaCambio = DateTime.UtcNow,
                 IdUsuarioCambio = idUsuario
             });
 
@@ -181,7 +181,7 @@ namespace LicitAR.Core.Business.Licitaciones
             {
                 return false;
             }
-            evaluacion.FechaFinEvaluacion = DateTime.Now;
+            evaluacion.FechaFinEvaluacion = DateTime.UtcNow;
             evaluacion.IdEstadoEvaluacion = 3;
             evaluacion.Audit = AuditHelper.SetModificationData(evaluacion.Audit, idUsuario);
 

@@ -83,7 +83,7 @@
                                     </button>
                                     <div class="dropdown-menu">
                                        
-                                        <a class="dropdown-item" asp-action="DetalleLicitaciones" asp-route-id="@item.IdLicitacion">
+                                        <a class="dropdown-item" asp-action="DetalleLicitaciones" asp-route-id="@(item?.IdLicitacion)">
                                             <i class="bx bx-show me-1"></i> Detalles
                                         </a>
 

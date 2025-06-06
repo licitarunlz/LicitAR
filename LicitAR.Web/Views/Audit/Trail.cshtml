@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Auditoría General";
     var query = Context.Request.Query;
+    var tzBuenosAires = TimeZoneInfo.FindSystemTimeZoneById("Argentina Standard Time");
 }
 
 <div class="card">
@@ -66,8 +67,9 @@
                 {
                     foreach (var item in Model)
                     {
+                        var fechaLocal = TimeZoneInfo.ConvertTimeFromUtc(item.FechaHora, tzBuenosAires);
                         <tr>
-                            <td>@item.FechaHora.ToString("g")</td>
+                            <td>@fechaLocal.ToString("g")</td>
                             <td>@item.UsuarioId</td>
                             <td>@item.UsuarioMail</td>
                             <td>@item.UsuarioNombreCompleto</td>

@@ -5,6 +5,7 @@ using LicitAR.Core.Data.Models;
 using LicitAR.Web.Helpers;
 using System.Linq;
 using LicitAR.Core.Business.Auditoria;
+using LicitAR.Web.Helpers.Auditoria;
 
 namespace LicitAR.Web.Controllers
 {
@@ -27,6 +28,7 @@ namespace LicitAR.Web.Controllers
             _auditManager = auditManager;
         }
 
+        [AuditarEvento("LicitacionInvitacionController - Tabla", "LicitacionInvitacion", "Visualización de invitaciones de licitación")]
         public async Task<IActionResult> Index(int? idLicitacion, string codigoLicitacion, string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
             List<LicitacionInvitacion> invitaciones;
@@ -94,6 +96,7 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpPost]
+        [AuditarEvento("LicitacionInvitacionController - Eliminar", "LicitacionInvitacion", "Eliminación de invitación de persona a licitación")]
         public async Task<IActionResult> Remove(int idLicitacion, int idPersona)
         {
             await _manager.RemoveInvitacionAsync(idLicitacion, idPersona);
@@ -121,6 +124,7 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpPost]
+        [AuditarEvento("LicitacionInvitacionController - Asignar Persona", "LicitacionInvitacion", "Asignación de personas a licitación")]
         public async Task<IActionResult> AssignPersonaToLicitacion(AssignPersonaToLicitacionViewModel model, List<int> SelectedToAdd, List<int> SelectedToRemove)
         {
             int idUsuario = IdentityHelper.GetUserLicitARId(User);

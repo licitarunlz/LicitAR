@@ -107,11 +107,11 @@
                                 <thead>
                                     <tr>
 
-                                        <td></td>
-                                        <td><b>OFERENTE</b></td>
-                                        <td><b>PRECIO UNITARIO</b></td>
-                                        <td><b>COMPARATIVA</b></td>
-                                        <td><b>PRECIO SUBTOTAL</b></td>
+                                        <th></th>
+                                        <th><b>OFERENTE</b></th>
+                                        <th><b>PRECIO UNITARIO</b></th>
+                                        <th><b>COMPARATIVA</b></th>
+                                        <th><b>PRECIO SUBTOTAL</b></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -162,15 +162,23 @@
                             {
                                 var detalle = licitacion.Items.FirstOrDefault(i => i.IdLicitacionDetalle == kvp.Key);
                                 var oferta = ofertas.SelectMany(o => o.Items)
-                                .FirstOrDefault(oi => oi.IdOfertaDetalle == kvp.Value);
+                                    .FirstOrDefault(oi => oi.IdOfertaDetalle == kvp.Value);
 
-                                <li class="list-group-item">
-                                    <b>Item:</b> @detalle?.Item |
-                                    <b>Oferente:</b> @oferta?.Oferta.Persona?.RazonSocial |
-                                    <b>Subtotal:</b> $@oferta?.ImporteSubtotal
-                                </li>
-
-                                importeTotal += oferta.ImporteSubtotal;
+                                if (oferta != null)
+                                {
+                                    <li class="list-group-item">
+                                        <b>Item:</b> @detalle?.Item |
+                                        <b>Oferente:</b> @oferta?.Oferta.Persona?.RazonSocial |
+                                        <b>Subtotal:</b> $@oferta?.ImporteSubtotal
+                                    </li>
+                                    importeTotal += oferta.ImporteSubtotal;
+                                }
+                                else
+                                {
+                                    <li class="list-group-item text-danger">
+                                        <b>Item:</b> @detalle?.Item | <b>Oferente:</b> <span class="text-danger">No encontrado</span>
+                                    </li>
+                                }
                             }
 
                         </ul>
@@ -232,4 +240,4 @@
         </div>
     </div>
 
-</div> 
+</div>
