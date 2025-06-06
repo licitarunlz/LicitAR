@@ -36,6 +36,11 @@ namespace LicitAR.Web.Controllers
             return View();
         }
 
+        public IActionResult ConnectionError()
+        {
+            return View();
+        }
+
         public IActionResult Generic()
         {
             var errorId = TempData["ErrorId"] ?? Guid.NewGuid().ToString();

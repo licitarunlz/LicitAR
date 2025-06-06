@@ -4,6 +4,7 @@ using LicitAR.Core.Data.Models;
 using LicitAR.Core.DI;
 using LicitAR.Core.Utils;
 using LicitAR.FileStorage.DI;
+using Microsoft.Data.SqlClient; // Asegúrate de tener este using
 
 public partial class Program
 {
@@ -39,10 +40,28 @@ public partial class Program
 
         var app = builder.Build();
 
+        // Middleware global para capturar errores de conexión a la base de datos
+        app.Use(async (context, next) =>
+        {
+            try
+            {
+                await next();
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Message.Contains("Cannot open server") || ex.Message.Contains("Client with IP address"))
+                {
+                    context.Response.Redirect("/Error/ConnectionError");
+                    return;
+                }
+                throw;
+            }
+        });
+
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
         {
-            app.UseExceptionHandler("/Home/Error");
+            app.UseExceptionHandler("/Shared/Error");
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }

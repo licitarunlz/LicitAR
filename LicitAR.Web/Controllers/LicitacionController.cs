@@ -356,7 +356,16 @@ namespace LicitAR.Web.Controllers
         [AuditarEvento("LicitacionController - Publicar", "Licitacion", "Confirmación de publicación de licitación", "IdLicitacion")]
         public async Task<IActionResult> PublicarConfirmed(LicitacionPublicarConfirmModel licitacion)
         {
-            var result = await _licitacionManager.PublicarLicitacionAsync(licitacion.IdLicitacion, licitacion.FechaCierre, IdentityHelper.GetUserLicitARId(User));
+            // Asumimos que la fecha viene en horario de Argentina y la convertimos a UTC
+            var argentinaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Argentina/Buenos_Aires");
+            var fechaCierreLocal = DateTime.SpecifyKind(licitacion.FechaCierre, DateTimeKind.Unspecified);
+            var fechaCierreUtc = TimeZoneInfo.ConvertTimeToUtc(fechaCierreLocal, argentinaTimeZone);
+
+            var result = await _licitacionManager.PublicarLicitacionAsync(
+                licitacion.IdLicitacion,
+                fechaCierreUtc,
+                IdentityHelper.GetUserLicitARId(User)
+            );
             if (!result)
             {
                 return View("NotFound");
@@ -365,7 +374,7 @@ namespace LicitAR.Web.Controllers
                 licitacion.IdLicitacion,
                 IdentityHelper.GetUserLicitARId(User),
                 "Publicación",
-                "FechaCierre", null, licitacion.FechaCierre.ToString()
+                "FechaCierre", null, fechaCierreUtc.ToString()
             );
             TempData["Mensaje"] = "Licitación Publicada Exitosamente!";
 
