@@ -63,7 +63,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 {
                     IdLicitacion = idLicitacion,
                     IdPersona = idPersona,
-                    FechaInvitacion = DateTime.UtcNow,
+                    FechaInvitacion = DateTime.Now,
                     IdUsuario = idUsuario,
                     Audit = AuditHelper.GetCreationData(idUsuario)
                 });

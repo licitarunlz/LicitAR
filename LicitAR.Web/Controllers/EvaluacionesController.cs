@@ -146,9 +146,9 @@ namespace LicitAR.Web.Controllers
             ViewBag.ofertas = ofertas;
             EvaluacionModel model = new EvaluacionModel();
             model.IdLicitacion = idLicitacion;
-            model.FechaInicioEvaluacion = DateTime.UtcNow;
+            model.FechaInicioEvaluacion = DateTime.Now;
             model.IdEvaluacion = 0;
-            model.FechaFinEvaluacion = DateTime.UtcNow;
+            model.FechaFinEvaluacion = DateTime.Now;
             model.IdUsuarioEvaluador = IdentityHelper.GetUserLicitARId(User);
 
             //ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion");

@@ -133,7 +133,7 @@
                                                 <i class="bx bx-upload me-1" aria-hidden="true"></i>&nbsp;Publicar
                                             </a>
                                         }
-                                        @if ((item.IdEstadoLicitacion == 3 || item.IdEstadoLicitacion == 7) && item.FechaCierre.HasValue && item.FechaCierre.Value < DateTime.UtcNow)
+                                        @if ((item.IdEstadoLicitacion == 3 || item.IdEstadoLicitacion == 7) && item.FechaCierre.HasValue && item.FechaCierre.Value < DateTime.Now)
                                         {
                                             <a class="dropdown-item" asp-action="Evaluar" asp-route-id="@item.IdLicitacion" aria-label="Evaluar licitación @item.CodigoLicitacion">
                                                 <i class="bx bx-upload me-1" aria-hidden="true"></i>&nbsp;Evaluar

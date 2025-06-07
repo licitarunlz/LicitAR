@@ -69,7 +69,7 @@ namespace LicitAR.Web.Helpers
         {
             audit ??= new Audit(); // Ensure audit is not null
             audit.ModifiedBy = userId;
-            audit.ModifiedDate = DateTime.UtcNow;
+            audit.ModifiedDate = DateTime.Now;
             return audit;
         }
     }

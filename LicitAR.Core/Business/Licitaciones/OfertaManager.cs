@@ -83,7 +83,7 @@ namespace LicitAR.Core.Business.Licitaciones
 
                 oferta.CodigoOfertaLicitacion = await this.ObtenerProximoCodigoOfertaAsync(oferta.IdLicitacion);
                 oferta.IdEstadoOferta = 1;
-                oferta.FechaOferta = DateTime.UtcNow;
+                oferta.FechaOferta = DateTime.Now;
                 
                 oferta.Audit = AuditHelper.GetCreationData(userId);
                 _dbContext.Ofertas.Add(oferta);
@@ -136,7 +136,7 @@ namespace LicitAR.Core.Business.Licitaciones
                     return false;
 
                 ofertaFromDdbb.IdEstadoOferta = 2;
-                ofertaFromDdbb.FechaOferta = DateTime.UtcNow;
+                ofertaFromDdbb.FechaOferta = DateTime.Now;
 
                 ofertaFromDdbb.Audit = AuditHelper.SetModificationData(ofertaFromDdbb.Audit, userId);
                                 

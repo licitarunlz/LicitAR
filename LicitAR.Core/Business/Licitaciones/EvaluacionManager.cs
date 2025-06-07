@@ -75,7 +75,7 @@ namespace LicitAR.Core.Business.Licitaciones
         {
             try
             {
-                evaluacion.FechaInicioEvaluacion = DateTime.UtcNow;
+                evaluacion.FechaInicioEvaluacion = DateTime.Now;
                 evaluacion.FechaFinEvaluacion = null;//las primeras arrancan en estado "Borrador" y dps se confirman
                 evaluacion.IdEstadoEvaluacion = 1; // Default state: Planificación
                 evaluacion.Audit = AuditHelper.GetCreationData(userId);
@@ -148,7 +148,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 return false;
 
             evaluacion.IdEstadoEvaluacion = 2;
-            evaluacion.FechaFinEvaluacion = DateTime.UtcNow;
+            evaluacion.FechaFinEvaluacion = DateTime.Now;
 
             evaluacion.Audit = AuditHelper.SetModificationData(evaluacion.Audit, idUsuario);
 
@@ -166,7 +166,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 IdLicitacion = licitacion.IdLicitacion,
                 IdEstadoAnterior = estadoAnterior,
                 IdEstadoNuevo = idEstadoResultado,
-                FechaCambio = DateTime.UtcNow,
+                FechaCambio = DateTime.Now,
                 IdUsuarioCambio = idUsuario
             });
 
@@ -181,7 +181,7 @@ namespace LicitAR.Core.Business.Licitaciones
             {
                 return false;
             }
-            evaluacion.FechaFinEvaluacion = DateTime.UtcNow;
+            evaluacion.FechaFinEvaluacion = DateTime.Now;
             evaluacion.IdEstadoEvaluacion = 3;
             evaluacion.Audit = AuditHelper.SetModificationData(evaluacion.Audit, idUsuario);
 
