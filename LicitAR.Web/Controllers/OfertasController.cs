@@ -18,6 +18,7 @@ using LicitAR.Core.Data.Models.Parametros;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Humanizer;
 using LicitAR.Web.Helpers.Auditoria;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace LicitAR.Web.Controllers
 {
@@ -177,9 +178,9 @@ namespace LicitAR.Web.Controllers
 
         // GET: Ofertas/Details/5
         [AuditarEvento("OfertasController - Detalle", "Oferta", "Visualización de detalle de oferta", "id")]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? idOferta)
         {
-            if (id == null)
+            if (idOferta == null)
             {
                 return NotFound();
             }
@@ -194,7 +195,7 @@ namespace LicitAR.Web.Controllers
                 .Include(o=> o.Licitacion.EstadoLicitacion)
                 .Include(o=> o.Licitacion.CategoriaLicitacion)
                 .Include(o=> o.Licitacion.Rubro)
-                .FirstOrDefaultAsync(m => m.IdOferta == id);
+                .FirstOrDefaultAsync(m => m.IdOferta == idOferta);
             if (oferta == null)
             {
                 return NotFound();
@@ -223,7 +224,16 @@ namespace LicitAR.Web.Controllers
 
             if (ofertas.Count > 0)
             {
-                return RedirectToAction("Edit", new { idOferta = ofertas.FirstOrDefault().IdOferta });
+                var ofertaModel = ofertas.FirstOrDefault();
+                if (ofertaModel.IdEstadoOferta == 1)
+                {
+                    return RedirectToAction("Edit", new { idOferta = ofertaModel.IdOferta });
+                }else
+                {
+                    return RedirectToAction("Details", new { idOferta = ofertaModel.IdOferta });
+
+                }
+
             }
 
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
@@ -297,7 +307,7 @@ namespace LicitAR.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuditarEvento("OfertasController - Editar", "Oferta", "Edición de oferta", "id")]
-        public async Task<IActionResult> Edit(int id,  OfertaModel ofertaModel)
+        public async Task<IActionResult> Edit(int idOferta,  OfertaModel ofertaModel)
         {
             Oferta oferta = null;
             if (ModelState.IsValid)

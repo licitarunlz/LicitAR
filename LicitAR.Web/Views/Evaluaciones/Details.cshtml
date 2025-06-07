@@ -30,6 +30,10 @@
                         <td>@licitacion.Descripcion</td>
                     </tr>
                     <tr>
+                        <th class="w-25 text-end">Rubro:</th>
+                        <td>@licitacion.Rubro.Descripcion</td>
+                    </tr>
+                    <tr>
                         <th class="text-end">Entidad Licitante:</th>
                         <td>@StringFormatHelper.FormatearCuitSeguro(licitacion.EntidadLicitante.Cuit, licitacion.EntidadLicitante.RazonSocial)</td>
                     </tr>
@@ -42,10 +46,11 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="text-end">Categoría Licitación:</th>
+                        <th class="text-end">Categoría:</th>
                         <td>
-                            <span class="badge bg-info">
-                                @Html.Raw(licitacion.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")
+
+                            <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdCategoria(licitacion.IdCategoriaLicitacion)">
+                                @licitacion.CategoriaLicitacion.Descripcion
                             </span>
                         </td>
                     </tr>
@@ -66,7 +71,7 @@
                 </tbody>
             </table>
 
-            
+
         </div>
     </div>
 
@@ -109,7 +114,8 @@
 
                                         <th></th>
                                         <th><b>OFERENTE</b></th>
-                                        <th><b>PRECIO UNITARIO</b></th>
+                                        <th><b>OFERTA POR UNIDAD</b></th>
+                                        <th><b>OBSERVACIÓN</b></th>
                                         <th><b>COMPARATIVA</b></th>
                                         <th><b>PRECIO SUBTOTAL</b></th>
                                     </tr>
@@ -132,13 +138,19 @@
                                                 data-itemnombre="@item.Item"
                                                 disabled
                                                 @(Model.Ofertas != null && Model.Ofertas.ContainsKey(item.IdLicitacionDetalle) &&
-                                                         Model.Ofertas[item.IdLicitacionDetalle] == ofertaDetalleProv.IdOfertaDetalle ? "checked" : "")
+                                                             Model.Ofertas[item.IdLicitacionDetalle] == ofertaDetalleProv.IdOfertaDetalle ? "checked" : "")
                                                 data-proveedor="@ofertaProv.Persona?.RazonSocial"
                                                 data-subtotal="@ofertaDetalleProv.ImporteSubtotal" />
                                             </td>
-                                            <td>@ofertaProv.Persona?.Cuit - @ofertaProv.Persona?.RazonSocial </td>
+                                            <td>@ofertaProv.Persona?.Cuit - @ofertaProv.Persona?.RazonSocial
+                                                @if(ofertaProv.Persona.IdRubro == licitacion.IdRubro)
+                                                {
+                                                    <span class="badge bg-label-success"> Coincide con Rubro</span>
+                                                }
+                                            </td>
 
                                             <td>$ @(ofertaDetalleProv?.ImporteUnitario)</td>
+                                            <td>$ @(ofertaDetalleProv?.Observacion)</td>
 
                                             <td>@(ofertaDetalleProv?.ImporteUnitario > item.PrecioEstimadoUnitario ? "Mayor" : "Menor")</td>
 
@@ -206,7 +218,7 @@
                 <div class="dropdown-menu dropup">
                     @if (Model.IdEstadoEvaluacion == 1)
                     {
-                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.IdEvaluacion">
+                        <a class="dropdown-item" asp-action="Edit" asp-route-idEvaluacion="@Model.IdEvaluacion">
                             <i class="bx bx-edit-alt me-1"></i> Editar
                         </a>
 
