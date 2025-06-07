@@ -24,6 +24,10 @@
                             <td>@Html.DisplayFor(model => model.Descripcion)</td>
                         </tr>
                         <tr>
+                            <th class="w-25 text-end">Rubro:</th>
+                            <td>@Html.DisplayFor(model => model.Rubro.Descripcion)</td>
+                        </tr>
+                        <tr>
                             <th class="text-end">Entidad Licitante:</th>
                             <td>@StringFormatHelper.FormatearCuitSeguro(Model.EntidadLicitante.Cuit, Model.EntidadLicitante.RazonSocial) </td>
                         </tr>

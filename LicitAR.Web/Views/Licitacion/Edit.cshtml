@@ -45,6 +45,13 @@
                         <span asp-validation-for="Descripcion" class="text-danger" aria-live="polite"></span>
                     </div>
 
+                        <div class="mb-3">
+                            <label asp-for="IdRubro" class="form-label"></label>
+                            <select asp-for="IdRubro" asp-items="ViewBag.ComboRubros" class="form-control">
+                                <option value="">Seleccione un Rubro</option>
+                            </select>
+                            <span asp-validation-for="IdRubro" class="text-danger"></span>
+                        </div>
                     <div class="mb-3">
                         <h5 class="mb-3" id="tipo-invitacion-title">Tipo de Invitación</h5>
                         <div class="form-check form-check-inline">

@@ -8,6 +8,8 @@ using LicitAR.Web.Models;
 using LicitAR.Web.Helpers;
 using LicitAR.Web.Helpers.Authorization;
 using LicitAR.Web.Helpers.Auditoria;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace LicitAR.Web.Controllers
 {
@@ -144,6 +146,7 @@ namespace LicitAR.Web.Controllers
                 IdEstadoLicitacion = licitacion.IdEstadoLicitacion,
                 IdCategoriaLicitacion = licitacion.IdCategoriaLicitacion,
                 EntidadLicitanteFormateada = entidadLicitanteFormateada,
+                Rubro = licitacion.Rubro,
                 Items = licitacion.Items.Select(x => new LicitacionDetalleModel
                 {
                     IdLicitacionDetalle = x.IdLicitacionDetalle,
@@ -175,7 +178,16 @@ namespace LicitAR.Web.Controllers
                     Texto = StringFormatHelper.FormatearCuitSeguro(e.Cuit, e.RazonSocial)
                 }).ToList();
 
+            var rubros = _dbContext.Rubros
+                  .Select(x => new SelectListItem
+                  {
+                      Value = x.IdRubro.ToString(),
+                      Text = x.Descripcion.ToString()
+                  }).ToList();
+
             ViewBag.EntidadesLicitantes = entidades;
+            ViewBag.ComboRubros = rubros;
+
             return View();
         }
 
@@ -237,7 +249,15 @@ namespace LicitAR.Web.Controllers
                     Texto = StringFormatHelper.FormatearCuitSeguro(e.Cuit, e.RazonSocial)
                 }).ToList();
 
+            var rubros = _dbContext.Rubros
+                  .Select(x => new SelectListItem
+                  {
+                      Value = x.IdRubro.ToString(),
+                      Text = x.Descripcion.ToString()
+                  }).ToList();
+            
             ViewBag.EntidadesLicitantes = entidades;
+            ViewBag.ComboRubros = rubros;
 
             var lic = new LicitacionModel();
             lic.SetLicitacionData(licitacion);

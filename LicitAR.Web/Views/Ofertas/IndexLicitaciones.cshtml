@@ -1,4 +1,5 @@
-﻿@model IEnumerable<LicitAR.Core.Data.Models.Licitacion>
+﻿@using LicitAR.Web.Helpers
+@model IEnumerable<LicitAR.Core.Data.Models.Licitacion>
 
 @{
     ViewData["Title"] = "Licitaciones";
@@ -96,12 +97,12 @@
                             <td>@item.CodigoLicitacion</td>
                             <td>@item.Titulo</td> 
                              <td>
-                                <span class="badge bg-label-secondary">
+                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(item.IdEstadoLicitacion)">
                                     @(item.EstadoLicitacion?.Descripcion ?? "N/A")
                                 </span>
                             </td>
                             <td>
-                                <span class="badge @(item.CategoriaLicitacion?.Descripcion == "Pública" ? "bg-label-primary" : "bg-label-warning")">
+                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdCategoria(item.IdCategoriaLicitacion)">
                                     @(item.CategoriaLicitacion?.Descripcion ?? "N/A")
                                 </span>
                             </td>

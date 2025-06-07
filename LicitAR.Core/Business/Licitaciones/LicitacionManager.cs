@@ -49,6 +49,7 @@ namespace LicitAR.Core.Business.Licitaciones
             return await _dbContext.Licitaciones
                 .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
                 .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
+                .Include(l=> l.Rubro)
                 .ToListAsync();
         }
 
@@ -63,6 +64,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
                 .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
                 .Include(l=> l.EntidadLicitante)
+                .Include(l=> l.Rubro)
                 .Include(d => d.Items)  // Include Los items
                 .FirstOrDefaultAsync(l => l.IdLicitacion == id);
         }
@@ -118,7 +120,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 licitacionFromDdbb.FechaPublicacion = licitacion.FechaPublicacion;
                 licitacionFromDdbb.FechaCierre = licitacion.FechaCierre;
                 licitacionFromDdbb.IdEntidadLicitante = licitacion.IdEntidadLicitante; // <-- Agrega esta línea
-
+                licitacionFromDdbb.IdRubro = licitacion.IdRubro;
                 licitacionFromDdbb.Audit = AuditHelper.SetModificationData(licitacionFromDdbb.Audit, userId);
 
                 licitacionFromDdbb.Items = licitacion.Items;

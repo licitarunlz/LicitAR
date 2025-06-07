@@ -2,7 +2,7 @@
 @model LicitAR.Core.Data.Models.Licitacion
 
 @{
-    ViewData["Title"] = "Detalle de la licitacion";
+    ViewData["Title"] = "Detalle de la licitación";
 }
 
 <div class="row">
@@ -22,6 +22,10 @@
                             <td>@Html.DisplayFor(model => model.Descripcion)</td>
                         </tr>
                         <tr>
+                            <th class="w-25 text-end">Rubro:</th>
+                            <td>@Html.DisplayFor(model => model.Rubro.Descripcion)</td>
+                        </tr>
+                        <tr>
                             <th class="text-end">Entidad Licitante:</th>
                             <td>@StringFormatHelper.FormatearCuitSeguro(Model.EntidadLicitante.Cuit, Model.EntidadLicitante.RazonSocial)</td>
                         </tr>
@@ -36,8 +40,8 @@
                         <tr>
                             <th class="text-end">Categoría Licitación:</th>
                             <td>
-                                <span class="badge bg-label-info">
-                                    @Html.Raw(Model.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")
+                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdCategoria(Model.IdCategoriaLicitacion)">
+                                    @Model.CategoriaLicitacion.Descripcion 
                                 </span>
                             </td>
                         </tr>
@@ -58,7 +62,7 @@
                     </tbody>
                 </table>
 
-                <dl class="row">
+                <div class="row">
 
 
                     <h6 class="fw-bold mb-2">Detalle de Ítems</h6>
@@ -78,13 +82,13 @@
                                     {
                                         var item = Model.Items.ToArray()[i];
                                         <tr>
-                                            <td>#@(item.NroItem + 1)</td>
+                                            <td class="text-center">#@(item.NroItem + 1)</td>
 
-                                            <td>@(item.Item)</td>
+                                            <td class="text-center">@(item.Item)</td>
 
-                                            <td>@(item.Descripcion)</td>
+                                            <td class="text-center">@(item.Descripcion)</td>
 
-                                            <td>@(item.Cantidad)</td>
+                                            <td class="text-center">@(item.Cantidad)</td>
                                         </tr>
                                     }
                                 </tbody>
@@ -93,7 +97,7 @@
                     </div>
 
 
-                </dl>
+                </div>
             </div>
             <div class="card-footer text-start">
                 <a asp-action="Create" asp-route-idlicitacion="@Model?.IdLicitacion" class="btn btn-primary">

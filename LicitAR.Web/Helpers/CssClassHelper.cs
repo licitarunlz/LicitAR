@@ -78,6 +78,25 @@ namespace LicitAR.Web.Helpers
             return result;
 
         }
+        public static string GetLicitacionBagdeCssClassByIdCategoria(int idCategoria)
+        {
+            string result = "";
+
+            switch (idCategoria)
+            {
+                case 1: //Publica
+                    result = "badge bg-label-primary";
+                    break;
+                case 2: //Privada
+                    result = "badge bg-label-warning";
+                    break;
+                default:
+                    result = "badge bg-label-secondary";
+                    break;
+            }
+
+            return result;
+        }
 
         public static string GetOfertaAlertCssClassByIdEstado(int idEstadoOferta)
         {
@@ -86,7 +105,7 @@ namespace LicitAR.Web.Helpers
             {
                  
                 case 1: //Borrador
-                    result = "badge bg-label-secondary";
+                    result = "badge bg-label-warning";
                     break;
                 case 2: //Publicada
                     result = "badge bg-label-success";
@@ -111,7 +130,7 @@ namespace LicitAR.Web.Helpers
             {
 
                 case 1: //Borrador
-                    result = "badge bg-label-secondary";
+                    result = "badge bg-label-warning";
                     break;
                 case 2: //Publicado
                     result = "badge bg-label-success";

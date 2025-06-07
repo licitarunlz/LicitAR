@@ -57,7 +57,7 @@ namespace LicitAR.Web.Controllers
                                         && x.FechaPublicacion < DateTime.Now
                                         && x.Audit.FechaBaja == null)?.ToList();
 
-            if (licitaciones == null || !licitaciones.Any())
+            if (licitaciones == null)
                 return View(licitaciones);
 
             var invitacionLicitaciones = await _licitacionInvitacionManager.GetInvitacionesByPersonaAsync(int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona").ToString()));
@@ -192,6 +192,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o=> o.Licitacion.Items)
                 .Include(o=> o.Licitacion.EntidadLicitante)
                 .Include(o=> o.Licitacion.EstadoLicitacion)
+                .Include(o=> o.Licitacion.CategoriaLicitacion)
+                .Include(o=> o.Licitacion.Rubro)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {
@@ -278,6 +280,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Licitacion.Items)
                 .Include(o => o.Licitacion.EntidadLicitante)
                 .Include(o => o.Licitacion.EstadoLicitacion)
+                .Include(o => o.Licitacion.CategoriaLicitacion)
+                .Include(o => o.Licitacion.Rubro)
                 .FirstOrDefaultAsync(m => m.IdOferta == idOferta);
             if (oferta == null)
             {
@@ -327,6 +331,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Licitacion.Items)
                 .Include(o => o.Licitacion.EntidadLicitante)
                 .Include(o => o.Licitacion.EstadoLicitacion)
+                .Include(o => o.Licitacion.CategoriaLicitacion)
+                .Include(o => o.Licitacion.Rubro)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {
@@ -364,6 +370,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Licitacion.Items)
                 .Include(o => o.Licitacion.EntidadLicitante)
                 .Include(o => o.Licitacion.EstadoLicitacion)
+                .Include(o => o.Licitacion.CategoriaLicitacion)
+                .Include(o => o.Licitacion.Rubro)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {

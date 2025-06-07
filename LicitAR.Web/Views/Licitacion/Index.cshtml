@@ -94,6 +94,7 @@
                     <th scope="col"></th>
                     <th scope="col">Código Licitación</th>
                     <th scope="col">Título</th>
+                    <th scope="col">Rubro</th>
                     <th scope="col">Estado</th>
                     <th scope="col">Categoría</th>
                     <th scope="col">Fecha Publicación</th>
@@ -168,6 +169,7 @@
                             </td>
                             <td>@item.CodigoLicitacion</td>
                             <td>@item.Titulo</td>
+                            <td>@item.Rubro.Descripcion</td>
                             <td>
                                 <span class="@(CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(item.IdEstadoLicitacion))" aria-label="Estado: @(item.EstadoLicitacion?.Descripcion ?? "N/A")">
                                     @(item.EstadoLicitacion?.Descripcion ?? "N/A")

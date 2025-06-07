@@ -88,7 +88,7 @@ namespace LicitAR.Web.Models
         public int IdLicitacionDetalle { get; set; }
         public decimal ImporteUnitario { get; set; }
         public decimal ImporteSubtotal { get; set; } 
-
+        public string? Observacion { get; set; }
         public OfertaDetalle GetOfertaDetalle(AuditTable audit, Oferta? oferta = null)
         {
             return new OfertaDetalle
@@ -100,7 +100,8 @@ namespace LicitAR.Web.Models
                 Oferta = oferta,
                 ImporteUnitario = this.ImporteUnitario,
                 IdLicitacionDetalle = this.IdLicitacionDetalle,
-                LicitacionDetalle = null
+                LicitacionDetalle = null,
+                Observacion = this.Observacion
             };
         }
 
@@ -111,7 +112,7 @@ namespace LicitAR.Web.Models
             this.IdOferta = ofertaDetalle.IdOferta;
             this.ImporteSubtotal = ofertaDetalle.ImporteSubtotal;
             this.ImporteUnitario = ofertaDetalle.ImporteUnitario;
-
+            this.Observacion = ofertaDetalle.Observacion;
         }
 
     }
