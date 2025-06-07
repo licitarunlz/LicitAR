@@ -40,6 +40,13 @@
                                     <input asp-for="RazonSocial" class="form-control" readonly="true" />
                                     <span asp-validation-for="RazonSocial" class="text-danger"></span>
                                 </div>
+                                <div class="col-md-12 mb-3">
+                                    <label asp-for="IdRubro" class="form-label"></label>
+                                    <select asp-for="IdRubro" asp-items="ViewBag.ComboRubros" class="form-control">
+                                        <option value="">Seleccione un Rubro</option>
+                                    </select>
+                                    <span asp-validation-for="IdRubro" class="text-danger"></span>
+                                </div>
                             </div>
                             <h5 class="mt-4 mb-3"><i class='bx bx-envelope me-2'></i>Contacto</h5>
                             <div class="row">

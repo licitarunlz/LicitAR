@@ -22,6 +22,10 @@ namespace LicitAR.Web.Models
         public int IdTipoPersona { get; set; }
 
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        [DisplayName("Rubro")]
+        public int? IdRubro { get; set; }
+
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         [MaxLength(200, ErrorMessage = ErrorMessages.MAXLENGTH)]
 
         [DisplayName("Razón Social")]
@@ -38,6 +42,7 @@ namespace LicitAR.Web.Models
         public string? Telefono { get; set; }
 
 
+        public string? Rubro { get; set; }
         public string? TipoPersona { get; set; }
         public string? Provincia { get; set; }
         public string? Localidad { get; set; }
@@ -62,7 +67,8 @@ namespace LicitAR.Web.Models
                 DireccionNumero = this.DireccionNumero,
                 DireccionPiso = this.DireccionPiso,
                 IdLocalidad = this.IdLocalidad,
-                IdProvincia = this.IdProvincia
+                IdProvincia = this.IdProvincia,
+                IdRubro = this.IdRubro
             };
         }
 
@@ -86,7 +92,8 @@ namespace LicitAR.Web.Models
             this.Provincia = persona.Provincia.Descripcion;
             this.Localidad = persona.Localidad.Descripcion;
             this.TipoPersona = persona.TipoPersona.Descripcion;
-
+            this.IdRubro = persona.IdRubro;
+            this.Rubro = persona.Rubro.Descripcion;
         }
     }
 }
