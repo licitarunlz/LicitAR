@@ -93,7 +93,7 @@ namespace LicitAR.Web.Models
             this.Localidad = persona.Localidad.Descripcion;
             this.TipoPersona = persona.TipoPersona.Descripcion;
             this.IdRubro = persona.IdRubro;
-            this.Rubro = persona.Rubro.Descripcion;
+            this.Rubro = persona.Rubro?.Descripcion;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿@model PersonaModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Nuevo Oferente";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
 
@@ -9,7 +9,7 @@
     <div class="col-xl">
         <div class="card mb-6">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="mb-0">Crear Persona</h3>
+                <h3 class="mb-0">Crear Oferente</h3>
                 <small class="text-body float-end">Ingrese los detalles</small>
             </div>
             <div class="card-body">
@@ -20,7 +20,7 @@
                         <div class="row mb-3">
                             <div class="col-md-3 mb-3">
                                 <label asp-for="Cuit" class="form-label"></label>
-                                <input asp-for="Cuit" class="form-control" />
+                                <input asp-for="Cuit" class="form-control" maxlength="11" />
                                 <span asp-validation-for="Cuit" class="text-danger"></span>
                             </div>
 
@@ -38,6 +38,14 @@
                                     <option value="">Seleccione un Tipo Persona</option>
                                 </select>
                                 <span asp-validation-for="IdTipoPersona" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="IdRubro" class="form-label"></label>
+                                <select asp-for="IdRubro" asp-items="ViewBag.ComboRubros" class="form-control">
+                                    <option value="">Seleccione un Rubro</option>
+                                </select>
+                                <span asp-validation-for="IdRubro" class="text-danger"></span>
                             </div>
                         </div>
                         <h4 class="mt-6"> Contacto  </h4>

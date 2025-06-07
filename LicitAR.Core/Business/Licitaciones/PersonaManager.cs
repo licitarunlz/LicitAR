@@ -41,6 +41,7 @@ namespace LicitAR.Core.Business.Licitaciones
                                     .Include(p => p.Provincia)
                                     .Include(p => p.Localidad)
                                     .Include(p => p.TipoPersona)
+                                    .Include(p => p.Rubro)
                                     .Where(x => x.Audit.FechaBaja == null).ToList();
         }
         public async Task<Persona?> GetPersonaByIdAsync(int idPersona)
@@ -48,7 +49,8 @@ namespace LicitAR.Core.Business.Licitaciones
             return await this._dbContext.Personas
                                 .Include(p => p.Provincia)
                                 .Include(p => p.Localidad)
-                                .Include(p => p.TipoPersona).FirstOrDefaultAsync(x => x.IdPersona == idPersona);
+                                .Include(p => p.TipoPersona)
+                                .Include(p => p.Rubro).FirstOrDefaultAsync(x => x.IdPersona == idPersona);
         }
         public async Task<IMessageManager> AgregarAsync(Persona persona, int idUser)
         {
@@ -92,7 +94,7 @@ namespace LicitAR.Core.Business.Licitaciones
                     entidadFromDdbb.DireccionPiso = persona.DireccionPiso;
                     entidadFromDdbb.DireccionDepto = persona.DireccionDepto;
                     entidadFromDdbb.DireccionCodigoPostal = persona.DireccionCodigoPostal;
-
+                    entidadFromDdbb.IdRubro = persona.IdRubro;
                     entidadFromDdbb.Audit = AuditHelper.SetModificationData(entidadFromDdbb.Audit, idUser);
 
                     _dbContext.Personas.Update(entidadFromDdbb);

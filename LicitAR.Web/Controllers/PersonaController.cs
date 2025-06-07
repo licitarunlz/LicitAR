@@ -125,9 +125,16 @@ namespace LicitAR.Web.Controllers
                         Text = x.Descripcion.ToString() 
                     }).ToList();
 
+            var rubros = _context.Rubros
+                  .Select(x => new SelectListItem
+                  {
+                      Value = x.IdRubro.ToString(),
+                      Text = x.Descripcion.ToString()
+                  }).ToList();
             ViewBag.ComboProvincias = items;
             ViewBag.ComboLocalidades = itemsLocalidades;
             ViewBag.ComboTiposPersona = tiposPersonas;
+            ViewBag.ComboRubros = rubros;
             return View();
         }
         // GET: Persona/CreatePersonaUsuario 
@@ -300,10 +307,17 @@ namespace LicitAR.Web.Controllers
                                                 Text = x.Descripcion
                                             }).ToList();
 
+            var rubros = _context.Rubros
+                  .Select(x => new SelectListItem
+                  {
+                      Value = x.IdRubro.ToString(),
+                      Text = x.Descripcion.ToString()
+                  }).ToList();
+
             ViewBag.ComboProvincias = items;
             ViewBag.ComboLocalidades = itemsLocalidades;
             ViewBag.ComboTiposPersona = tiposPersonas;
-
+            ViewBag.ComboRubros = rubros;
 
             var personaModel = new PersonaModel();
             personaModel.SetPersonaData(persona);

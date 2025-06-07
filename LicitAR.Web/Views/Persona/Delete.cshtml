@@ -1,7 +1,7 @@
 ﻿@model PersonaModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Eliminar Oferente";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
 }
 
@@ -11,93 +11,83 @@
         <div class="card">
             <div class="card-header">
                 <h4 class="mt-6">Confirmar eliminación del Oferente:</h4>
+                <h5 class="mb-0">
+                    <b>@Html.DisplayFor(model => model.Cuit)</b> - @Html.DisplayFor(model => model.RazonSocial)
+                </h5>
             </div>
             <div class="card-body">
-                <dl class="row">
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.Cuit)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.Cuit)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.RazonSocial)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.RazonSocial)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.IdTipoPersona)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.TipoPersona)
-                    </dd>
-                    <h4 class="mt-6"> Contacto  </h4>
-                    <hr />
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.Email)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.Email)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.Telefono)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.Telefono)
-                    </dd>
+                <table class="table table-borderless align-middle mb-4">
+                    <tbody>
+                        <tr>
+                            <th class="w-25 text-end">@Html.DisplayNameFor(model => model.Cuit):</th>
+                            <td>@Html.DisplayFor(model => model.Cuit)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.RazonSocial):</th>
+                            <td>@Html.DisplayFor(model => model.RazonSocial)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.IdTipoPersona):</th>
+                            <td>@Html.DisplayFor(model => model.TipoPersona)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.IdRubro):</th>
+                            <td>@Html.DisplayFor(model => model.Rubro)</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                    <h4 class="mt-6"> Domicilio </h4>
-                    <hr />
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.IdProvincia)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.Provincia)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.IdLocalidad)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.Localidad)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.DireccionBarrio)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.DireccionBarrio)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.DireccionCalle)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.DireccionCalle)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.DireccionNumero)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.DireccionNumero)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.DireccionPiso)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.DireccionPiso)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.DireccionDepto)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.DireccionDepto)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.DireccionCodigoPostal)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.DireccionCodigoPostal)
-                    </dd>
-                </dl>
+                <h6 class="fw-bold mt-4 mb-2">Contacto</h6>
+                <table class="table table-borderless align-middle mb-4">
+                    <tbody>
+                        <tr>
+                            <th class="w-25 text-end">@Html.DisplayNameFor(model => model.Email):</th>
+                            <td>@Html.DisplayFor(model => model.Email)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.Telefono):</th>
+                            <td>@Html.DisplayFor(model => model.Telefono)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h6 class="fw-bold mt-4 mb-2">Domicilio</h6>
+                <table class="table table-borderless align-middle">
+                    <tbody>
+                        <tr>
+                            <th class="w-25 text-end">@Html.DisplayNameFor(model => model.IdProvincia):</th>
+                            <td>@Html.DisplayFor(model => model.Provincia)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.IdLocalidad):</th>
+                            <td>@Html.DisplayFor(model => model.Localidad)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionBarrio):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionBarrio)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionCalle):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionCalle)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionNumero):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionNumero)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionPiso):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionPiso)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionDepto):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionDepto)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionCodigoPostal):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionCodigoPostal)</td>
+                        </tr>
+                    </tbody>
+                </table>
                 <form asp-action="Delete">
                     <div class="text-start">
                         <input type="hidden" asp-for="IdPersona" />
