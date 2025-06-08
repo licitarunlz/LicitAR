@@ -17,6 +17,7 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<bool> UpdateOfertaAsync(Oferta oferta, int userId);
         Task<bool> PublicarOfertaAsync(int idOferta, int userId);
         Task<bool> CancelarOfertaAsync(int id, int idUsuario);
+        Task<List<Oferta>> GetAllOfertasAsync();
         Task<List<Oferta>> GetAllOfertasPorLicitacionAsync(int IdLicitacion);
         Task<List<Oferta>> GetAllOfertasExistentesPorPersonaYLicitacionAsync(int IdPersona, int IdLicitacion);
         Task<List<Oferta>> GetAllOfertasPorPersonaAsync(int IdPersona);
@@ -65,6 +66,16 @@ namespace LicitAR.Core.Business.Licitaciones
                 .ToListAsync();
         }
 
+        public async Task<List<Oferta>> GetAllOfertasAsync()
+        {
+            return await _dbContext.Ofertas
+                .Where(o => o.Audit.FechaBaja == null)
+                .Include(o => o.EstadoOferta) // Include EstadoLicitacion
+                .Include(o => o.Persona)
+                .Include(o => o.Licitacion)
+                .Include(o => o.Items)
+                .ToListAsync();
+        }
 
         public async Task<Oferta?> GetOfertaByIdAsync(int idOferta)
         {

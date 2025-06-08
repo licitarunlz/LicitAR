@@ -11,6 +11,7 @@
     var isLocalidadesActive = currentPage.Equals("/Parametro/Localidades", StringComparison.OrdinalIgnoreCase);
     var isUsuariosActive = currentPage.StartsWith("/Usuario", StringComparison.OrdinalIgnoreCase);
     var isAuditTrailActive = currentPage.StartsWith("/Audit/Trail", StringComparison.OrdinalIgnoreCase);
+    var isReportesActive = currentPage.StartsWith("/Reportes", StringComparison.OrdinalIgnoreCase);
     var isAuditLicitacionActive = currentPage.StartsWith("/Audit/Licitacion", StringComparison.OrdinalIgnoreCase);
     var isAuditoriaActive = isAuditTrailActive || isAuditLicitacionActive;
 }
@@ -279,6 +280,27 @@
                 </li>
             }
 
+
+            @if (user.HasClaim("permission", "Reportes.Ver"))
+            {
+                <li class='menu-item@((isReportesActive) ? " active open" : "")'>
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bxs-report"></i>
+                        <div class="text-truncate" data-i18n="Reportes">Reportes</div>
+                    </a>
+                    <ul class="menu-sub">
+                        @if (user.HasClaim("permission", "Reportes.Ver"))
+                        {
+                            <li class='menu-item@(currentPage.Equals("/Reportes") ? " active" : "")'>
+                                <a asp-controller="Reportes" asp-action="Index" class="menu-link">
+                                    <div>Reportes</div>
+                                </a>
+                            </li>
+                        }
+                       
+                    </ul>
+                </li>
+            }
             <!-- Auditoría -->
             @if (user.HasClaim("permission", "Auditoria.Ver"))
             {

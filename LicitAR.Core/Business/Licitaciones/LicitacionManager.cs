@@ -55,7 +55,11 @@ namespace LicitAR.Core.Business.Licitaciones
 
         public async Task<List<Licitacion>> GetAllActiveLicitacionesAsync()
         {
-            return await _dbContext.Licitaciones.Where(x=> x.Audit.FechaBaja == null).ToListAsync();
+            return await _dbContext.Licitaciones
+                .Include(l=> l.EntidadLicitante)
+                .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
+                .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
+                .Include(l => l.Rubro).Where(x=> x.Audit.FechaBaja == null).ToListAsync();
         }
 
         public async Task<Licitacion?> GetLicitacionByIdAsync(int id)
