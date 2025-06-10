@@ -42,6 +42,12 @@ namespace LicitAR.Web.Controllers
         [AuditarEvento("PersonaController - Tabla", "Persona", "Visualización de tabla oferentes", "id")]
         public async Task<IActionResult> Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
+            // Redirigir a Home si el usuario es Oferente
+            if (User.HasClaim("RoleDescription", "Oferente"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var personasList = await _personaManager.GetAllPersonasAsync();
              
             var query = personasList.AsQueryable();
