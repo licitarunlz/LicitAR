@@ -1,112 +1,473 @@
 @{
-  ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Inicio";
 }
-@section VendorStyles {
-<link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" />
-}
-@section VendorScripts {
-<script src="~/vendor/libs/apex-charts/apexcharts.js"></script>
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 }
 @section PageScripts {
-<script src="~/js/dashboards-licitaciones.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="~/js/dashboard.js"></script>
 }
 
+<!-- Dashboard Content -->
 <div class="row">
-  <!-- Felicitaciones -->
-  <div class="col-xxl-8 mb-6 order-0">
+  <!-- Welcome Card -->
+  <div class="col-xxl-8 mb-4 order-0">
     <div class="card">
       <div class="d-flex align-items-start row">
         <div class="col-sm-7">
           <div class="card-body">
-            <h5 class="card-title text-primary mb-3">¡Felicitaciones! 🎉</h5>
-            <p class="mb-6">Has ganado <strong>890 licitaciones</strong> este mes. ¡Sigue así!</p>
-            <a href="javascript:;" class="btn btn-sm btn-outline-primary">Ver detalles</a>
+            <h5 class="card-title text-primary mb-3">Bienvenido al Sistema LicitAR 🎉</h5>
+            <p class="mb-4">Este mes se han publicado un 24% más de licitaciones que el mes pasado.<br>Revisa las nuevas oportunidades disponibles.</p>
+            <a href="javascript:;" class="btn btn-sm btn-primary">Ver Licitaciones Activas</a>
           </div>
         </div>
         <div class="col-sm-5 text-center text-sm-left">
-          <div class="card-body pb-0 px-0 px-md-6">
-            <img src="~/images/illustrations/man-with-laptop.png" height="175" alt="Felicitaciones">
+          <div class="card-body pb-0 px-0 px-md-4">
+            <img src="~/images/illustrations/man-with-laptop.png" height="175" alt="Dashboard Image">
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Métricas principales -->
+  <!-- Statistics Cards -->
   <div class="col-xxl-4 col-lg-12 col-md-4 order-1">
     <div class="row">
-      <div class="col-lg-6 col-md-12 col-6 mb-6">
+      <div class="col-lg-6 col-md-12 col-6 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <p class="mb-1">Licitaciones Ganadas</p>
-            <h4 class="card-title mb-3">15</h4>
-            <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +10% este mes</small>
+            <div class="card-title d-flex align-items-start justify-content-between mb-4">
+              <div class="avatar flex-shrink-0">
+                <span class="avatar-initial rounded bg-label-primary"><i class='bx bx-calendar'></i></span>
+              </div>
+              <div class="dropdown">
+                <button class="btn p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bx bx-dots-vertical-rounded text-muted"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                  <a class="dropdown-item" href="javascript:void(0);">Ver Detalles</a>
+                  <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+                </div>
+              </div>
+            </div>
+            <p class="mb-1">Licitaciones Activas</p>
+            <h4 class="card-title mb-2">42</h4>
+            <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +18.2%</small>
           </div>
         </div>
       </div>
-      <div class="col-lg-6 col-md-12 col-6 mb-6">
+      <div class="col-lg-6 col-md-12 col-6 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <p class="mb-1">Ofertas Enviadas</p>
-            <h4 class="card-title mb-3">45</h4>
-            <small class="text-info fw-medium"><i class='bx bx-right-arrow-alt'></i> Sin cambios</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-6 col-md-12 col-6 mb-6">
-        <div class="card h-100">
-          <div class="card-body">
-            <p class="mb-1">Licitaciones Perdidas</p>
-            <h4 class="card-title mb-3">8</h4>
-            <small class="text-danger fw-medium"><i class='bx bx-down-arrow-alt'></i> -5% este mes</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-6 col-md-12 col-6 mb-6">
-        <div class="card h-100">
-          <div class="card-body">
-            <p class="mb-1">Documentos Subidos</p>
-            <h4 class="card-title mb-3">120</h4>
-            <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +15% este mes</small>
+            <div class="card-title d-flex align-items-start justify-content-between mb-4">
+              <div class="avatar flex-shrink-0">
+                <span class="avatar-initial rounded bg-label-info"><i class='bx bx-check-shield'></i></span>
+              </div>
+              <div class="dropdown">
+                <button class="btn p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bx bx-dots-vertical-rounded text-muted"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                  <a class="dropdown-item" href="javascript:void(0);">Ver Detalles</a>
+                  <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+                </div>
+              </div>
+            </div>
+            <p class="mb-1">Adjudicaciones</p>
+            <h4 class="card-title mb-2">17</h4>
+            <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> +5.4%</small>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Licitaciones próximas a cerrar -->
-  <div class="col-12 col-xxl-8 order-2 mb-6">
-    <div class="card">
-      <div class="card-header">
-        <h5 class="card-title">Licitaciones Próximas a Cerrar</h5>
+  <!-- Licitaciones por Sector -->
+  <div class="col-md-6 col-lg-4 col-xl-4 order-2 mb-4">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between">
+        <div class="card-title mb-0">
+          <h5 class="mb-1 me-2">Licitaciones por Sector</h5>
+          <p class="card-subtitle">128 Licitaciones Totales</p>
+        </div>
+        <div class="dropdown">
+          <button class="btn text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bx bx-dots-vertical-rounded"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="javascript:void(0);">Ver Todos</a>
+            <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+          </div>
+        </div>
       </div>
       <div class="card-body">
-        <ul class="list-group">
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            Licitación A - Cierra en 3 días
-            <span class="badge bg-primary rounded-pill">Alta prioridad</span>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="d-flex flex-column align-items-center gap-1">
+            <h3 class="mb-1">42</h3>
+            <small>Activas</small>
+          </div>
+          <div id="sectorStatisticsChart" style="min-height: 100px;"></div>
+        </div>
+        <ul class="p-0 m-0">
+          <li class="d-flex align-items-center mb-3">
+            <div class="avatar flex-shrink-0 me-3">
+              <span class="avatar-initial rounded bg-label-primary"><i class='bx bx-building'></i></span>
+            </div>
+            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+              <div class="me-2">
+                <h6 class="mb-0">Infraestructura</h6>
+                <small>Obras públicas, Edificación</small>
+              </div>
+              <div class="user-progress">
+                <h6 class="mb-0">28</h6>
+              </div>
+            </div>
           </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            Licitación B - Cierra en 5 días
-            <span class="badge bg-warning rounded-pill">Media prioridad</span>
+          <li class="d-flex align-items-center mb-3">
+            <div class="avatar flex-shrink-0 me-3">
+              <span class="avatar-initial rounded bg-label-success"><i class='bx bx-first-aid'></i></span>
+            </div>
+            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+              <div class="me-2">
+                <h6 class="mb-0">Salud</h6>
+                <small>Equipamiento, Servicios</small>
+              </div>
+              <div class="user-progress">
+                <h6 class="mb-0">17</h6>
+              </div>
+            </div>
           </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            Licitación C - Cierra en 7 días
-            <span class="badge bg-success rounded-pill">Baja prioridad</span>
+          <li class="d-flex align-items-center mb-3">
+            <div class="avatar flex-shrink-0 me-3">
+              <span class="avatar-initial rounded bg-label-info"><i class='bx bx-laptop'></i></span>
+            </div>
+            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+              <div class="me-2">
+                <h6 class="mb-0">Tecnología</h6>
+                <small>Software, Hardware</small>
+              </div>
+              <div class="user-progress">
+                <h6 class="mb-0">14</h6>
+              </div>
+            </div>
+          </li>
+          <li class="d-flex align-items-center">
+            <div class="avatar flex-shrink-0 me-3">
+              <span class="avatar-initial rounded bg-label-secondary"><i class='bx bx-briefcase'></i></span>
+            </div>
+            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+              <div class="me-2">
+                <h6 class="mb-0">Otros</h6>
+                <small>Consultoría, Servicios generales</small>
+              </div>
+              <div class="user-progress">
+                <h6 class="mb-0">11</h6>
+              </div>
+            </div>
           </li>
         </ul>
       </div>
     </div>
   </div>
 
-  <!-- Gráficos -->
-  <div class="col-12 col-md-8 col-lg-12 col-xxl-4 order-3">
-    <div class="card">
-      <div class="card-header">
-        <h5 class="card-title">Análisis de Licitaciones</h5>
+  <!-- Tendencia de Licitaciones -->
+  <div class="col-md-6 col-lg-4 order-3 mb-4">
+    <div class="card h-100">
+      <div class="card-header nav-align-top">
+        <ul class="nav nav-pills" role="tablist">
+          <li class="nav-item">
+            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#tab-licitaciones" aria-controls="tab-licitaciones" aria-selected="true">Licitaciones</button>
+          </li>
+          <li class="nav-item">
+            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#tab-adjudicaciones" aria-controls="tab-adjudicaciones">Adjudicaciones</button>
+          </li>
+        </ul>
       </div>
       <div class="card-body">
-        <div id="licitacionesChart"></div>
+        <div class="tab-content p-0">
+          <div class="tab-pane fade show active" id="tab-licitaciones" role="tabpanel">
+            <div class="d-flex mb-4">
+              <div class="avatar flex-shrink-0 me-3">
+                <span class="avatar-initial rounded bg-label-primary"><i class='bx bx-trending-up'></i></span>
+              </div>
+              <div>
+                <p class="mb-0">Licitaciones Mensuales</p>
+                <div class="d-flex align-items-center">
+                  <h6 class="mb-0 me-1">128</h6>
+                  <small class="text-success fw-medium">
+                    <i class='bx bx-chevron-up'></i>
+                    24.3%
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div id="licitacionesTrendChart" style="min-height: 200px;"></div>
+          </div>
+          <div class="tab-pane fade" id="tab-adjudicaciones" role="tabpanel">
+            <div class="d-flex mb-4">
+              <div class="avatar flex-shrink-0 me-3">
+                <span class="avatar-initial rounded bg-label-success"><i class='bx bx-check-double'></i></span>
+              </div>
+              <div>
+                <p class="mb-0">Adjudicaciones Mensuales</p>
+                <div class="d-flex align-items-center">
+                  <h6 class="mb-0 me-1">54</h6>
+                  <small class="text-success fw-medium">
+                    <i class='bx bx-chevron-up'></i>
+                    12.8%
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div id="adjudicacionesTrendChart" style="min-height: 200px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Últimas Licitaciones -->
+  <div class="col-md-6 col-lg-4 order-4 mb-4">
+    <div class="card h-100">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="card-title m-0 me-2">Últimas Licitaciones</h5>
+        <div class="dropdown">
+          <button class="btn text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bx bx-dots-vertical-rounded"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="javascript:void(0);">Ver Todas</a>
+            <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+          </div>
+        </div>
+      </div>
+      <div class="card-body pt-0">
+        <ul class="p-0 m-0">
+          <li class="d-flex align-items-center pb-2 pt-3 border-bottom">
+            <div class="avatar flex-shrink-0 me-3">
+              <span class="avatar-initial rounded bg-label-primary">INF</span>
+            </div>
+            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+              <div class="me-2">
+                <small class="text-muted d-block">Infraestructura</small>
+                <h6 class="mb-0">Renovación de Escuela N°42</h6>
+              </div>
+              <div class="user-progress d-flex align-items-center gap-2">
+                <h6 class="mb-0">$82.6M</h6>
+              </div>
+            </div>
+          </li>
+          <li class="d-flex align-items-center py-2 border-bottom">
+            <div class="avatar flex-shrink-0 me-3">
+              <span class="avatar-initial rounded bg-label-success">TEC</span>
+            </div>
+            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+              <div class="me-2">
+                <small class="text-muted d-block">Tecnología</small>
+                <h6 class="mb-0">Actualización de Servidores</h6>
+              </div>
+              <div class="user-progress d-flex align-items-center gap-2">
+                <h6 class="mb-0">$14.5M</h6>
+              </div>
+            </div>
+          </li>
+          <li class="d-flex align-items-center py-2 border-bottom">
+            <div class="avatar flex-shrink-0 me-3">
+              <span class="avatar-initial rounded bg-label-info">SAL</span>
+            </div>
+            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+              <div class="me-2">
+                <small class="text-muted d-block">Salud</small>
+                <h6 class="mb-0">Equipamiento Hospital Central</h6>
+              </div>
+              <div class="user-progress d-flex align-items-center gap-2">
+                <h6 class="mb-0">$63.9M</h6>
+              </div>
+            </div>
+          </li>
+          <li class="d-flex align-items-center py-2 border-bottom">
+            <div class="avatar flex-shrink-0 me-3">
+              <span class="avatar-initial rounded bg-label-warning">SER</span>
+            </div>
+            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+              <div class="me-2">
+                <small class="text-muted d-block">Servicios</small>
+                <h6 class="mb-0">Limpieza de Edificios Públicos</h6>
+              </div>
+              <div class="user-progress d-flex align-items-center gap-2">
+                <h6 class="mb-0">$8.2M</h6>
+              </div>
+            </div>
+          </li>
+          <li class="d-flex align-items-center py-2">
+            <div class="avatar flex-shrink-0 me-3">
+              <span class="avatar-initial rounded bg-label-danger">VEH</span>
+            </div>
+            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+              <div class="me-2">
+                <small class="text-muted d-block">Vehículos</small>
+                <h6 class="mb-0">Adquisición Flota Municipal</h6>
+              </div>
+              <div class="user-progress d-flex align-items-center gap-2">
+                <h6 class="mb-0">$32.7M</h6>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Próximos Vencimientos y Oportunidades -->
+<div class="row">
+  <!-- Calendario de Vencimientos -->
+  <div class="col-md-6 mb-4">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Próximos Vencimientos</h5>
+        <button type="button" class="btn btn-sm btn-primary">Ver Calendario</button>
+      </div>
+      <div class="card-body">
+        <div class="timeline-wrapper timeline-wrapper-primary">
+          <div class="timeline-item">
+            <span class="timeline-indicator timeline-indicator-primary">
+              <i class="bx bx-calendar"></i>
+            </span>
+            <div class="timeline-event">
+              <div class="timeline-header">
+                <h6 class="mb-0">Licitación #2023-45</h6>
+                <small class="text-muted">Hoy</small>
+              </div>
+              <p class="mb-2">Vence presentación para "Equipamiento Escolar"</p>
+              <div class="d-flex flex-wrap">
+                <div class="avatar me-2">
+                  <span class="avatar-initial rounded bg-label-danger">EDU</span>
+                </div>
+                <div>
+                  <p class="mb-0">Monto Estimado: $5.2M</p>
+                  <span class="text-muted">12:00 hs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <span class="timeline-indicator timeline-indicator-warning">
+              <i class="bx bx-calendar"></i>
+            </span>
+            <div class="timeline-event">
+              <div class="timeline-header">
+                <h6 class="mb-0">Licitación #2023-48</h6>
+                <small class="text-muted">Mañana</small>
+              </div>
+              <p class="mb-2">Vence presentación para "Servicios de Seguridad"</p>
+              <div class="d-flex flex-wrap">
+                <div class="avatar me-2">
+                  <span class="avatar-initial rounded bg-label-warning">SEG</span>
+                </div>
+                <div>
+                  <p class="mb-0">Monto Estimado: $3.8M</p>
+                  <span class="text-muted">15:30 hs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <span class="timeline-indicator timeline-indicator-info">
+              <i class="bx bx-calendar"></i>
+            </span>
+            <div class="timeline-event">
+              <div class="timeline-header">
+                <h6 class="mb-0">Licitación #2023-52</h6>
+                <small class="text-muted">En 3 días</small>
+              </div>
+              <p class="mb-0">Vence presentación para "Remodelación Oficinas"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Oportunidades Destacadas -->
+  <div class="col-md-6 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Oportunidades Destacadas</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 col-12 mb-3">
+            <div class="card border shadow-none">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="avatar flex-shrink-0 me-2">
+                    <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-building"></i></span>
+                  </div>
+                  <span class="badge bg-label-primary">Alta Prioridad</span>
+                </div>
+                <h6 class="mb-1">Infraestructura Vial</h6>
+                <p class="mb-2 text-muted">7 nuevas licitaciones</p>
+                <div class="progress" style="height: 6px;">
+                  <div class="progress-bar bg-primary" style="width: 85%;" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-12 mb-3">
+            <div class="card border shadow-none">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="avatar flex-shrink-0 me-2">
+                    <span class="avatar-initial rounded bg-label-info"><i class="bx bx-laptop"></i></span>
+                  </div>
+                  <span class="badge bg-label-info">Oportunidad</span>
+                </div>
+                <h6 class="mb-1">Servicios IT</h6>
+                <p class="mb-2 text-muted">4 nuevas licitaciones</p>
+                <div class="progress" style="height: 6px;">
+                  <div class="progress-bar bg-info" style="width: 65%;" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-12 mb-3">
+            <div class="card border shadow-none">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="avatar flex-shrink-0 me-2">
+                    <span class="avatar-initial rounded bg-label-success"><i class="bx bx-first-aid"></i></span>
+                  </div>
+                  <span class="badge bg-label-success">Recurrente</span>
+                </div>
+                <h6 class="mb-1">Equipos Médicos</h6>
+                <p class="mb-2 text-muted">3 nuevas licitaciones</p>
+                <div class="progress" style="height: 6px;">
+                  <div class="progress-bar bg-success" style="width: 45%;" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-12 mb-3">
+            <div class="card border shadow-none">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="avatar flex-shrink-0 me-2">
+                    <span class="avatar-initial rounded bg-label-warning"><i class="bx bx-bulb"></i></span>
+                  </div>
+                  <span class="badge bg-label-warning">Nueva</span>
+                </div>
+                <h6 class="mb-1">Energía Renovable</h6>
+                <p class="mb-2 text-muted">2 nuevas licitaciones</p>
+                <div class="progress" style="height: 6px;">
+                  <div class="progress-bar bg-warning" style="width: 30%;" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

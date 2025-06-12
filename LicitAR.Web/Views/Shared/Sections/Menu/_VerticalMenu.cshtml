@@ -38,12 +38,23 @@
     {
         <ul class="menu-inner py-1">
 
-            <!-- Dashboard -->
-            @if (user.HasClaim("permission", "Dashboard.Ver"))
+            <!-- Inicio -->
+            @if (user.HasClaim("permission", "Inicio.Ver"))
             {
-                <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Dashboard/") ? " active open" : "")'>
+                <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Home/") ? " active open" : "")'>
                     <a asp-action="Index" asp-controller="Home" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-home-smile"></i>
+                        <div class="text-truncate" data-i18n="Inicio">Inicio</div>
+                    </a>
+                </li>
+            }
+
+            <!-- Dashboard -->
+            @if (user.HasClaim("permission", "DashboardAdmin.Ver"))
+            {
+                <li class='menu-item@(currentPage.StartsWith("/Dashboard/") ? " active open" : "")'>
+                    <a asp-action="AdminDashboard" asp-controller="Dashboard" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-layout"></i>
                         <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
                     </a>
                 </li>
@@ -337,37 +348,47 @@
     @if (user.HasClaim("RoleDescription", "Oferente"))
     {
         <ul class="menu-inner py-1">
-            <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Dashboard/") ? " active open" : "")'>
+
+            <!-- Inicio -->
+            <li class='menu-item@(currentPage.EndsWith("/") || currentPage.StartsWith("/Home/") ? " active open" : "")'>
                 <a asp-action="Index" asp-controller="Home" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-home-smile"></i>
-                    <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
+                    <div class="text-truncate" data-i18n="Inicio">Inicio</div>
                 </a>
             </li>
 
+            <!-- Dashboard -->
+            @if (user.HasClaim("permission", "DashboardOferente.Ver"))
+            {
+                <li class='menu-item@(currentPage.StartsWith("/Dashboard/") ? " active open" : "")'>
+                    <a asp-action="OferenteDashboard" asp-controller="Dashboard" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-layout"></i>
+                        <div class="text-truncate" data-i18n="Dashboards">Dashboard</div>
+                    </a>
+                </li>
+            }
 
+            <!-- Usuario -->
             <li class='menu-item@(  currentPage.StartsWith("/Usuario/") ? " active open" : "")'>
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-shield"></i>
-                    <div class="text-truncate" data-i18n="Dashboards">Usuario</div>
+                    <div class="text-truncate" data-i18n="Usuario">Usuario</div>
                 </a>
                 <ul class="menu-sub">
-
                     <li class='menu-item@(currentPage == "/Usuario/MyProfile" ? " active" : "")'>
 
                         <a asp-action="MyProfile" asp-controller="Usuario" class="menu-link">
                             <div>Mi Perfil</div>
                         </a>
                     </li>
-
-
-
                 </ul>
             </li>
 
+            <!-- Licitaciones -->
             <li class='menu-item@(  currentPage.StartsWith("/Proveedor/") ||currentPage.StartsWith("/Ofertas")  ? " active open" : "")'>
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons bx bx-file"></i>
-                    <div class="text-truncate" data-i18n="Dashboards">Licitaciones</div>
+                    <div class="text-truncate" data-i18n="Licitaciones">Licitaciones</div>
                 </a>
                 <ul class="menu-sub">
 
