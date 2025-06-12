@@ -6,6 +6,7 @@ using LicitAR.Web.Helpers;
 using System.Linq;
 using LicitAR.Core.Business.Auditoria;
 using LicitAR.Web.Helpers.Auditoria;
+using Microsoft.Extensions.Configuration;
 
 namespace LicitAR.Web.Controllers
 {
@@ -15,17 +16,20 @@ namespace LicitAR.Web.Controllers
         private readonly IPersonaManager _personaManager;
         private readonly ILicitacionManager _licitacionManager;
         private readonly IAuditManager _auditManager;
+        private readonly IConfiguration _config;
 
         public LicitacionInvitacionController(
             ILicitacionInvitacionManager manager,
             IPersonaManager personaManager,
             ILicitacionManager licitacionManager,
-            IAuditManager auditManager)
+            IAuditManager auditManager,
+            IConfiguration config)
         {
             _manager = manager;
             _personaManager = personaManager;
             _licitacionManager = licitacionManager;
             _auditManager = auditManager;
+            _config = config;
         }
 
         [AuditarEvento("LicitacionInvitacionController - Tabla", "LicitacionInvitacion", "Visualización de invitaciones de licitación")]
@@ -131,7 +135,8 @@ namespace LicitAR.Web.Controllers
 
             if (SelectedToAdd != null && SelectedToAdd.Any())
             {
-                await _manager.AddInvitacionesAsync(model.IdLicitacion, SelectedToAdd, idUsuario);
+                var baseUrl = _config["App:BaseUrl"] ?? "https://tusitio.com";
+                await _manager.AddInvitacionesAsync(model.IdLicitacion, SelectedToAdd, idUsuario, baseUrl);
                 foreach (var idPersona in SelectedToAdd)
                 {
                     var persona = await _personaManager.GetPersonaByIdAsync(idPersona);

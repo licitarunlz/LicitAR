@@ -1,0 +1,36 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Resultado del envío de email";
+}
+
+<div class="row mb-12 g-6">
+    <div class="col-md-12 col-lg-12">
+        <div class="card" role="main">
+            <div class="card-header d-flex justify-content-between align-items-center ">
+                <h5 class="mb-0">
+                    <b>Envío de Email de Prueba</b>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success" role="alert">
+                    El email de prueba fue enviado correctamente a <b>pablo.numb@gmail.com</b>.
+                </div>
+                <div class="mb-3">
+                    <p>
+                        Licitación: <b>@Model.LicitacionNombre</b><br />
+                        ID: <b>@Model.LicitacionId</b><br />
+                        Fecha: <b>@Model.FechaCreacion</b>
+                    </p>
+                </div>
+                <div class="text-start mt-8">
+                    <a href="@Url.Action("TestEmail", "Home")" class="btn btn-primary" aria-label="Enviar de nuevo">
+                        <i class="bx bx-mail-send" aria-hidden="true"></i>&nbsp;Enviar de nuevo
+                    </a>
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-secondary" aria-label="Volver al Home">
+                        <i class="bx bx-arrow-back" aria-hidden="true"></i>&nbsp;Volver al Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

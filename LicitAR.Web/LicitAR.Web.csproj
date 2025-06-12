@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\LicitAR.Core\Licitar.Core.csproj" />
+    <ProjectReference Include="..\LicitAR.Core\LicitAR.Core.csproj" />
     <ProjectReference Include="..\LicitAR.FileStorage\LicitAR.FileStorage.csproj" />
   </ItemGroup>
 
@@ -16,6 +16,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="RazorLight" Version="2.0.0-rc.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +27,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
 
 </Project>

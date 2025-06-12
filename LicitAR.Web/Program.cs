@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using LicitAR.Core.Data.Models;
+using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Localization;
 using LicitAR.Core.DI;
+using LicitAR.Core.Data.Models;
 using LicitAR.Core.Utils;
+using LicitAR.Core.Services;
 using LicitAR.FileStorage.DI;
-using Microsoft.Data.SqlClient; // Asegúrate de tener este using
+using LicitAR.Web.Services;
+using System.Globalization;
 
 public partial class Program
 {
@@ -23,7 +27,14 @@ public partial class Program
         builder.Services.AddAppBusinessRegistrations(builder.Configuration);
         builder.Services.AddServicesRegistrations(builder.Configuration);
         builder.Services.AddFileStorageRegistrations(builder.Configuration);
+        
+        // Envío de mails con vistas
+        builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
+        builder.Services.AddScoped<EmailSenderService>();
+        builder.Services.AddScoped<ILicitacionNotificationService, LicitacionNotificationService>();
 
+        builder.Services.AddHttpContextAccessor();
+        
         // Add services to the container.
         builder.Services.AddControllersWithViews(options =>
         {
@@ -37,6 +48,15 @@ public partial class Program
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
         });
+
+        // Configuración de cultura global
+        var defaultCulture = new CultureInfo("es-AR");
+        var localizationOptions = new RequestLocalizationOptions
+        {
+            DefaultRequestCulture = new RequestCulture(defaultCulture),
+            SupportedCultures = new[] { defaultCulture },
+            SupportedUICultures = new[] { defaultCulture }
+        };
 
         var app = builder.Build();
 
@@ -57,6 +77,9 @@ public partial class Program
                 throw;
             }
         });
+
+        // Usa la configuración de localización antes de cualquier middleware que procese requests
+        app.UseRequestLocalization(localizationOptions);
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())

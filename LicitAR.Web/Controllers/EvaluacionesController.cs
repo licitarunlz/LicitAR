@@ -26,18 +26,21 @@ namespace LicitAR.Web.Controllers
         private IOfertaManager _ofertaManager;
         private IEvaluacionManager _evaluacionManager;
         private readonly IAuditManager _auditManager;
+        private readonly IConfiguration _config;
 
         public EvaluacionesController(LicitARDbContext context,
                                       ILicitacionManager licitacionManager,
                                       IOfertaManager ofertaManager,
                                       IEvaluacionManager evaluacionManager,
-                                      IAuditManager auditManager)
+                                      IAuditManager auditManager,
+                                      IConfiguration config)
         {
             _context = context;
             _licitacionManager = licitacionManager;
             _ofertaManager = ofertaManager;
             _evaluacionManager = evaluacionManager;
             _auditManager = auditManager;
+            _config = config;
         }
 
         [HttpGet("/Licitacion/Evaluaciones")]
@@ -336,7 +339,8 @@ namespace LicitAR.Web.Controllers
         public async Task<IActionResult> Resultado(int idEvaluacion, int idEstadoResultado)
         {
             int idUser = IdentityHelper.GetUserLicitARId(User);
-            var result = await _evaluacionManager.ResultadoEvaluacionAsync(idEvaluacion, idEstadoResultado, idUser);
+            var baseUrl = _config["App:BaseUrl"] ?? "https://https://licitarappdev.azurewebsites.net/";
+            var result = await _evaluacionManager.ResultadoEvaluacionAsync(idEvaluacion, idEstadoResultado, idUser, baseUrl);
 
             return RedirectToAction(nameof(Index));
         }
