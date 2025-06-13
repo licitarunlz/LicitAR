@@ -24,6 +24,10 @@
 
   <ItemGroup>
     <Folder Include="Models\EntidadLicitante\" />
+    <Content Include="Views\EmailTemplates\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <PropertyGroup>
