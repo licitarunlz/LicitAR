@@ -35,6 +35,29 @@
     <EmbeddedResource Include="Views\EmailTemplates\**\*.cshtml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Remove="Views\EmailTemplates\InvitacionLicitacion.cshtml" />
+    <EmbeddedResource Remove="Views\EmailTemplates\LicitacionAdjudicada.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\EmailTemplates\InvitacionLicitacion.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\EmailTemplates\LicitacionAdjudicada.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\EmailTemplates\LicitacionCreada.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\EmailTemplates\LicitacionImpugnada.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
