@@ -24,6 +24,9 @@
 
   <ItemGroup>
     <Folder Include="Models\EntidadLicitante\" />
+    <!-- Excluir los templates del contenido implícito -->
+    <Content Remove="Views\EmailTemplates\**\*.*" />
+    <!-- Incluir explícitamente los templates y copiar a salida -->
     <Content Include="Views\EmailTemplates\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
