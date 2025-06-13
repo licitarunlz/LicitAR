@@ -1,4 +1,5 @@
 using RazorLight;
+using RazorLight.Razor;
 using System.IO;
 using System.Threading.Tasks;
 
