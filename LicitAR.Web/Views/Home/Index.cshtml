@@ -1,4 +1,6 @@
 @{
+    TempData.Keep();
+    var user = ViewContext.HttpContext.User;
     ViewData["Title"] = "Inicio";
 }
 
@@ -28,37 +30,76 @@
             </div>
         </div>
     </div>
-
-    <div class="row justify-content-center mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center">
-                    <i class="bx bx-list-ul fs-1 text-info"></i>
-                    <h5 class="card-title mt-2">Ver Licitaciones</h5>
-                    <p class="card-text">Consulta el listado de licitaciones activas y su estado.</p>
-                    <a href="/Licitacion" class="btn btn-outline-primary">Ir al Listado</a>
+    
+    <!-- Tarjetas según ROL-->
+    @if (user.HasClaim("RoleDescription", "Administrador"))
+    {
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="bx bx-list-ul fs-1 text-info"></i>
+                        <h5 class="card-title mt-2">Ver Licitaciones</h5>
+                        <p class="card-text">Consulta el listado de licitaciones activas y su estado.</p>
+                        <a href="/Licitacion" class="btn btn-outline-primary">Ir al Listado</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="bx bx-plus-circle fs-1 text-success"></i>
+                        <h5 class="card-title mt-2">Nueva Licitación</h5>
+                        <p class="card-text">Crea una nueva licitación y comienza el proceso de contratación.</p>
+                        <a href="/Licitacion/Create" class="btn btn-outline-success">Crear Licitación</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="bx bx-history fs-1 text-warning"></i>
+                        <h5 class="card-title mt-2">Auditoría</h5>
+                        <p class="card-text">Consulta el historial de auditoría y los movimientos realizados sobre las licitaciones.</p>
+                        <a href="/Audit/Licitacion" class="btn btn-outline-warning">Ver Auditoría</a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center">
-                    <i class="bx bx-plus-circle fs-1 text-success"></i>
-                    <h5 class="card-title mt-2">Nueva Licitación</h5>
-                    <p class="card-text">Crea una nueva licitación y comienza el proceso de contratación.</p>
-                    <a href="/Licitacion/Create" class="btn btn-outline-success">Crear Licitación</a>
+    }
+    else if (user.HasClaim("RoleDescription", "Oferente"))
+    {
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="bx bx-list-ul fs-1 text-info"></i>
+                        <h5 class="card-title mt-2">Ver Licitaciones</h5>
+                        <p class="card-text">Consulta el listado de licitaciones disponibles para ofertar.</p>
+                        <a href="/Proveedor/Licitaciones" class="btn btn-outline-primary">Ir al Listado</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="bx bx-money fs-1 text-secondary"></i>
+                        <h5 class="card-title mt-2">Ver mis Ofertas</h5>
+                        <p class="card-text">Consulta y gestiona tus ofertas presentadas.</p>
+                        <a href="/Ofertas" class="btn btn-outline-secondary">Mis Ofertas</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="bx bx-bar-chart-alt-2 fs-1 text-primary"></i>
+                        <h5 class="card-title mt-2">Dashboard</h5>
+                        <p class="card-text">Visualiza el dashboard con tus estadísticas y actividad reciente.</p>
+                        <a href="/Dashboard/OferenteDashboard" class="btn btn-outline-primary">Ver Dashboard</a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center">
-                    <i class="bx bx-history fs-1 text-warning"></i>
-                    <h5 class="card-title mt-2">Auditoría</h5>
-                    <p class="card-text">Consulta el historial de auditoría y los movimientos realizados sobre las licitaciones.</p>
-                    <a href="/Audit/Licitacion" class="btn btn-outline-warning">Ver Auditoría</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    }
 </div>
