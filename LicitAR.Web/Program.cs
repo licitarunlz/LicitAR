@@ -17,6 +17,7 @@ public partial class Program
     {
         // Configura Serilog antes de crear el builder
         Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Error()
             .ReadFrom.Configuration(new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
