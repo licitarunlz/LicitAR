@@ -31,6 +31,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <!-- Agrega esto para embebidos -->
+    <EmbeddedResource Include="Views\EmailTemplates\**\*.cshtml" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -11,13 +11,15 @@ namespace LicitAR.Web.Services
 
     public class ViewRenderService : IViewRenderService
     {
-        private readonly RazorLightEngine _engine;
+        private readonly RazorLightEngine _razorEngine;
 
         public ViewRenderService()
         {
-            var templatesPath = Path.Combine(Directory.GetCurrentDirectory(), "Views", "EmailTemplates");
-            _engine = new RazorLightEngineBuilder()
-                .UseFileSystemProject(templatesPath)
+            var assembly = typeof(ViewRenderService).Assembly;
+            var rootNamespace = "LicitAR.Web"; // Ajusta si tu namespace raíz es diferente
+            var project = new EmbeddedRazorProject(assembly, rootNamespace + ".Views.EmailTemplates");
+            _razorEngine = new RazorLightEngineBuilder()
+                .UseProject(project)
                 .UseMemoryCachingProvider()
                 .Build();
         }
@@ -25,7 +27,7 @@ namespace LicitAR.Web.Services
         public async Task<string> RenderToStringAsync(string viewName, object model, object? viewData = null)
         {
             // viewName should be the filename, e.g. "LicitacionCreada.cshtml"
-            return await _engine.CompileRenderAsync(viewName + ".cshtml", model);
+            return await _razorEngine.CompileRenderAsync(viewName + ".cshtml", model);
         }
     }
 }
