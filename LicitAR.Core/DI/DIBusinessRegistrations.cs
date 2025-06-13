@@ -1,6 +1,6 @@
 ﻿using LicitAR.Core.Business.Identidad;
 using LicitAR.Core.Business.Licitaciones;
-using LicitAR.Core.Services;
+using LicitAR.Core.Business.Dashboard;
 using LicitAR.Core.Business.Parametros;
 using LicitAR.Core.Utils;
 using LicitAR.Core.Business.Auditoria;
@@ -30,6 +30,7 @@ namespace LicitAR.Core.DI
             services.AddScoped<ILicitacionInvitacionManager, LicitacionInvitacionManager>();
             services.AddScoped<IReportesManager, ReportesManager>();
             services.AddScoped<IAuditManager, AuditManager>();
+            services.AddScoped<IDashboardManager, DashboardManager>();
 
             return services;
         }
