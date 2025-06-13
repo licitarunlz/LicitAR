@@ -1,6 +1,7 @@
 using RazorLight;
 using System.IO;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace LicitAR.Web.Services
 {
@@ -17,9 +18,8 @@ namespace LicitAR.Web.Services
         {
             var assembly = typeof(ViewRenderService).Assembly;
             var rootNamespace = "LicitAR.Web"; // Ajusta si tu namespace raíz es diferente
-            var project = new EmbeddedRazorProject(assembly, rootNamespace + ".Views.EmailTemplates");
             _razorEngine = new RazorLightEngineBuilder()
-                .UseProject(project)
+                .UseEmbeddedResourcesProject(assembly, rootNamespace)
                 .UseMemoryCachingProvider()
                 .Build();
         }
