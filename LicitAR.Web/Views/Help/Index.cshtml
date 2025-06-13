@@ -1,0 +1,81 @@
+@{
+    ViewData["Title"] = "Ayuda";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow rounded-4 border-0">
+                <div class="card-body">
+                    <h2 class="card-title text-primary mb-3 fw-bold">Preguntas Frecuentes</h2>
+                    <p class="mb-4">
+                        Encuentra respuestas a las dudas más comunes sobre el funcionamiento de LicitAR, el sistema de compulsa de licitaciones públicas y privadas.
+                    </p>
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading1">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                    ¿Qué es LicitAR?
+                                </button>
+                            </h2>
+                            <div id="collapse1" class="accordion-collapse collapse show" aria-labelledby="heading1" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    LicitAR es un sistema para la gestión integral de licitaciones públicas y privadas, donde entidades licitantes y oferentes pueden interactuar, postularse y gestionar procesos de compra y contratación de manera transparente y eficiente.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading2">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                    ¿Quiénes pueden participar en una licitación?
+                                </button>
+                            </h2>
+                            <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Pueden participar entidades licitantes (que publican licitaciones) y oferentes (que se postulan para ofrecer bienes o servicios). Ambos deben estar registrados en el sistema.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading3">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                    ¿Cómo es el proceso de una licitación en LicitAR?
+                                </button>
+                            </h2>
+                            <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    El proceso incluye: publicación de la licitación, postulación de oferentes, evaluación de propuestas, adjudicación, y cierre (adjudicada o desierta). Todo el proceso es transparente y auditable.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading4">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                    ¿Qué significa que una licitación quede desierta?
+                                </button>
+                            </h2>
+                            <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Una licitación queda desierta cuando no se presentan ofertas válidas o ninguna propuesta cumple con los requisitos establecidos por la entidad licitante.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading5">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                                    ¿Dónde puedo ver el historial y auditoría de las licitaciones?
+                                </button>
+                            </h2>
+                            <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    En la sección <b>Auditoría</b> puedes consultar el historial de movimientos y acciones realizadas sobre cada licitación.
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Puedes agregar más preguntas según necesidad -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
