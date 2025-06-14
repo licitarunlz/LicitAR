@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using LicitAR.Web.Helpers.Authorization;
 using LicitAR.Web.Helpers.Auditoria;
 using LicitAR.Web.ViewModels.Dashboard;
+
 using LicitAR.Core.Business.Dashboard;
 
 namespace LicitAR.Web.Controllers
@@ -29,8 +30,28 @@ namespace LicitAR.Web.Controllers
             var vm = new AdminDashboardViewModel
             {
                 TotalLicitaciones = dto.TotalLicitaciones,
+                TotalLicitacionesActivas = dto.TotalLicitacionesActivasMesActual,
+                TotalAdjudicaciones = dto.TotalAdjudicacionesMesActual,
+                PorcentajeAdjudicacionesVsMesAnterior = dto.PorcentajeAdjudicacionesVsMesAnterior,
+                PorcentajeLicitacionesActivasVsMesAnterior = dto.PorcentajeLicitacionesActivasVsMesAnterior,
                 LicitacionesActivas = dto.LicitacionesActivas,
-                Adjudicaciones = dto.Adjudicaciones
+                Adjudicaciones = dto.Adjudicaciones,
+                LicitacionesPorSector = dto.LicitacionesPorSector
+                    .Select(x => new AdminDashboardViewModel.LicitacionPorSector
+                    {
+                        Rubro = x.Rubro,
+                        Cantidad = x.Cantidad,
+                        Descripcion = x.Descripcion,
+                        Nombre = x.Nombre
+                    }).ToList(),
+                UltimasLicitaciones = dto.UltimasLicitaciones
+                    .Select(x => new AdminDashboardViewModel.Licitacion
+                    {
+                        Rubro = x.Rubro,
+                        Titulo = x.Titulo,
+                        MontoEstimado = x.MontoEstimado,
+                        Nombre = x.Nombre
+                    }).ToList()
             };
             return View(vm);
         }

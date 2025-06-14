@@ -1,6 +1,6 @@
 @model LicitAR.Web.ViewModels.Dashboard.AdminDashboardViewModel
 @{
-    ViewData["Title"] = "Dashboard Administrador";
+    ViewData["Title"] = "Dashboard";
 }
 @section PageStyles {
     <link rel="stylesheet" href="~/css/dashboard.css" />
@@ -11,7 +11,7 @@
     <script src="~/js/dashboard.js"></script>
 }
 
-<!-- Similar al Index_NEW, pero usando datos del ViewModel -->
+<!-- Bienvenido -->
 <div class="row">
     <div class="col-xxl-8 mb-4 order-0">
         <div class="card">
@@ -20,7 +20,7 @@
                     <div class="card-body">
                         <h5 class="card-title text-primary mb-3">Bienvenido Administrador 🎉</h5>
                         <p class="mb-4">Este mes se han publicado un @Model.TotalLicitaciones licitaciones.<br>Revisa las nuevas oportunidades disponibles.</p>
-                        <a href="javascript:;" class="btn btn-sm btn-primary">Ver Licitaciones Activas</a>
+                        <a href="/Licitacion/Index" class="btn btn-sm btn-primary">Ver todas las Licitaciones</a>
                     </div>
                 </div>
                 <div class="col-sm-5 text-center text-sm-left">
@@ -31,5 +31,222 @@
             </div>
         </div>
     </div>
-    <!-- Puedes seguir adaptando el resto del dashboard usando los datos del ViewModel -->
+
+ <!-- Statistics Cards -->
+  <div class="col-xxl-4 col-lg-12 col-md-4 order-1">
+    <div class="row">
+      <div class="col-lg-6 col-md-12 col-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="card-title d-flex align-items-start justify-content-between mb-4">
+              <div class="avatar flex-shrink-0">
+                <span class="avatar-initial rounded bg-label-primary"><i class='bx bx-pulse'></i></span>
+              </div>
+              <div class="dropdown">
+                <button class="btn p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bx bx-dots-vertical-rounded text-muted"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                  <a class="dropdown-item" href="/Licitacion?soloActivas=true">Ver Detalles</a>
+                  <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+                </div>
+              </div>
+            </div>
+            <p class="mb-1"> Activas</p>
+            <h4 class="card-title mb-2">@Model.LicitacionesActivas</h4>
+            @* <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> @Model.PorcentajeLicitacionesActivasVsMesAnterior.ToString("P2")</small> *@
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-12 col-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="card-title d-flex align-items-start justify-content-between mb-4">
+              <div class="avatar flex-shrink-0">
+                <span class="avatar-initial rounded bg-label-info"><i class='bx bx-award'></i></span>
+              </div>
+              <div class="dropdown">
+                <button class="btn p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bx bx-dots-vertical-rounded text-muted"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                  <a class="dropdown-item" href="/Licitacion?idEstadoLicitacion=9">Ver Detalles</a>
+                  <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+                </div>
+              </div>
+            </div>
+            <p class="mb-1">Adjudicaciones</p>
+            <h4 class="card-title mb-2">@Model.Adjudicaciones</h4>
+            @* <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> @Model.PorcentajeAdjudicacionesVsMesAnterior.ToString("P2")</small> *@
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> 
+</div>
+
+<div class="row">
+  <!-- Licitaciones por Sector -->
+  <div class="col-md-6 col-lg-4 col-xl-4 order-2 mb-4">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between">
+        <div class="card-title mb-0">
+          <h5 class="mb-1 me-2">Licitaciones por sector</h5>
+          <p class="card-subtitle">@Model.TotalLicitaciones Licitaciones totales</p>
+        </div>
+        <div class="dropdown">
+          <button class="btn text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bx bx-dots-vertical-rounded"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="/Licitacion/Index">Ver Todos</a>
+            <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex mb-4">
+                <div class="avatar flex-shrink-0 me-3">
+                    <span class="avatar-initial rounded bg-label-primary"><i class='bx bx-play-circle'></i></span>
+                </div>
+                <div>
+                    <p class="mb-0">Licitaciones activas este mes</p>
+                    <div class="d-flex align-items-center">
+                    <h6 class="mb-0 me-1">@Model.TotalLicitacionesActivas</h6>
+                    <small class="text-success fw-medium">
+                    <i class='bx bx-chevron-up'></i>
+                    @Model.PorcentajeLicitacionesActivasVsMesAnterior.ToString("P2")
+                    </small>
+                </div>
+            </div>
+        </div>
+        </div>
+        <ul class="p-0 m-0">
+        @foreach (var sector in Model.LicitacionesPorSector)
+        {
+            <li class="d-flex align-items-center mb-3">
+                <div class="avatar flex-shrink-0 me-3">
+                    <span class="avatar-initial rounded @sector.ColorClass">
+                        <i class='bx @sector.IconClass'></i>
+                    </span>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-0 fs-6">@sector.Nombre</h6>
+                    <small>
+                        @{
+                            var desc = sector.Descripcion ?? "";
+                            var dashIdx = desc.IndexOf('-');
+                            var descShort = dashIdx > 0 ? desc.Substring(0, dashIdx).Trim() : desc;
+                        }
+                        @descShort
+                    </small>
+                </div>
+                <div class="user-progress ms-3">
+                    <h6 class="mb-0">@sector.Cantidad</h6>
+                </div>
+            </li>
+        }
+        </ul>
+      </div>
+    </div>  
+  </div>
+
+  <!-- Tendencia de Licitaciones -->
+  <div class="col-md-6 col-lg-4 order-3 mb-4">
+    <div class="card h-100">
+      <div class="card-header nav-align-top">
+        <ul class="nav nav-pills" role="tablist">
+          <li class="nav-item">
+            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#tab-licitaciones" aria-controls="tab-licitaciones" aria-selected="true">Licitaciones</button>
+          </li>
+          <li class="nav-item">
+            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#tab-adjudicaciones" aria-controls="tab-adjudicaciones">Adjudicaciones</button>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body">
+        <div class="tab-content p-0">
+          <div class="tab-pane fade show active" id="tab-licitaciones" role="tabpanel">
+            <div class="d-flex mb-4">
+              <div class="avatar flex-shrink-0 me-3">
+                <span class="avatar-initial rounded bg-label-primary"><i class='bx bx-trending-up'></i></span>
+              </div>
+              <div>
+                <p class="mb-0">Licitaciones Mensuales</p>
+                <div class="d-flex align-items-center">
+                  <h6 class="mb-0 me-1">@Model.LicitacionesActivas</h6>
+                  <small class="text-success fw-medium">
+                    <i class='bx bx-chevron-up'></i>
+                    @Model.PorcentajeLicitacionesActivasVsMesAnterior.ToString("P2")
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div id="licitacionesTrendChart" style="min-height: 200px;"></div>
+          </div>
+          <div class="tab-pane fade" id="tab-adjudicaciones" role="tabpanel">
+            <div class="d-flex mb-4">
+              <div class="avatar flex-shrink-0 me-3">
+                <span class="avatar-initial rounded bg-label-success"><i class='bx bx-check-double'></i></span>
+              </div>
+              <div>
+                <p class="mb-0">Adjudicaciones Mensuales</p>
+                <div class="d-flex align-items-center">
+                  <h6 class="mb-0 me-1">@Model.Adjudicaciones</h6>
+                  <small class="text-success fw-medium">
+                    <i class='bx bx-chevron-up'></i>
+                    @Model.PorcentajeAdjudicacionesVsMesAnterior.ToString("P2")
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div id="adjudicacionesTrendChart" style="min-height: 200px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Últimas Licitaciones -->
+  <div class="col-md-6 col-lg-4 order-4 mb-4">
+    <div class="card h-100">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="card-title m-0 me-2">Últimas Licitaciones</h5>
+        <div class="dropdown">
+          <button class="btn text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bx bx-dots-vertical-rounded"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="/Licitacion/Index">Ver Todas</a>
+            <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+          </div>
+        </div>
+      </div>
+      <div class="card-body pt-0">
+        <ul class="p-0 m-0">
+          @foreach (var lic in Model.UltimasLicitaciones)
+          {
+              var rubro = lic.Rubro ?? "";
+              var avatarText = rubro.Length >= 3 ? rubro.Substring(0, 3).ToUpper() : rubro.ToUpper();
+              <li class="d-flex align-items-center py-2 border-bottom">
+                <div class="avatar flex-shrink-0 me-3">
+                  <span class="avatar-initial rounded @lic.ColorClass">@avatarText</span>
+                </div>
+                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                  <div class="me-2">
+                    <small class="text-muted d-block">@lic.Rubro</small>
+                    <h6 class="mb-0">@lic.Titulo</h6>
+                    <span class="mb-0 d-block">@lic.MontoEstimado.ToString("C0")</span>
+                  </div>
+                </div>
+              </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 </div>

@@ -48,7 +48,7 @@ namespace LicitAR.Web.Controllers
         // GET: Licitacion
         [AuthorizeClaim("Licitaciones.Ver")]
         [AuditarEvento("LicitacionController - Tabla", "Licitacion", "Visualización de tabla licitaciones", "id")]
-        public async Task<IActionResult> Index(string codigoLicitacion, string titulo, DateTime? fechaPublicacion, DateTime? fechaCierre, int? idCategoriaLicitacion, int? idEstadoLicitacion, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string codigoLicitacion, string titulo, DateTime? fechaPublicacion, DateTime? fechaCierre, int? idCategoriaLicitacion, int? idEstadoLicitacion, int page = 1, int pageSize = 10, bool? soloActivas = null)
         {
             var licitacionesList = await _licitacionManager.GetAllLicitacionesAsync();
             licitacionesList = licitacionesList.OrderByDescending(x => x.CodigoLicitacion).ToList();
@@ -60,6 +60,11 @@ namespace LicitAR.Web.Controllers
             ViewBag.EstadosLicitacion = estados;
 
             var query = licitacionesList.AsQueryable();
+
+            if (soloActivas.HasValue && soloActivas.Value)
+            {
+                query = query.Where(l => l.Enabled == true);
+            }
 
             if (!string.IsNullOrEmpty(codigoLicitacion))
             {
