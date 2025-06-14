@@ -7,6 +7,7 @@ using LicitAR.Core.Business.Auditoria;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using LicitAR.Core.Business.Reportes;
+using LicitAR.Core.Business.Documentacion;
 
 namespace LicitAR.Core.DI
 {
@@ -19,6 +20,8 @@ namespace LicitAR.Core.DI
 
             services.AddScoped<IMessageManager, MessageManager>();
             services.AddScoped<ILicitacionManager, LicitacionManager>();
+
+            services.AddScoped<ILicitacionDocumentacionManager, LicitacionDocumentacionManager>();
             services.AddScoped<IOfertaManager, OfertaManager>();
             services.AddScoped<IEntidadLicitanteManager, EntidadLicitanteManager>();
             services.AddScoped<IPersonaManager,PersonaManager>();

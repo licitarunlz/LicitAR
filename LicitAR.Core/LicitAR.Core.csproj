@@ -23,4 +23,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LicitAR.FileStorage\LicitAR.FileStorage.csproj" />
+  </ItemGroup>
+
 </Project>

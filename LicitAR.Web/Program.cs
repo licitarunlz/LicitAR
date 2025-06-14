@@ -41,10 +41,10 @@ public partial class Program
             .AddEnvironmentVariables();
 
         builder.Services.AddContextRegistrations(builder.Configuration);
+        builder.Services.AddFileStorageRegistrations(builder.Configuration);
         builder.Services.AddIdentityRegistrations(builder.Configuration);
         builder.Services.AddAppBusinessRegistrations(builder.Configuration);
         builder.Services.AddServicesRegistrations(builder.Configuration);
-        builder.Services.AddFileStorageRegistrations(builder.Configuration);
         
         // Envío de mails con vistas
         builder.Services.AddScoped<IViewRenderService, ViewRenderService>();

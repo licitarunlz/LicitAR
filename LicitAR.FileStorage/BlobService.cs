@@ -1,32 +1,42 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace LicitAR.FileStorage
 {
-    public class BlobService
+    public interface IBlobStorageService
     {
-        private readonly BlobServiceClient _blobServiceClient;
+        Task<string> SubirArchivoAsync(IFormFile archivo);
+    }
+
+    public class BlobStorageService : IBlobStorageService
+    {
+        private readonly string _connectionString;
         private readonly string _containerName;
 
-        public BlobService(string connectionString, string containerName)
+        public BlobStorageService(IConfiguration config)
         {
-            _blobServiceClient = new BlobServiceClient(connectionString);
-            _containerName = containerName;
+            _connectionString = config["AzureBlobStorage:ConnectionString"];
+            _containerName = config["AzureBlobStorage:ContainerName"];
         }
 
-        public async Task<string> UploadFileAsync(Stream fileStream, string fileName, string contentType)
+        public async Task<string> SubirArchivoAsync(IFormFile archivo)
         {
             try
             {
-                var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
-                await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
+                var blobClient = new BlobContainerClient(_connectionString, _containerName);
+                await blobClient.CreateIfNotExistsAsync();
 
-                var blobClient = containerClient.GetBlobClient(fileName);
-                var headers = new BlobHttpHeaders { ContentType = contentType };
+                var nombreUnico = Guid.NewGuid() + Path.GetExtension(archivo.FileName);
+                var blob = blobClient.GetBlobClient(nombreUnico);
 
-                await blobClient.UploadAsync(fileStream, headers);
+                using (var stream = archivo.OpenReadStream())
+                {
+                    await blob.UploadAsync(stream, true);
+                }
 
-                return blobClient.Uri.ToString(); // URL del archivo subido
+                return blob.Uri.ToString(); // Esto lo guardás en la tabla
             }
             catch (Exception ex)
             {

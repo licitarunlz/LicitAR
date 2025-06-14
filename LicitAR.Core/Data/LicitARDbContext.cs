@@ -40,6 +40,7 @@ namespace LicitAR.Core.Data
         public DbSet<EstadoEvaluacion> EstadoEvaluacion { get; set; }
         public DbSet<LicitacionEstadoHistorial> LicitacionEstadoHistorial { get; set; }
         public DbSet<LicitacionInvitacion> LicitacionInvitacion { get; set; }
+        public DbSet<LicitacionDocumentacion> LicitacionDocumentacion { get; set; }
         public DbSet<AuditTrail> AuditTrails { get; set; }
         public DbSet<AuditLicitacion> AuditLicitaciones { get; set; }
 
@@ -66,6 +67,7 @@ namespace LicitAR.Core.Data
             modelBuilder.Entity<Evaluacion>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<EvaluacionOferta>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<EvaluacionOfertaDetalle>().OwnsOne(p => p.Audit);
+
 
             modelBuilder.Entity<Evaluacion>()
                         .HasOne(p => p.Licitacion)
@@ -136,7 +138,24 @@ namespace LicitAR.Core.Data
                         .HasForeignKey(l => l.IdEntidadLicitante)
                         .OnDelete(DeleteBehavior.NoAction); // o Cascade, según tu lógica
 
+            modelBuilder.Entity<Licitacion>()
+                    .HasMany(l => l.DocumentosAsociados)
+                    .WithOne(i => i.Licitacion)
+                    .HasForeignKey(i => i.IdLicitacion)
+                    .OnDelete(DeleteBehavior.Cascade); // Borra ítems si se borra la licitación
+
+
+
             modelBuilder.Entity<LicitacionDetalle>().OwnsOne(p => p.Audit);
+
+
+
+            modelBuilder.Entity<LicitacionDocumentacion>().OwnsOne(p => p.Audit);
+
+            modelBuilder.Entity<LicitacionDocumentacion>().HasOne(p => p.Licitacion)
+                .WithMany(p => p.DocumentosAsociados)
+                .HasForeignKey(p => p.IdLicitacion)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Oferta>().OwnsOne(p => p.Audit);
 

@@ -1,0 +1,103 @@
+﻿@using LicitAR.Core.Data.Models
+@using LicitAR.Web.Helpers
+@model IEnumerable<LicitAR.Core.Data.Models.LicitacionDocumentacion>
+
+@{
+    ViewData["Title"] = "Documentación";
+    Licitacion licitacion = ViewBag.licitacion;
+}
+ 
+
+<div class="row">
+    <div class="col-xl">
+        <div class="card mb-6">
+            <div class="card-header d-flex justify-content-between align-items-center ">
+                <h5 class="mb-0">
+                    <b>@licitacion.CodigoLicitacion</b> - @licitacion.Titulo
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless align-middle mb-4">
+                    <tbody>
+                        <tr>
+                            <th class="w-25 text-end">Descripción:</th>
+                            <td>@licitacion.Descripcion</td>
+                        </tr>
+                        <tr>
+                            <th class="w-25 text-end">Rubro:</th>
+                            <td>@licitacion.Rubro.Descripcion</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Entidad Licitante:</th>
+                            <td>@StringFormatHelper.FormatearCuitSeguro(licitacion.EntidadLicitante.Cuit, licitacion.EntidadLicitante.RazonSocial)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Estado Licitación:</th>
+                            <td>
+                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(licitacion.IdEstadoLicitacion)" data-bs-toggle="tooltip" title="@licitacion.EstadoLicitacion.Descripcion">
+                                    @licitacion.EstadoLicitacion.Descripcion
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Categoría Licitación:</th>
+                            <td>
+                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdCategoria(licitacion.IdCategoriaLicitacion)" data-bs-toggle="tooltip" title="@licitacion.CategoriaLicitacion.Descripcion">
+                                    @(licitacion.CategoriaLicitacion.Descripcion)
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Fecha Publicación:</th>
+                            <td>
+                                <i class="bx bx-calendar"></i>
+                                @licitacion.FechaPublicacion
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Fecha Cierre:</th>
+                            <td>
+                                <i class="bx bx-calendar"></i>
+                                @licitacion.FechaCierre
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="row mb-3">
+                    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <h4 class="mb-0">Documentación Vinculada</h4>
+                        <a asp-action="Create" asp-route-idLicitacion="@licitacion.IdLicitacion" class="btn btn-primary btn-sm ">
+                            <i class='bx bx-upload  me-2'></i> Agregar
+                        </a>
+                    </div>
+                </div>
+                  
+                <div class="documentos-lista">
+                    @foreach (var item in Model)
+                    {
+                        <div class="documento-card">
+                            <div><strong>Documento:</strong> @item.TituloDocumento</div>
+                            <div><strong>@Html.DisplayNameFor(m => item.FechaCarga):</strong> @item.FechaCarga.ToString()</div>
+                             <div class="acciones">
+                                    <a href="@item.BlobUri" target="_blank" class="btn btn-info btn-sm" style="color:white">
+                                        <i class='bx bx-download me-2'></i> Descargar
+                                    </a>
+
+                                <form asp-action="Delete" method="post" onsubmit="return confirm('¿Seguro que querés eliminar este documento?');" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.IdLicitacionDocumentacion " />
+                                        <input type="hidden" name="idLicitacion" value="@licitacion.IdLicitacion" />
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class='bx bx-trash me-2'></i> Eliminar
+                                        </button>
+                                    </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+             </div>
+        </div>
+    </div>
+</div>
+
