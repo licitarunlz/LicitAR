@@ -19,5 +19,6 @@ namespace LicitAR.Web.Models
         public string EntidadLicitanteFormateada { get; set; }
         public List<LicitacionDetalleModel> Items { get; set; }
         public EstadoLicitacion EstadoLicitacion { get; set; }
+        public Rubro Rubro { get; set; }
     }
 }

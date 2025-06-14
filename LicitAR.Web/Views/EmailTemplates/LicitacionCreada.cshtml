@@ -1,0 +1,14 @@
+@model dynamic
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Nueva Licitación Creada</title>
+</head>
+<body>
+    <h1>¡Nueva licitación creada!</h1>
+    <p>La licitación <b>@Model.LicitacionNombre</b> fue creada exitosamente el @Model.FechaCreacion:d.</p>
+    <p>Puedes ver los detalles o gestionar la licitación desde el sistema.</p>
+    <a href="@Model.UrlDetalle" style="display:inline-block;padding:10px 20px;background:#007bff;color:#fff;text-decoration:none;border-radius:4px;">Ver licitación</a>
+</body>
+</html>

@@ -13,7 +13,7 @@ namespace LicitAR.Core.Utils
         {
             return new AuditTable
             {
-                FechaAlta = DateTime.UtcNow,
+                FechaAlta = DateTime.Now,
                 IdUsuarioAlta = IdUsuario,
                 FechaModificacion = null,
                 IdUsuarioModificacion = null,
@@ -27,7 +27,7 @@ namespace LicitAR.Core.Utils
 
         public static AuditTable SetModificationData(AuditTable audit, int IdUsuario)
         {
-            audit.FechaModificacion = DateTime.UtcNow;
+            audit.FechaModificacion = DateTime.Now;
             audit.IdUsuarioModificacion = IdUsuario;
 
             return audit;
@@ -35,7 +35,7 @@ namespace LicitAR.Core.Utils
 
         public static AuditTable SetDeletionData(AuditTable audit, int IdUsuario)
         {
-            audit.FechaBaja = DateTime.UtcNow;
+            audit.FechaBaja = DateTime.Now;
             audit.IdUsuarioBaja = IdUsuario;
 
             return audit;

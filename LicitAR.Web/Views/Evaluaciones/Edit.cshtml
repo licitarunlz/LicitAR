@@ -1,6 +1,7 @@
 ﻿@model EvaluacionModel
 
 @using LicitAR.Core.Data.Models
+@using LicitAR.Web.Helpers
 @using Newtonsoft.Json
 
 @{
@@ -23,12 +24,15 @@
                 <br />
                 <div class="col-md-3"><strong>Descripción:</strong> </div>
                 <div class="col-md-9">@licitacion.Descripcion</div>
+                <div class="col-md-3"><strong>Rubro:</strong> </div>
+                <div class="col-md-9">@licitacion.Rubro.Descripcion</div>
+
                 <div class="col-md-3"><strong>Fecha Publicacion:</strong> </div>
                 <div class="col-md-9">@licitacion.FechaPublicacion.Value</div>
                 <div class="col-md-3"><strong>Fecha Cierre de Ofertas:</strong> </div>
                 <div class="col-md-9">@licitacion.FechaCierre.Value</div>
                 <div class="col-md-3"><strong>Categoría:</strong> </div>
-                <div class="col-md-9">@licitacion.CategoriaLicitacion.Descripcion</div>
+                <div class="col-md-9"><span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdCategoria(licitacion.IdCategoriaLicitacion)"> @licitacion.CategoriaLicitacion.Descripcion </span></div>
             </div>
         </div>
     </div>
@@ -57,7 +61,6 @@
                             <div class="row">
                                 <div class="col-md-3"><strong>Descripción:</strong> </div>
                                 <div class="col-md-9">@item.Descripcion</div>
-
                                 <div class="col-md-3"><strong>Cantidad:</strong> </div>
                                 <div class="col-md-9">@item.Cantidad</div>
 
@@ -72,7 +75,9 @@
 
                                         <th></th>
                                         <th><b>OFERENTE</b></th>
-                                        <th><b>PRECIO UNITARIO</b></th>
+                                        <th><b>OFERTA POR UNIDAD</b></th>
+
+                                        <th><b>OBSERVACION</b></th>
                                         <th><b>COMPARATIVA</b></th>
                                         <th><b>PRECIO SUBTOTAL</b></th>
                                     </tr>
@@ -98,9 +103,17 @@
                                                        data-proveedor="@ofertaProv.Persona?.RazonSocial"
                                                        data-subtotal="@ofertaDetalleProv.ImporteSubtotal" />
                                             </td>
-                                            <td>@ofertaProv.Persona?.Cuit - @ofertaProv.Persona?.RazonSocial </td>
+                                            <td>@ofertaProv.Persona?.Cuit - @ofertaProv.Persona?.RazonSocial
+
+                                                @if (ofertaProv.Persona.IdRubro == licitacion.IdRubro)
+                                                {
+                                                    <span class="badge bg-label-success"> Coincide con Rubro</span>
+                                                }
+
+                                            </td>
 
                                             <td>$ @(ofertaDetalleProv?.ImporteUnitario)</td>
+                                            <td>  @(ofertaDetalleProv?.Observacion == null? "-": ofertaDetalleProv?.Observacion)</td>
 
                                             <td>@(ofertaDetalleProv?.ImporteUnitario > item.PrecioEstimadoUnitario ? "Mayor" : "Menor")</td>
 

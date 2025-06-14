@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,12 +38,18 @@ namespace LicitAR.Core.Data.Models
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         [MaxLength(30, ErrorMessage = ErrorMessages.MAXLENGTH)]
         public string? Telefono { get; set; }
+
+
+        public int? IdRubro { get; set; }
          
         public Provincia Provincia { get; set; }
 
         public Localidad Localidad { get; set; }
 
         public TipoPersona TipoPersona { get; set; }
+
+        [ForeignKey("IdRubro")]
+        public Rubro Rubro { get; set; }
 
         public bool Enabled { get; set; } = true; // Por defecto, habilitado
 

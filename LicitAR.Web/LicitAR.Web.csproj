@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\LicitAR.Core\Licitar.Core.csproj" />
+    <ProjectReference Include="..\LicitAR.Core\LicitAR.Core.csproj" />
     <ProjectReference Include="..\LicitAR.FileStorage\LicitAR.FileStorage.csproj" />
   </ItemGroup>
 
@@ -16,16 +16,53 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="RazorLight" Version="2.0.0-rc.3" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Models\EntidadLicitante\" />
+    <!-- Excluir los templates del contenido implícito -->
+    <Content Remove="Views\EmailTemplates\**\*.*" />
+    <!-- Incluir explícitamente los templates y copiar a salida -->
+    <Content Include="Views\EmailTemplates\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <!-- Agrega esto para embebidos -->
+    <EmbeddedResource Include="Views\EmailTemplates\**\*.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Views\EmailTemplates\InvitacionLicitacion.cshtml" />
+    <EmbeddedResource Remove="Views\EmailTemplates\LicitacionAdjudicada.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\EmailTemplates\InvitacionLicitacion.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\EmailTemplates\LicitacionAdjudicada.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\EmailTemplates\LicitacionCreada.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\EmailTemplates\LicitacionImpugnada.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
 
 </Project>

@@ -32,6 +32,10 @@ namespace LicitAR.Core.Data.Models
         [Required(ErrorMessage = ErrorMessages.REQUIRED)]
         public decimal ImporteSubtotal { get; set; }
 
+
+        [MaxLength(200, ErrorMessage = ErrorMessages.MAXLENGTH)]
+        public string? Observacion { get; set; }
+
         public Oferta? Oferta { get; set; }
         public LicitacionDetalle? LicitacionDetalle { get; set; }
 

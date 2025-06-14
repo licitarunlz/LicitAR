@@ -1,16 +1,39 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using LicitAR.Core.Data.Models;
+using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Localization;
 using LicitAR.Core.DI;
+using LicitAR.Core.Data.Models;
 using LicitAR.Core.Utils;
+using LicitAR.Core.Services;
 using LicitAR.FileStorage.DI;
+using LicitAR.Web.Services;
+using System.Globalization;
+using Serilog;
 
 public partial class Program
 {
     public static void Main(string[] args)
     {
+        // Configura Serilog antes de crear el builder
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Error()
+            .ReadFrom.Configuration(new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build())
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+
         var builder = WebApplication.CreateBuilder(args);
-        
+
+        // Usa Serilog como logger principal
+        builder.Host.UseSerilog();
+
         builder.Configuration
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -22,7 +45,14 @@ public partial class Program
         builder.Services.AddAppBusinessRegistrations(builder.Configuration);
         builder.Services.AddServicesRegistrations(builder.Configuration);
         builder.Services.AddFileStorageRegistrations(builder.Configuration);
+        
+        // Envío de mails con vistas
+        builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
+        builder.Services.AddScoped<EmailSenderService>();
+        builder.Services.AddScoped<ILicitacionNotificationService, LicitacionNotificationService>();
 
+        builder.Services.AddHttpContextAccessor();
+        
         // Add services to the container.
         builder.Services.AddControllersWithViews(options =>
         {
@@ -37,12 +67,42 @@ public partial class Program
             options.Cookie.IsEssential = true;
         });
 
+        // Configuración de cultura global
+        var defaultCulture = new CultureInfo("es-AR");
+        var localizationOptions = new RequestLocalizationOptions
+        {
+            DefaultRequestCulture = new RequestCulture(defaultCulture),
+            SupportedCultures = new[] { defaultCulture },
+            SupportedUICultures = new[] { defaultCulture }
+        };
+
         var app = builder.Build();
+
+        // Middleware global para capturar errores de conexión a la base de datos
+        app.Use(async (context, next) =>
+        {
+            try
+            {
+                await next();
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Message.Contains("Cannot open server") || ex.Message.Contains("Client with IP address"))
+                {
+                    context.Response.Redirect("/Error/ConnectionError");
+                    return;
+                }
+                throw;
+            }
+        });
+
+        // Usa la configuración de localización antes de cualquier middleware que procese requests
+        app.UseRequestLocalization(localizationOptions);
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
         {
-            app.UseExceptionHandler("/Home/Error");
+            app.UseExceptionHandler("/Shared/Error");
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }

@@ -1,0 +1,96 @@
+﻿@model PersonaModel
+
+@{
+    ViewData["Title"] = "Detalles de Oferente";
+    Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
+}
+
+<div class="row ">
+    <div class="col-xl-8">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <b>@Html.DisplayFor(model => model.Cuit)</b> - @Html.DisplayFor(model => model.RazonSocial)
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless align-middle mb-4">
+                    <tbody>
+                        <tr>
+                            <th class="w-25 text-end">@Html.DisplayNameFor(model => model.Cuit):</th>
+                            <td>@Html.DisplayFor(model => model.Cuit)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.RazonSocial):</th>
+                            <td>@Html.DisplayFor(model => model.RazonSocial)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.IdTipoPersona):</th>
+                            <td>@Html.DisplayFor(model => model.TipoPersona)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h6 class="fw-bold mt-4 mb-2">Contacto</h6>
+                <table class="table table-borderless align-middle mb-4">
+                    <tbody>
+                        <tr>
+                            <th class="w-25 text-end">@Html.DisplayNameFor(model => model.Email):</th>
+                            <td>@Html.DisplayFor(model => model.Email)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.Telefono):</th>
+                            <td>@Html.DisplayFor(model => model.Telefono)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h6 class="fw-bold mt-4 mb-2">Domicilio</h6>
+                <table class="table table-borderless align-middle">
+                    <tbody>
+                        <tr>
+                            <th class="w-25 text-end">@Html.DisplayNameFor(model => model.IdProvincia):</th>
+                            <td>@Html.DisplayFor(model => model.Provincia)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.IdLocalidad):</th>
+                            <td>@Html.DisplayFor(model => model.Localidad)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionBarrio):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionBarrio)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionCalle):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionCalle)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionNumero):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionNumero)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionPiso):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionPiso)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionDepto):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionDepto)</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">@Html.DisplayNameFor(model => model.DireccionCodigoPostal):</th>
+                            <td>@Html.DisplayFor(model => model.DireccionCodigoPostal)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model?.IdPersona" class="btn btn-primary">
+                    <i class="bx bx-edit"></i>&nbsp;Editar
+                </a>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bx bx-arrow-back"></i>&nbsp;Volver al listado
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

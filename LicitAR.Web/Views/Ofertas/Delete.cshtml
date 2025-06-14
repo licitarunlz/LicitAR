@@ -45,6 +45,10 @@
                     <td>@Html.DisplayFor(model => model.Licitacion.Descripcion)</td>
                 </tr>
                 <tr>
+                    <th class="w-25 text-end">Rubro:</th>
+                    <td>@Html.DisplayFor(model => model.Licitacion.Rubro.Descripcion)</td>
+                </tr>
+                <tr>
                     <th class="text-end">Entidad Licitante:</th>
                     <td>@StringFormatHelper.FormatearCuitSeguro(Model.Licitacion.EntidadLicitante.Cuit, Model.Licitacion.EntidadLicitante.RazonSocial)</td>
                 </tr>
@@ -59,8 +63,8 @@
                 <tr>
                     <th class="text-end">Categoría Licitación:</th>
                     <td>
-                        <span class="badge bg-label-info">
-                            @Html.Raw(Model.Licitacion.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")
+                        <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdCategoria(Model.Licitacion.IdCategoriaLicitacion)">
+                            @Model.Licitacion.CategoriaLicitacion.Descripcion
                         </span>
                     </td>
                 </tr>
@@ -93,7 +97,8 @@
                             <th><b>ITEM</b></th>
                             <th><b>DESCRIPCIÓN</b></th>
                             <th><b>CANTIDAD</b></th>
-                            <th class="@(backgroundClass)"><b>PRECIO UNITARIO</b></th>
+                        <th class="@(backgroundClass)"><b>PRECIO UNITARIO</b></th>
+                        <th class="@(backgroundClass)"><b>OBSERVACIÓN</b></th>
                             <th class="@(backgroundClass)"><b>SUBTOTAL</b></th>
                         </tr>
                     </thead>
@@ -113,13 +118,14 @@
 
                                 <td class="@(backgroundClass)">@(itemOferta.ImporteUnitario)</td>
 
+                            <td class="@(backgroundClass)">@(itemOferta.Observacion)</td>
                                 <td class="@(backgroundClass)">@(itemOferta.ImporteSubtotal)</td>
                             </tr>
                         }
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="5" class="text-start"><strong>TOTAL GENERAL:</strong></td>
+                            <td colspan="6" class="text-start"><strong>TOTAL GENERAL:</strong></td>
                             <td><strong><span id="total-general">@(Model.Items.Sum(x => x.ImporteSubtotal))</span></strong></td>
                         </tr>
                     </tfoot>

@@ -17,6 +17,8 @@ using LicitAR.Core.Utils;
 using LicitAR.Core.Data.Models.Parametros;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Humanizer;
+using LicitAR.Web.Helpers.Auditoria;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace LicitAR.Web.Controllers
 {
@@ -40,6 +42,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Ofertas
         [HttpGet("/Proveedor/Licitaciones")]
+        [AuditarEvento("OfertasController - Tabla", "Oferta", "Visualización de licitaciones para proveedor")]
         public async Task<IActionResult> IndexLicitaciones(string codigoLicitacion, string titulo, int? idCategoriaLicitacion, int page = 1, int pageSize = 10)
         {
             var licitaciones = await _licitacionManager.GetAllLicitacionesAsync();
@@ -51,11 +54,11 @@ namespace LicitAR.Web.Controllers
             licitaciones = licitaciones.Where(x =>
                                            x.IdEstadoLicitacion == 3
                                         && x.IdCategoriaLicitacion == 1
-                                        && x.FechaCierre > DateTime.UtcNow
-                                        && x.FechaPublicacion < DateTime.UtcNow
+                                        && x.FechaCierre > DateTime.Now
+                                        && x.FechaPublicacion < DateTime.Now
                                         && x.Audit.FechaBaja == null)?.ToList();
 
-            if (licitaciones == null || !licitaciones.Any())
+            if (licitaciones == null)
                 return View(licitaciones);
 
             var invitacionLicitaciones = await _licitacionInvitacionManager.GetInvitacionesByPersonaAsync(int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona").ToString()));
@@ -65,8 +68,8 @@ namespace LicitAR.Web.Controllers
                 foreach(var invitacion in invitacionLicitaciones)
                 {
                     var licit = invitacion.Licitacion;
-                    if (licit.FechaPublicacion < DateTime.UtcNow 
-                        && licit.FechaCierre > DateTime.UtcNow 
+                    if (licit.FechaPublicacion < DateTime.Now 
+                        && licit.FechaCierre > DateTime.Now 
                         && licit.Audit.FechaBaja == null)
                     {
                         if (!licitaciones.Any(x=> x.IdLicitacion == licit.IdLicitacion))
@@ -114,6 +117,7 @@ namespace LicitAR.Web.Controllers
 
         [AuthorizeClaim("Licitaciones.Ver")]
         [HttpGet("/Proveedor/Licitaciones/Detalle")]
+        [AuditarEvento("OfertasController - Detalle", "Oferta", "Visualización de detalle de licitación para proveedor", "id")]
         public async Task<IActionResult> DetalleLicitaciones(int? id)
         {
             if (id == null)
@@ -130,6 +134,7 @@ namespace LicitAR.Web.Controllers
             return View(licitacion);
         }
         // GET: Ofertas
+        [AuditarEvento("OfertasController - Tabla", "Oferta", "Visualización de ofertas del proveedor")]
         public async Task<IActionResult> Index(string codigoLicitacion, string titulo,   int page = 1, int pageSize = 10)
         {
 
@@ -172,9 +177,10 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Ofertas/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [AuditarEvento("OfertasController - Detalle", "Oferta", "Visualización de detalle de oferta", "id")]
+        public async Task<IActionResult> Details(int? idOferta)
         {
-            if (id == null)
+            if (idOferta == null)
             {
                 return NotFound();
             }
@@ -187,7 +193,9 @@ namespace LicitAR.Web.Controllers
                 .Include(o=> o.Licitacion.Items)
                 .Include(o=> o.Licitacion.EntidadLicitante)
                 .Include(o=> o.Licitacion.EstadoLicitacion)
-                .FirstOrDefaultAsync(m => m.IdOferta == id);
+                .Include(o=> o.Licitacion.CategoriaLicitacion)
+                .Include(o=> o.Licitacion.Rubro)
+                .FirstOrDefaultAsync(m => m.IdOferta == idOferta);
             if (oferta == null)
             {
                 return NotFound();
@@ -216,13 +224,22 @@ namespace LicitAR.Web.Controllers
 
             if (ofertas.Count > 0)
             {
-                return RedirectToAction("Edit", new { idOferta = ofertas.FirstOrDefault().IdOferta });
+                var ofertaModel = ofertas.FirstOrDefault();
+                if (ofertaModel.IdEstadoOferta == 1)
+                {
+                    return RedirectToAction("Edit", new { idOferta = ofertaModel.IdOferta });
+                }else
+                {
+                    return RedirectToAction("Details", new { idOferta = ofertaModel.IdOferta });
+
+                }
+
             }
 
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             OfertaModel oferta = new OfertaModel
             {
-                FechaOferta = DateTime.UtcNow,
+                FechaOferta = DateTime.Now,
                 IdEstadoOferta = 1,
                 IdLicitacion = idlicitacion.Value,
                 IdPersona = int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona"))
@@ -236,6 +253,7 @@ namespace LicitAR.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("/Proveedor/Licitaciones/Postularse")]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("OfertasController - Crear", "Oferta", "Creación de oferta")]
         public async Task<IActionResult> Create(OfertaModel ofertaModel)
         {
 
@@ -272,6 +290,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Licitacion.Items)
                 .Include(o => o.Licitacion.EntidadLicitante)
                 .Include(o => o.Licitacion.EstadoLicitacion)
+                .Include(o => o.Licitacion.CategoriaLicitacion)
+                .Include(o => o.Licitacion.Rubro)
                 .FirstOrDefaultAsync(m => m.IdOferta == idOferta);
             if (oferta == null)
             {
@@ -286,7 +306,8 @@ namespace LicitAR.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,  OfertaModel ofertaModel)
+        [AuditarEvento("OfertasController - Editar", "Oferta", "Edición de oferta", "id")]
+        public async Task<IActionResult> Edit(int idOferta,  OfertaModel ofertaModel)
         {
             Oferta oferta = null;
             if (ModelState.IsValid)
@@ -320,6 +341,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Licitacion.Items)
                 .Include(o => o.Licitacion.EntidadLicitante)
                 .Include(o => o.Licitacion.EstadoLicitacion)
+                .Include(o => o.Licitacion.CategoriaLicitacion)
+                .Include(o => o.Licitacion.Rubro)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {
@@ -332,6 +355,7 @@ namespace LicitAR.Web.Controllers
         // POST: Ofertas/Delete/5
         [HttpPost, ActionName("Cancelar")]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("OfertasController - Cancelar", "Oferta", "Cancelación de oferta", "id")]
         public async Task<IActionResult> CancelarConfirmed(int id)
         {
             var result = await _ofertaManager.CancelarOfertaAsync(id, IdentityHelper.GetUserLicitARId(User));
@@ -356,6 +380,8 @@ namespace LicitAR.Web.Controllers
                 .Include(o => o.Licitacion.Items)
                 .Include(o => o.Licitacion.EntidadLicitante)
                 .Include(o => o.Licitacion.EstadoLicitacion)
+                .Include(o => o.Licitacion.CategoriaLicitacion)
+                .Include(o => o.Licitacion.Rubro)
                 .FirstOrDefaultAsync(m => m.IdOferta == id);
             if (oferta == null)
             {
@@ -368,6 +394,7 @@ namespace LicitAR.Web.Controllers
         // POST: Ofertas/Delete/5
         [HttpPost, ActionName("Publicar")]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("OfertasController - Publicar", "Oferta", "Publicación de oferta", "idOferta")]
         public async Task<IActionResult> PublicarConfirmed(int idOferta)
         {
             var result = await _ofertaManager.PublicarOfertaAsync(idOferta, IdentityHelper.GetUserLicitARId(User));

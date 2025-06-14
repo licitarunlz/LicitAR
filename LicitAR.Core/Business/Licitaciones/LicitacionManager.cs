@@ -49,12 +49,17 @@ namespace LicitAR.Core.Business.Licitaciones
             return await _dbContext.Licitaciones
                 .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
                 .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
+                .Include(l=> l.Rubro)
                 .ToListAsync();
         }
 
         public async Task<List<Licitacion>> GetAllActiveLicitacionesAsync()
         {
-            return await _dbContext.Licitaciones.Where(x=> x.Audit.FechaBaja == null).ToListAsync();
+            return await _dbContext.Licitaciones
+                .Include(l=> l.EntidadLicitante)
+                .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
+                .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
+                .Include(l => l.Rubro).Where(x=> x.Audit.FechaBaja == null).ToListAsync();
         }
 
         public async Task<Licitacion?> GetLicitacionByIdAsync(int id)
@@ -63,6 +68,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 .Include(l => l.EstadoLicitacion) // Include EstadoLicitacion
                 .Include(l => l.CategoriaLicitacion) // Include CategoriaLicitacion
                 .Include(l=> l.EntidadLicitante)
+                .Include(l=> l.Rubro)
                 .Include(d => d.Items)  // Include Los items
                 .FirstOrDefaultAsync(l => l.IdLicitacion == id);
         }
@@ -89,7 +95,7 @@ namespace LicitAR.Core.Business.Licitaciones
                     IdLicitacion = licitacion.IdLicitacion,
                     IdEstadoAnterior = null, // No hay estado anterior en creación
                     IdEstadoNuevo = licitacion.IdEstadoLicitacion,
-                    FechaCambio = DateTime.UtcNow,
+                    FechaCambio = DateTime.Now,
                     IdUsuarioCambio = userId
                 });
 
@@ -118,7 +124,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 licitacionFromDdbb.FechaPublicacion = licitacion.FechaPublicacion;
                 licitacionFromDdbb.FechaCierre = licitacion.FechaCierre;
                 licitacionFromDdbb.IdEntidadLicitante = licitacion.IdEntidadLicitante; // <-- Agrega esta línea
-
+                licitacionFromDdbb.IdRubro = licitacion.IdRubro;
                 licitacionFromDdbb.Audit = AuditHelper.SetModificationData(licitacionFromDdbb.Audit, userId);
 
                 licitacionFromDdbb.Items = licitacion.Items;
@@ -132,7 +138,7 @@ namespace LicitAR.Core.Business.Licitaciones
                         IdLicitacion = licitacion.IdLicitacion,
                         IdEstadoAnterior = estadoAnterior,
                         IdEstadoNuevo = licitacion.IdEstadoLicitacion,
-                        FechaCambio = DateTime.UtcNow,
+                        FechaCambio = DateTime.Now,
                         IdUsuarioCambio = userId
                     });
                 }
@@ -168,7 +174,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 IdLicitacion = id,
                 IdEstadoAnterior = estadoAnterior,
                 IdEstadoNuevo = 14,
-                FechaCambio = DateTime.UtcNow,
+                FechaCambio = DateTime.Now,
                 IdUsuarioCambio = idUsuario
             });
             
@@ -186,7 +192,7 @@ namespace LicitAR.Core.Business.Licitaciones
             }
             var estadoAnterior = licitacion.IdEstadoLicitacion;
             licitacion.Enabled = true;
-            licitacion.FechaPublicacion = DateTime.UtcNow;
+            licitacion.FechaPublicacion = DateTime.Now;
             licitacion.IdEstadoLicitacion = 3;
             licitacion.FechaCierre = fechaCierre;
             licitacion.Audit = AuditHelper.SetModificationData(licitacion.Audit, idUsuario);
@@ -199,7 +205,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 IdLicitacion = idLicitacion,
                 IdEstadoAnterior = estadoAnterior,
                 IdEstadoNuevo = 3,
-                FechaCambio = DateTime.UtcNow,
+                FechaCambio = DateTime.Now,
                 IdUsuarioCambio = idUsuario
             });
 
@@ -290,7 +296,7 @@ namespace LicitAR.Core.Business.Licitaciones
                 IdLicitacion = idLicitacion,
                 IdEstadoAnterior = estadoAnterior,
                 IdEstadoNuevo = 7,
-                FechaCambio = DateTime.UtcNow,
+                FechaCambio = DateTime.Now,
                 IdUsuarioCambio = idUsuario
             });
 

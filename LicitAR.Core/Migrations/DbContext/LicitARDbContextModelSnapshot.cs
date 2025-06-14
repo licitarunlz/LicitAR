@@ -443,6 +443,9 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.Property<int>("IdEstadoLicitacion")
                         .HasColumnType("int");
 
+                    b.Property<int?>("IdRubro")
+                        .HasColumnType("int");
+
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -455,6 +458,8 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.HasIndex("IdEntidadLicitante");
 
                     b.HasIndex("IdEstadoLicitacion");
+
+                    b.HasIndex("IdRubro");
 
                     b.ToTable("Licitaciones");
                 });
@@ -571,6 +576,10 @@ namespace LicitAR.Core.Migrations.DbContext
 
                     b.Property<decimal>("ImporteUnitario")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Observacion")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("IdOfertaDetalle");
 
@@ -753,7 +762,7 @@ namespace LicitAR.Core.Migrations.DbContext
 
                     b.HasKey("IdRubro");
 
-                    b.ToTable("Rubro");
+                    b.ToTable("Rubros");
                 });
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.Parametros.TipoContacto", b =>
@@ -849,6 +858,9 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.Property<int>("IdProvincia")
                         .HasColumnType("int");
 
+                    b.Property<int?>("IdRubro")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdTipoPersona")
                         .HasColumnType("int");
 
@@ -867,6 +879,8 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.HasIndex("IdLocalidad");
 
                     b.HasIndex("IdProvincia");
+
+                    b.HasIndex("IdRubro");
 
                     b.HasIndex("IdTipoPersona");
 
@@ -1396,6 +1410,10 @@ namespace LicitAR.Core.Migrations.DbContext
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LicitAR.Core.Data.Models.Parametros.Rubro", "Rubro")
+                        .WithMany()
+                        .HasForeignKey("IdRubro");
+
                     b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
                         {
                             b1.Property<int>("LicitacionIdLicitacion")
@@ -1435,6 +1453,8 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.Navigation("EntidadLicitante");
 
                     b.Navigation("EstadoLicitacion");
+
+                    b.Navigation("Rubro");
                 });
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.LicitacionDetalle", b =>
@@ -1946,7 +1966,7 @@ namespace LicitAR.Core.Migrations.DbContext
 
                             b1.HasKey("RubroIdRubro");
 
-                            b1.ToTable("Rubro");
+                            b1.ToTable("Rubros");
 
                             b1.WithOwner()
                                 .HasForeignKey("RubroIdRubro");
@@ -2044,6 +2064,10 @@ namespace LicitAR.Core.Migrations.DbContext
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LicitAR.Core.Data.Models.Parametros.Rubro", "Rubro")
+                        .WithMany()
+                        .HasForeignKey("IdRubro");
+
                     b.HasOne("LicitAR.Core.Data.Models.Parametros.TipoPersona", "TipoPersona")
                         .WithMany()
                         .HasForeignKey("IdTipoPersona")
@@ -2087,6 +2111,8 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.Navigation("Localidad");
 
                     b.Navigation("Provincia");
+
+                    b.Navigation("Rubro");
 
                     b.Navigation("TipoPersona");
                 });

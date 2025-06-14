@@ -8,7 +8,7 @@
 
 <div class="row mb-12 g-6">
     <div class="col-md-12 col-lg-12">
-        <div class="card">
+        <div class="card" role="main">
             <div class="card-header d-flex justify-content-between align-items-center ">
                 <h5 class="mb-0">
                     <b>@Model.CodigoLicitacion</b> - @Model.Titulo
@@ -16,11 +16,15 @@
             </div>
 
             <div class="card-body">
-                <table class="table table-borderless align-middle mb-4">
+                <table class="table table-borderless align-middle mb-4" role="table" aria-label="Detalle de la licitación">
                     <tbody>
                         <tr>
                             <th class="w-25 text-end">Descripción:</th>
                             <td>@Model.Descripcion</td>
+                        </tr>
+                        <tr>
+                            <th class="w-25 text-end">Rubro:</th>
+                            <td>@Model.Rubro.Descripcion</td>
                         </tr>
                         <tr>
                             <th class="text-end">Entidad Licitante:</th>
@@ -29,7 +33,7 @@
                         <tr>
                             <th class="text-end">Estado Licitación:</th>
                             <td>
-                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(Model.IdEstadoLicitacion)" data-bs-toggle="tooltip" title="@Model.EstadoLicitacion.Descripcion">
+                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(Model.IdEstadoLicitacion)" data-bs-toggle="tooltip" title="@Model.EstadoLicitacion.Descripcion" aria-label="Estado: @Model.EstadoLicitacion.Descripcion">
                                     @Model.EstadoLicitacion.Descripcion
                                 </span>
                             </td>
@@ -37,7 +41,7 @@
                         <tr>
                             <th class="text-end">Categoría Licitación:</th>
                             <td>
-                                <span class="badge bg-info">
+                                <span class="badge bg-info" aria-label="Categoría: @(Model.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")">
                                     @Html.Raw(Model.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")
                                 </span>
                             </td>
@@ -65,15 +69,15 @@
                     </tbody>
                 </table>
 
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
+                <div class="table-responsive" role="region" aria-label="Detalle de ítems">
+                    <table class="table table-striped table-hover" role="table">
                             <thead>
                                 <tr>
-                                    <th><b>NRO ITEM</b></th>
-                                    <th><b>ITEM</b></th>
-                                    <th><b>DESCRIPCIÓN</b></th>
-                                    <th><b>CANTIDAD</b></th>
-                                    <th><b>PRECIO UNITARIO ESTIMADO</b></th>
+                                    <th scope="col" aria-label="Número de ítem"><b>NRO ITEM</b></th>
+                                    <th scope="col" aria-label="Nombre del ítem"><b>ITEM</b></th>
+                                    <th scope="col" aria-label="Descripción del ítem"><b>DESCRIPCIÓN</b></th>
+                                    <th scope="col" aria-label="Cantidad solicitada"><b>CANTIDAD</b></th>
+                                    <th scope="col" aria-label="Precio unitario estimado"><b>PRECIO UNITARIO ESTIMADO</b></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -95,13 +99,13 @@
                         </table>
                     </div><br />
                     
-                <form asp-action="Delete">
+                <form asp-action="Delete" role="form" aria-label="Eliminar licitación">
                     <input type="hidden" asp-for="IdLicitacion" />
 
                     <div class="text-start mt-8">
-                        <input type="submit" value="Eliminar" class="btn btn-danger" />
-                        <a asp-action="Index" class="btn btn-secondary">
-                            <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
+                        <input type="submit" value="Eliminar" class="btn btn-danger" aria-label="Eliminar licitación" />
+                        <a asp-action="Index" class="btn btn-secondary" aria-label="Volver al Listado">
+                            <i class="bx bx-arrow-back" aria-hidden="true"></i>&nbsp;Volver al Listado
                         </a>
                     </div>
                 </form>

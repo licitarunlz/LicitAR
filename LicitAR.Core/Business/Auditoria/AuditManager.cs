@@ -44,7 +44,7 @@ namespace LicitAR.Core.Business.Auditoria
             var trail = new AuditTrail
             {
                 UsuarioId = usuarioId,
-                FechaHora = DateTime.UtcNow,
+                FechaHora = DateTime.Now,
                 Accion = accion,
                 Entidad = entidad,
                 EntidadId = entidadId,
@@ -66,7 +66,7 @@ namespace LicitAR.Core.Business.Auditoria
             var audit = new AuditLicitacion
             {
                 IdLicitacion = idLicitacion,
-                FechaHora = DateTime.UtcNow,
+                FechaHora = DateTime.Now,
                 UsuarioId = usuarioId,
                 Accion = accion,
                 CampoModificado = campo,

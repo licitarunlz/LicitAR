@@ -1,14 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using LicitAR.Core.Business.Licitaciones;
 using LicitAR.Core.Data.Models;
-using LicitAR.Web.Helpers;
 using LicitAR.Core.Utils;
-using LicitAR.Web.Models;
-using LicitAR.Web.Helpers.Authorization;
-using Microsoft.Extensions.Logging;
 using LicitAR.Core.Data;
 using LicitAR.Core.Business.Auditoria;
+using LicitAR.Web.Models;
+using LicitAR.Web.Helpers;
+using LicitAR.Web.Helpers.Authorization;
 using LicitAR.Web.Helpers.Auditoria;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace LicitAR.Web.Controllers
 {
@@ -46,7 +47,8 @@ namespace LicitAR.Web.Controllers
 
         // GET: Licitacion
         [AuthorizeClaim("Licitaciones.Ver")]
-        public async Task<IActionResult> Index(string codigoLicitacion, string titulo, DateTime? fechaPublicacion, DateTime? fechaCierre, int? idCategoriaLicitacion, int? idEstadoLicitacion, int page = 1, int pageSize = 10)
+        [AuditarEvento("LicitacionController - Tabla", "Licitacion", "Visualización de tabla licitaciones", "id")]
+        public async Task<IActionResult> Index(string codigoLicitacion, string titulo, DateTime? fechaPublicacion, DateTime? fechaCierre, int? idCategoriaLicitacion, int? idEstadoLicitacion, int page = 1, int pageSize = 10, bool? soloActivas = null)
         {
             var licitacionesList = await _licitacionManager.GetAllLicitacionesAsync();
             licitacionesList = licitacionesList.OrderByDescending(x => x.CodigoLicitacion).ToList();
@@ -58,6 +60,11 @@ namespace LicitAR.Web.Controllers
             ViewBag.EstadosLicitacion = estados;
 
             var query = licitacionesList.AsQueryable();
+
+            if (soloActivas.HasValue && soloActivas.Value)
+            {
+                query = query.Where(l => l.Enabled == true);
+            }
 
             if (!string.IsNullOrEmpty(codigoLicitacion))
             {
@@ -105,7 +112,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Licitacion/Details/5
         [AuthorizeClaim("Licitaciones.Ver")]
-        [AuditarEvento("LicitacionController - Details", "Licitacion", "Visualización de detalle de licitación", "id")]
+        [AuditarEvento("LicitacionController - Detalle", "Licitacion", "Visualización de detalle de licitación", "id")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -144,6 +151,7 @@ namespace LicitAR.Web.Controllers
                 IdEstadoLicitacion = licitacion.IdEstadoLicitacion,
                 IdCategoriaLicitacion = licitacion.IdCategoriaLicitacion,
                 EntidadLicitanteFormateada = entidadLicitanteFormateada,
+                Rubro = licitacion.Rubro,
                 Items = licitacion.Items.Select(x => new LicitacionDetalleModel
                 {
                     IdLicitacionDetalle = x.IdLicitacionDetalle,
@@ -163,7 +171,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Licitacion/Create
         [AuthorizeClaim("Licitaciones.Crear")]
-        [AuditarEvento("LicitacionController - Create", "Licitacion", "Inicio creación de licitación")]
+        [AuditarEvento("LicitacionController - Creacion", "Licitacion", "Inicio creación de licitación")]
         public IActionResult Create()
         {
             var entidades = _dbContext.EntidadesLicitantes
@@ -173,9 +181,20 @@ namespace LicitAR.Web.Controllers
                 {
                     e.IdEntidadLicitante,
                     Texto = StringFormatHelper.FormatearCuitSeguro(e.Cuit, e.RazonSocial)
-                }).ToList();
+                }).OrderBy(x => x.Texto)
+                .ToList();
+
+            var rubros = _dbContext.Rubros
+                  .Select(x => new SelectListItem
+                  {
+                      Value = x.IdRubro.ToString(),
+                      Text = x.Descripcion.ToString()
+                  }).OrderBy(x => x.Text)
+                  .ToList();
 
             ViewBag.EntidadesLicitantes = entidades;
+            ViewBag.ComboRubros = rubros;
+
             return View();
         }
 
@@ -183,7 +202,7 @@ namespace LicitAR.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("Licitaciones.Crear")]
-        [AuditarEvento("LicitacionController - Create", "Licitacion", "Creación de licitación")]
+        [AuditarEvento("LicitacionController - Creacion", "Licitacion", "Creación de licitación")]
         public async Task<IActionResult> Create(LicitacionModel licitacionModel)
         {
             if (ModelState.IsValid)
@@ -209,7 +228,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Licitacion/Edit/5
         [AuthorizeClaim("Licitaciones.Editar")]
-        [AuditarEvento("LicitacionController - Edit", "Licitacion", "Inicio edición de licitación", "id")]
+        [AuditarEvento("LicitacionController - Editar", "Licitacion", "Inicio edición de licitación", "id")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -237,7 +256,15 @@ namespace LicitAR.Web.Controllers
                     Texto = StringFormatHelper.FormatearCuitSeguro(e.Cuit, e.RazonSocial)
                 }).ToList();
 
+            var rubros = _dbContext.Rubros
+                  .Select(x => new SelectListItem
+                  {
+                      Value = x.IdRubro.ToString(),
+                      Text = x.Descripcion.ToString()
+                  }).ToList();
+            
             ViewBag.EntidadesLicitantes = entidades;
+            ViewBag.ComboRubros = rubros;
 
             var lic = new LicitacionModel();
             lic.SetLicitacionData(licitacion);
@@ -248,7 +275,7 @@ namespace LicitAR.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("Licitaciones.Editar")]
-        [AuditarEvento("LicitacionController - Edit", "Licitacion", "Edición de licitación", "id")]
+        [AuditarEvento("LicitacionController - Editar", "Licitacion", "Edición de licitación", "id")]
         public async Task<IActionResult> Edit(int id, LicitacionModel licitacionModel)
         {
             if (id != licitacionModel.IdLicitacion)
@@ -284,7 +311,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Licitacion/Delete/5
         [AuthorizeClaim("Licitaciones.Eliminar")]
-        [AuditarEvento("LicitacionController - Delete", "Licitacion", "Inicio eliminación de licitación", "id")]
+        [AuditarEvento("LicitacionController - Eliminar", "Licitacion", "Inicio eliminación de licitación", "id")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -311,7 +338,7 @@ namespace LicitAR.Web.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("Licitaciones.Eliminar")]
-        [AuditarEvento("LicitacionController - DeleteConfirmed", "Licitacion", "Confirmación de eliminación de licitación", "id")]
+        [AuditarEvento("LicitacionController - Eliminar", "Licitacion", "Confirmación de eliminación de licitación", "id")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var result = await _licitacionManager.DeleteLicitacionAsync(id, IdentityHelper.GetUserLicitARId(User));
@@ -353,10 +380,19 @@ namespace LicitAR.Web.Controllers
         [HttpPost, ActionName("Publicar")]
         [ValidateAntiForgeryToken]
         [AuthorizeClaim("Licitaciones.Crear")]
-        [AuditarEvento("LicitacionController - PublicarConfirmed", "Licitacion", "Confirmación de publicación de licitación", "IdLicitacion")]
+        [AuditarEvento("LicitacionController - Publicar", "Licitacion", "Confirmación de publicación de licitación", "IdLicitacion")]
         public async Task<IActionResult> PublicarConfirmed(LicitacionPublicarConfirmModel licitacion)
         {
-            var result = await _licitacionManager.PublicarLicitacionAsync(licitacion.IdLicitacion, licitacion.FechaCierre, IdentityHelper.GetUserLicitARId(User));
+            // Asumimos que la fecha viene en horario de Argentina y la convertimos a UTC
+            var argentinaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Argentina/Buenos_Aires");
+            var fechaCierreLocal = DateTime.SpecifyKind(licitacion.FechaCierre, DateTimeKind.Unspecified);
+            var fechaCierreUtc = TimeZoneInfo.ConvertTimeToUtc(fechaCierreLocal, argentinaTimeZone);
+
+            var result = await _licitacionManager.PublicarLicitacionAsync(
+                licitacion.IdLicitacion,
+                fechaCierreUtc,
+                IdentityHelper.GetUserLicitARId(User)
+            );
             if (!result)
             {
                 return View("NotFound");
@@ -365,7 +401,7 @@ namespace LicitAR.Web.Controllers
                 licitacion.IdLicitacion,
                 IdentityHelper.GetUserLicitARId(User),
                 "Publicación",
-                "FechaCierre", null, licitacion.FechaCierre.ToString()
+                "FechaCierre", null, fechaCierreUtc.ToString()
             );
             TempData["Mensaje"] = "Licitación Publicada Exitosamente!";
 
@@ -443,7 +479,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Licitacion/History/5
-        [AuditarEvento("LicitacionController - History", "Licitacion", "Visualización historial de licitación", "id")]
+        [AuditarEvento("LicitacionController - Historial", "Licitacion", "Visualización historial de licitación", "id")]
         public async Task<IActionResult> History(int id)
         {
             var licitacion = await _licitacionManager.GetLicitacionByIdAsync(id);

@@ -48,6 +48,9 @@ namespace LicitAR.Web.Models
         [Display(Name = "Categoría Licitación")]
         public int IdCategoriaLicitacion { get; set; }
 
+        [Display(Name = "Rubro")]
+        [Required(ErrorMessage = ErrorMessages.REQUIRED)]
+        public int? IdRubro { get; set; }
 
 
         public List<LicitacionDetalleModel> Items { get; set; } = new List<LicitacionDetalleModel>();
@@ -108,6 +111,7 @@ namespace LicitAR.Web.Models
                 Titulo = this.Titulo,
                 EstadoLicitacion = estadoLicitacion,
                 CategoriaLicitacion = categoriaLicitacion, // Pass the provided CategoriaLicitacion object
+                IdRubro = this.IdRubro,
                 Items = detalle
             };
         }
@@ -134,6 +138,7 @@ namespace LicitAR.Web.Models
             this.IdEstadoLicitacion = licitacion.IdEstadoLicitacion;
             this.IdLicitacion = licitacion.IdLicitacion;
             this.Titulo = licitacion.Titulo;
+            this.IdRubro = licitacion.IdRubro;
             this.Items =licitacion.Items.Where(x=> x.Audit.FechaBaja == null).Select(x => new LicitacionDetalleModel
             {
                 Cantidad = x.Cantidad,

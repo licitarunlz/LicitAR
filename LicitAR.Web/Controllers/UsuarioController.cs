@@ -50,6 +50,7 @@ public class UsuarioController : Controller
 
     [Authorize]
     [AuthorizeClaim("Usuarios.Ver")] 
+    [AuditarEvento("UsuarioController - Tabla", "Usuario", "Visualización de tabla Usuario", "id")]
     public async Task<IActionResult> Index(string? nombre, string? apellido, string? email, string? cuit, bool? habilitado, int page = 1, int pageSize = 10)
     {
         var users = await _usuarioManager.GetAllUsuarioModelsAsync();
@@ -93,6 +94,7 @@ public class UsuarioController : Controller
 
     [Authorize]
     [AuthorizeClaim("Roles.Ver")]
+    [AuditarEvento("UsuarioController - Tabla", "Usuario", "Visualización de tabla Roles", "id")]
     public async Task<IActionResult> Roles(string? nombre)
     {
         var rolesResumen = await _rolManager.GetAllRolesWithResumenAsync();
@@ -135,7 +137,7 @@ public class UsuarioController : Controller
     [Authorize]
     [AuthorizeClaim("Roles.Editar")]
     [ValidateAntiForgeryToken]
-    [AuditarEvento("UsuarioController - AssignUsersToRole", "Usuario", "Asignación de usuarios a rol", "RoleId")]
+    [AuditarEvento("UsuarioController - Asignar Usuarios", "Usuario", "Asignación de usuarios a rol", "RoleId")]
     public async Task<IActionResult> AssignUsersToRole(AssignUsersToRoleViewModel model)
     {
         _logger.LogInformation("AssignUsersToRole POST called for RoleId: {RoleId}, RoleName: {RoleName}", model.RoleId, model.RoleName);
@@ -224,7 +226,7 @@ public class UsuarioController : Controller
     [Authorize]
     [AuthorizeClaim("EntidadLicitante.Editar")]
     [ValidateAntiForgeryToken]
-    [AuditarEvento("UsuarioController - AssignUsersToEntidad", "EntidadLicitante", "Asignación de usuarios a entidad", "IdEntidadLicitante")]
+    [AuditarEvento("UsuarioController - Asignar Usuarios", "EntidadLicitante", "Asignación de usuarios a entidad", "IdEntidadLicitante")]
     public async Task<IActionResult> AssignUsersToEntidad(AssignUsersToEntidadViewModel model)
     {
         if (!ModelState.IsValid)
@@ -546,7 +548,7 @@ public class UsuarioController : Controller
     [ValidateAntiForgeryToken] // Ensure Anti-Forgery Token validation
     [Authorize]
     [AuthorizeClaim("Perfil.Editar")]
-    [AuditarEvento("UsuarioController - EditMyProfile", "Usuario", "Edición de mi perfil", "IdUsuario")]
+    [AuditarEvento("UsuarioController - Editar", "Usuario", "Edición de mi perfil", "IdUsuario")]
     public async Task<IActionResult> EditMyProfile(UsuarioModel model)
     {
         if (!ModelState.IsValid)
@@ -609,7 +611,7 @@ public class UsuarioController : Controller
     [ValidateAntiForgeryToken] // Ensure AntiForgeryToken validation is enabled
     [Authorize]
     [AuthorizeClaim("Usuarios.Editar")]
-    [AuditarEvento("UsuarioController - Edit", "Usuario", "Edición de usuario", "IdUsuario")]
+    [AuditarEvento("UsuarioController - Editar", "Usuario", "Edición de usuario", "IdUsuario")]
     public async Task<IActionResult> Edit(UsuarioModel model)
     {
         if (!ModelState.IsValid)
@@ -677,7 +679,7 @@ public class UsuarioController : Controller
     [HttpPost]
     [Authorize]
     [AuthorizeClaim("Usuarios.Eliminar")] 
-    [AuditarEvento("UsuarioController - ToggleEnabled", "Usuario", "Habilitar/Deshabilitar usuario", "id")]
+    [AuditarEvento("UsuarioController - Eliminar", "Usuario", "Habilitar/Deshabilitar usuario", "id")]
     public async Task<IActionResult> ToggleEnabled(int id, bool enabled)
     {
         _logger.LogInformation("ToggleEnabled called with id: {id}, enabled: {enabled}", id, enabled);

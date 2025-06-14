@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
     var licitacion = Model.Licitacion;
     var subtotal = Model.Items.Sum(x => x.ImporteSubtotal);
-    string backgroundClass = Model.EstadoOferta?.IdEstadoOferta == 1 ? "bg-label-warning" : Model.EstadoOferta?.IdEstadoOferta == 2 ? "bg-label-primary" : "bg-label-danger";
+    string backgroundClass = CssClassHelper.GetOfertaBagdeCssClassByIdEstado(Model.IdEstadoOferta);
 
 }
 
@@ -33,7 +33,7 @@
                         <div class="text-start">
                             <h5 class="mb-0">
                                 <b>@Html.DisplayFor(model => model.FechaOferta)</b>
-                                <span class="badge @(backgroundClass)">
+                                <span class="@(backgroundClass)">
                                     @(Model.EstadoOferta?.Descripcion ?? "N/A")
                                 </span>
                             </h5>
@@ -56,6 +56,10 @@
                                 <td>@licitacion.Descripcion</td>
                             </tr>
                             <tr>
+                                <th class="w-25 text-end">Rubro:</th>
+                                <td>@licitacion.Rubro.Descripcion</td>
+                            </tr>
+                            <tr>
                                 <th class="text-end">Entidad Licitante:</th>
                                 <td>@StringFormatHelper.FormatearCuitSeguro(licitacion.EntidadLicitante.Cuit, licitacion.EntidadLicitante.RazonSocial)</td>
                             </tr>
@@ -70,8 +74,9 @@
                             <tr>
                                 <th class="text-end">Categoría Licitación:</th>
                                 <td>
-                                    <span class="badge bg-label-info">
-                                        @Html.Raw(licitacion.IdCategoriaLicitacion == 1 ? "Privada" : "Pública")
+
+                                    <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdCategoria(licitacion.IdCategoriaLicitacion)" data-bs-toggle="tooltip" title="@licitacion.CategoriaLicitacion.Descripcion">
+                                        @(licitacion.CategoriaLicitacion.Descripcion)
                                     </span>
                                 </td>
                             </tr> 
@@ -100,12 +105,13 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th><b>NRO ITEM</b></th>
-                                    <th><b>ITEM</b></th>
-                                    <th><b>DESCRIPCIÓN</b></th>
-                                    <th><b>CANTIDAD</b></th>
-                                    <th><b>PRECIO UNITARIO</b></th>
-                                    <th><b>SUBTOTAL</b></th>
+                                    <th class="text-center"><b>NRO ITEM</b></th>
+                                    <th class="text-center"><b>ITEM</b></th>
+                                    <th class="text-center"><b>DESCRIPCIÓN</b></th>
+                                    <th class="text-center"><b>CANTIDAD</b></th>
+                                    <th class="text-center"><b>PRECIO UNITARIO</b></th>
+                                    <th class="text-center"><b>OBSERVACIÓN</b></th>
+                                    <th class="text-center"><b>SUBTOTAL</b></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -114,13 +120,13 @@
                                     var item = licitacion.Items.ToArray()[i];
                                     var itemOferta = Model.Items.FirstOrDefault(x => x.IdLicitacionDetalle == item.IdLicitacionDetalle);
                                     <tr>
-                                        <td>
+                                        <td class="text-center">
                                             #@(item.NroItem + 1)
                                             <input name="Items[@i].IdLicitacionDetalle" type="hidden" class="form-control" value="@item.IdLicitacionDetalle" />
 
                                         </td>
 
-                                        <td>
+                                        <td class="text-center">
                                             @(item.Item)
                                             <input name="Items[@i].IdOfertaDetalle" type="hidden" class="form-control" value="@(itemOferta != null ? itemOferta.IdOfertaDetalle : "")" />
                                         </td>
@@ -128,14 +134,14 @@
 
 
 
-                                        <td>
+                                        <td class="text-center">
                                             @(item.Descripcion)
 
                                             <input name="Items[@i].IdOferta" type="hidden" class="form-control" value="@(itemOferta != null ? itemOferta.IdOferta : "")" />
 
                                         </td>
 
-                                        <td>@(item.Cantidad)</td>
+                                        <td class="text-center">@(item.Cantidad)</td>
                                         <input name="Items[@i].Cantidad" disabled type="hidden" class="form-control" value="@item.Cantidad" />
 
                                         <td>
@@ -147,7 +153,16 @@
                                                    value="@(itemOferta != null ? itemOferta.ImporteUnitario : "")" />
                                             <span data-valmsg-for="Items[@i].ImporteUnitario" class="text-danger"></span>
                                         </td>
+
                                         <td>
+                                            <input name="Items[@i].Observacion"
+                                                   type="text"
+                                                   class="form-control"
+                                                   data-index="@i"
+                                                   value="@(itemOferta != null ? itemOferta.Observacion : "")" />
+                                            <span data-valmsg-for="Items[@i].Observacion" class="text-danger"></span>
+                                        </td>
+                                        <td class="text-center">
                                             <span class="item-subtotal" id="subtotal-@i">@(itemOferta != null ? itemOferta.ImporteSubtotal : "")</span>
                                             <input name="Items[@i].ImporteSubtotal" type="hidden" class="form-control" value="@(itemOferta != null ? itemOferta.ImporteSubtotal : "")" />
 
@@ -157,8 +172,8 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="5" class="text-start"><strong>TOTAL GENERAL:</strong></td>
-                                    <td><strong><span id="total-general">@subtotal</span></strong></td>
+                                    <td colspan="6" class="text-start"><strong>TOTAL GENERAL:</strong></td>
+                                    <td class="text-center"><strong><span id="total-general">@subtotal</span></strong></td>
                                 </tr>
                             </tfoot>
                         </table>

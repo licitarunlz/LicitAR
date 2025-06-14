@@ -2,6 +2,7 @@ using LicitAR.Core.Data;
 using LicitAR.Core.Data.Models;
 using LicitAR.Core.Utils;
 using Microsoft.EntityFrameworkCore;
+using LicitAR.Core.Services;
 
 namespace LicitAR.Core.Business.Licitaciones
 {
@@ -9,7 +10,7 @@ namespace LicitAR.Core.Business.Licitaciones
     {
         Task<List<LicitacionInvitacion>> GetAllAsync();
         Task<List<LicitacionInvitacion>> GetByLicitacionAsync(int idLicitacion);
-        Task AddInvitacionesAsync(int idLicitacion, List<int> idPersonas, int idUsuario);
+        Task AddInvitacionesAsync(int idLicitacion, List<int> idPersonas, int idUsuario, string baseUrl);
         Task RemoveInvitacionAsync(int idLicitacion, int idPersona);
         Task<List<LicitacionInvitacion>> GetInvitacionesByPersonaAsync(int idPersona);
     }
@@ -17,10 +18,12 @@ namespace LicitAR.Core.Business.Licitaciones
     public class LicitacionInvitacionManager : ILicitacionInvitacionManager
     {
         private readonly LicitARDbContext _dbContext;
+        private readonly ILicitacionNotificationService _notificationService;
 
-        public LicitacionInvitacionManager(LicitARDbContext dbContext)
+        public LicitacionInvitacionManager(LicitARDbContext dbContext, ILicitacionNotificationService notificationService)
         {
             _dbContext = dbContext;
+            _notificationService = notificationService;
         }
 
         public async Task<List<LicitacionInvitacion>> GetAllAsync()
@@ -48,7 +51,8 @@ namespace LicitAR.Core.Business.Licitaciones
                 .Where(x => x.IdPersona == idPersona)
                 .ToListAsync();
         }
-        public async Task AddInvitacionesAsync(int idLicitacion, List<int> idPersonas, int idUsuario)
+
+        public async Task AddInvitacionesAsync(int idLicitacion, List<int> idPersonas, int idUsuario, string baseUrl)
         {
             var existentes = await _dbContext.LicitacionInvitacion
                 .Where(x => x.IdLicitacion == idLicitacion)
@@ -63,10 +67,27 @@ namespace LicitAR.Core.Business.Licitaciones
                 {
                     IdLicitacion = idLicitacion,
                     IdPersona = idPersona,
-                    FechaInvitacion = DateTime.UtcNow,
+                    FechaInvitacion = DateTime.Now,
                     IdUsuario = idUsuario,
                     Audit = AuditHelper.GetCreationData(idUsuario)
                 });
+
+                // Obtener datos de la persona y licitación para el email
+                var persona = await _dbContext.Personas.FindAsync(idPersona);
+                var licitacion = await _dbContext.Licitaciones.FindAsync(idLicitacion);
+
+                if (persona != null && licitacion != null && !string.IsNullOrEmpty(persona.Email))
+                {
+                    var model = new
+                    {
+                        NombrePersona = persona.RazonSocial,
+                        LicitacionNombre = licitacion.Titulo,
+                        LicitacionId = licitacion.IdLicitacion,
+                        FechaInvitacion = DateTime.Now,
+                        BaseUrl = baseUrl
+                    };
+                    await _notificationService.NotificarInvitacionLicitacionAsync(persona.Email, model);
+                }
             }
             await _dbContext.SaveChangesAsync();
         }

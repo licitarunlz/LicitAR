@@ -34,6 +34,9 @@ namespace LicitAR.Core.Data.Models
         [MaxLength(2000, ErrorMessage =  ErrorMessages.MAXLENGTH)]
         [Display(Name = "Descripción")]
         public required string Descripcion { get; set; }
+        
+        [Display(Name = "Rubro")]
+        public int? IdRubro { get; set; }
 
         
         [Display(Name = "Fecha de Publicación")]
@@ -57,6 +60,8 @@ namespace LicitAR.Core.Data.Models
         [ForeignKey("IdCategoriaLicitacion")]
         public required CategoriaLicitacion CategoriaLicitacion { get; set; }
 
+        [ForeignKey("IdRubro")]
+        public Rubro Rubro { get; set; }
         [ForeignKey("IdEntidadLicitante")]
         public EntidadLicitante EntidadLicitante { get; set; }
         public bool Enabled { get; set; } = true; // Por defecto, habilitado

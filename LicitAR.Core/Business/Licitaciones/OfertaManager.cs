@@ -17,6 +17,7 @@ namespace LicitAR.Core.Business.Licitaciones
         Task<bool> UpdateOfertaAsync(Oferta oferta, int userId);
         Task<bool> PublicarOfertaAsync(int idOferta, int userId);
         Task<bool> CancelarOfertaAsync(int id, int idUsuario);
+        Task<List<Oferta>> GetAllOfertasAsync();
         Task<List<Oferta>> GetAllOfertasPorLicitacionAsync(int IdLicitacion);
         Task<List<Oferta>> GetAllOfertasExistentesPorPersonaYLicitacionAsync(int IdPersona, int IdLicitacion);
         Task<List<Oferta>> GetAllOfertasPorPersonaAsync(int IdPersona);
@@ -65,6 +66,16 @@ namespace LicitAR.Core.Business.Licitaciones
                 .ToListAsync();
         }
 
+        public async Task<List<Oferta>> GetAllOfertasAsync()
+        {
+            return await _dbContext.Ofertas
+                .Where(o => o.Audit.FechaBaja == null)
+                .Include(o => o.EstadoOferta) // Include EstadoLicitacion
+                .Include(o => o.Persona)
+                .Include(o => o.Licitacion)
+                .Include(o => o.Items)
+                .ToListAsync();
+        }
 
         public async Task<Oferta?> GetOfertaByIdAsync(int idOferta)
         {
@@ -83,7 +94,7 @@ namespace LicitAR.Core.Business.Licitaciones
 
                 oferta.CodigoOfertaLicitacion = await this.ObtenerProximoCodigoOfertaAsync(oferta.IdLicitacion);
                 oferta.IdEstadoOferta = 1;
-                oferta.FechaOferta = DateTime.UtcNow;
+                oferta.FechaOferta = DateTime.Now;
                 
                 oferta.Audit = AuditHelper.GetCreationData(userId);
                 _dbContext.Ofertas.Add(oferta);
@@ -136,7 +147,7 @@ namespace LicitAR.Core.Business.Licitaciones
                     return false;
 
                 ofertaFromDdbb.IdEstadoOferta = 2;
-                ofertaFromDdbb.FechaOferta = DateTime.UtcNow;
+                ofertaFromDdbb.FechaOferta = DateTime.Now;
 
                 ofertaFromDdbb.Audit = AuditHelper.SetModificationData(ofertaFromDdbb.Audit, userId);
                                 

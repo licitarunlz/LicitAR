@@ -4,68 +4,79 @@
     ViewData["Title"] = $"Editar Licitación: [{Model.CodigoLicitacion}] - {Model.Titulo}";
 }
 
+<main role="main">
 <div class="row">
     <div class="col-xl">
         <div class="card mb-6">
             <div class="card-body">
-                <form asp-action="Edit" id="form-licitacion">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <form asp-action="Edit" id="form-licitacion" role="form" aria-labelledby="form-title">
+                    <h1 id="form-title" class="visually-hidden">Editar Licitación</h1>
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3" aria-live="assertive"></div>
 
                     <input type="hidden" asp-for="IdLicitacion" />
                     <input type="hidden" asp-for="IdEstadoLicitacion" />
 
                     <div class="row">
                         <div class="col-md-3 mb-3">
-                            <label asp-for="CodigoLicitacion" class="form-label"></label>
-                            <input asp-for="CodigoLicitacion" class="form-control" readonly="true" />
-                            <span asp-validation-for="CodigoLicitacion" class="text-danger"></span>
+                            <label asp-for="CodigoLicitacion" class="form-label" for="CodigoLicitacion"></label>
+                            <input asp-for="CodigoLicitacion" class="form-control" readonly="true" id="CodigoLicitacion" aria-readonly="true" />
+                            <span asp-validation-for="CodigoLicitacion" class="text-danger" aria-live="polite"></span>
                         </div>
                         <div class="col-md-9 mb-3">
-                            <label asp-for="IdEntidadLicitante" class="form-label">Entidad Licitante</label>
+                            <label asp-for="IdEntidadLicitante" class="form-label" for="IdEntidadLicitante">Entidad Licitante</label>
                             <select asp-for="IdEntidadLicitante" class="form-select"
-                                    asp-items="@(new SelectList(ViewBag.EntidadesLicitantes, "IdEntidadLicitante", "Texto", Model.IdEntidadLicitante))">
+                                    asp-items="@(new SelectList(ViewBag.EntidadesLicitantes, "IdEntidadLicitante", "Texto", Model.IdEntidadLicitante))"
+                                    id="IdEntidadLicitante" aria-required="true">
                                 <option value="">Seleccione una entidad...</option>
                             </select>
-                            <span asp-validation-for="IdEntidadLicitante" class="text-danger"></span>
+                            <span asp-validation-for="IdEntidadLicitante" class="text-danger" aria-live="polite"></span>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Titulo" class="form-label"></label>
-                        <input asp-for="Titulo" class="form-control" />
-                        <span asp-validation-for="Titulo" class="text-danger"></span>
+                        <label asp-for="Titulo" class="form-label" for="Titulo"></label>
+                        <input asp-for="Titulo" class="form-control" id="Titulo" aria-required="true" />
+                        <span asp-validation-for="Titulo" class="text-danger" aria-live="polite"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Descripcion" class="form-label"></label>
-                        <textarea rows="5" asp-for="Descripcion" class="form-control"></textarea>
-                        <span asp-validation-for="Descripcion" class="text-danger"></span>
+                        <label asp-for="Descripcion" class="form-label" for="Descripcion"></label>
+                        <textarea rows="5" asp-for="Descripcion" class="form-control" id="Descripcion" aria-required="true"></textarea>
+                        <span asp-validation-for="Descripcion" class="text-danger" aria-live="polite"></span>
                     </div>
 
+                        <div class="mb-3">
+                            <label asp-for="IdRubro" class="form-label"></label>
+                            <select asp-for="IdRubro" asp-items="ViewBag.ComboRubros" class="form-control">
+                                <option value="">Seleccione un Rubro</option>
+                            </select>
+                            <span asp-validation-for="IdRubro" class="text-danger"></span>
+                        </div>
                     <div class="mb-3">
-                        <h5 class="mb-3">Tipo de Invitación</h5>
+                        <h5 class="mb-3" id="tipo-invitacion-title">Tipo de Invitación</h5>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" asp-for="IdCategoriaLicitacion" value="1" id="publica" />
-                            <label class="form-check-label" for="publica">Pública</label>
+                            <input class="form-check-input" type="radio" asp-for="IdCategoriaLicitacion" value="1" id="publica" aria-labelledby="publica-label tipo-invitacion-title" />
+                            <label class="form-check-label" for="publica" id="publica-label">Pública</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" asp-for="IdCategoriaLicitacion" value="2" id="privada" />
-                            <label class="form-check-label" for="privada">Privada</label>
+                            <input class="form-check-input" type="radio" asp-for="IdCategoriaLicitacion" value="2" id="privada" aria-labelledby="privada-label tipo-invitacion-title" />
+                            <label class="form-check-label" for="privada" id="privada-label">Privada</label>
                         </div>
-                        <span asp-validation-for="IdCategoriaLicitacion" class="text-danger"></span>
+                        <span asp-validation-for="IdCategoriaLicitacion" class="text-danger" aria-live="polite"></span>
                     </div>
 
                     <div class="mb-3 mt-3">
-                        <h5 class="mb-3">Detalle</h5>
-                        <table class="table" id="items-table">
+                        <h5 class="mb-3" id="detalle-title">Detalle</h5>
+                        <table class="table" id="items-table" aria-describedby="detalle-title" aria-label="Detalle de ítems de la licitación">
+                            <caption class="visually-hidden">Detalle de ítems de la licitación</caption>
                             <thead>
                                 <tr>
-                                    <th>Nro Item</th>
-                                    <th>Item</th>
-                                    <th>Descripción</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio Unitario Estimado</th>
-                                    <th></th>
+                                    <th scope="col">Nro Item</th>
+                                    <th scope="col">Item</th>
+                                    <th scope="col">Descripción</th>
+                                    <th scope="col">Cantidad</th>
+                                    <th scope="col">Precio Unitario Estimado</th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -80,40 +91,42 @@
                                             <input name="Items[@i].NroItem" class="form-control" value="@Model.Items[i].NroItem" type="hidden" />
                                         </td>
                                         <td>
-                                            <input name="Items[@i].Item" class="form-control" value="@Model.Items[i].Item" />
+                                            <input name="Items[@i].Item" class="form-control" value="@Model.Items[i].Item" aria-label="Item @(i+1)" />
                                         </td>
                                         <td>
-                                            <input name="Items[@i].Descripcion" class="form-control" value="@Model.Items[i].Descripcion" />
+                                            <input name="Items[@i].Descripcion" class="form-control" value="@Model.Items[i].Descripcion" aria-label="Descripción @(i+1)" />
                                         </td>
                                         <td>
-                                            <input name="Items[@i].Cantidad" class="form-control" value="@Model.Items[i].Cantidad" />
+                                            <input name="Items[@i].Cantidad" class="form-control" value="@Model.Items[i].Cantidad" aria-label="Cantidad @(i+1)" />
                                         </td>
                                         <td>
-                                            <input name="Items[@i].PrecioEstimadoUnitario" class="form-control" value="@Model.Items[i].PrecioEstimadoUnitario" />
+                                            <input name="Items[@i].PrecioEstimadoUnitario" class="form-control" value="@Model.Items[i].PrecioEstimadoUnitario" aria-label="Precio Estimado Unitario @(i+1)" />
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-danger btn-sm btn-remove" title="Eliminar"><i class="bx bx-trash"></i></button>
+                                            <button type="button" class="btn btn-danger btn-sm btn-remove" title="Eliminar ítem" aria-label="Eliminar ítem @(i+1)">
+                                                <i class="bx bx-trash" aria-hidden="true"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
 
-                        <div class="alert alert-danger alert-dismissible fade show py-6" role="alert" id="tabla-error" style="display:none"></div>
+                        <div class="alert alert-danger alert-dismissible fade show py-6" role="alert" id="tabla-error" style="display:none" aria-live="assertive"></div>
                         <br />
 
-                        <button type="button" class="btn btn-success btn-sm d-flex align-items-center gap-1" id="add-detalle">
-                            <i class="bx bx-plus"></i> <span>Agregar ítem</span>
+                        <button type="button" class="btn btn-success btn-sm d-flex align-items-center gap-1" id="add-detalle" aria-label="Agregar ítem al detalle">
+                            <i class="bx bx-plus" aria-hidden="true"></i> <span>Agregar ítem</span>
                         </button>
                         <br />
                     </div>
 
                     <div class="text-start mt-8">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bx bx-edit"></i>&nbsp;Editar
+                        <button type="submit" class="btn btn-primary" aria-label="Editar licitación">
+                            <i class="bx bx-edit" aria-hidden="true"></i>&nbsp;Editar
                         </button>
-                        <a asp-action="Index" class="btn btn-secondary">
-                            <i class="bx bx-arrow-back"></i>&nbsp;Volver a la Lista
+                        <a asp-action="Index" class="btn btn-secondary" aria-label="Volver a la lista de licitaciones">
+                            <i class="bx bx-arrow-back" aria-hidden="true"></i>&nbsp;Volver a la Lista
                         </a>
                     </div>
                 </form>
@@ -121,6 +134,7 @@
         </div>
     </div>
 </div>
+</main>
 
 @section BusinessScripts {
     <partial name="_ValidationScriptsPartial" />
@@ -137,19 +151,21 @@
                     <input name="Items[${index}].NroItem" class="form-control" type="hidden" value="${index}" />
                 </td>
                 <td>
-                    <input name="Items[${index}].Item" class="form-control" />
+                    <input name="Items[${index}].Item" class="form-control" aria-label="Item ${index + 1}" />
                 </td>
                 <td>
-                    <input name="Items[${index}].Descripcion" class="form-control" />
+                    <input name="Items[${index}].Descripcion" class="form-control" aria-label="Descripción ${index + 1}" />
                 </td>
                 <td>
-                    <input name="Items[${index}].Cantidad" class="form-control" />
+                    <input name="Items[${index}].Cantidad" class="form-control" aria-label="Cantidad ${index + 1}" />
                 </td>
                 <td>
-                    <input name="Items[${index}].PrecioEstimadoUnitario" class="form-control" />
+                    <input name="Items[${index}].PrecioEstimadoUnitario" class="form-control" aria-label="Precio Estimado Unitario ${index + 1}" />
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger btn-sm btn-remove" title="Eliminar"><i class="bx bx-trash"></i></button>
+                    <button type="button" class="btn btn-danger btn-sm btn-remove" title="Eliminar ítem" aria-label="Eliminar ítem ${index + 1}">
+                        <i class="bx bx-trash" aria-hidden="true"></i>
+                    </button>
                 </td>
             </tr>`;
             $("#items-table tbody").append(nuevaFila);

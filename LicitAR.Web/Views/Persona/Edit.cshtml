@@ -43,7 +43,13 @@
                                 </select>
                                 <span asp-validation-for="IdTipoPersona" class="text-danger"></span>
                             </div>
-
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="IdRubro" class="form-label"></label>
+                                <select asp-for="IdRubro" asp-items="ViewBag.ComboRubros" class="form-control">
+                                    <option value="">Seleccione un Rubro</option>
+                                </select>
+                                <span asp-validation-for="IdRubro" class="text-danger"></span>
+                            </div>
 
                            
                         </div>
@@ -59,7 +65,7 @@
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Telefono" class="control-label"></label>
-                                <input asp-for="Telefono" class="form-control" />
+                                <input asp-for="Telefono" class="form-control" maxlength="15" />
                                 <span asp-validation-for="Telefono" class="text-danger"></span>
                             </div>
                         </div>

@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Reportes";
+}
+<!--Licitaciones-->
+<div class="card shadow-sm border border-primary mb-2">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0" style="color:white">
+            <i class="bx bx-file"></i> Licitaciones
+        </h5>
+        <form method="post" asp-action="Exportar" asp-controller="Reportes" class="mb-0">
+            <input type="hidden" name="tipoEntidad" id="tipoEntidad" value="Licitaciones" />
+            <button type="submit" class="btn btn-outline-light btn-sm">
+                <i class="bx bx-download me-1"></i> Exportar
+            </button>
+        </form>
+    </div>
+
+    <div class="card-body">
+
+        <p class="mt-4">Obtener listado completo de licitaciones en formato Excel.</p>
+
+
+
+    </div>
+</div>
+<!--Ofertas-->
+<div class="card shadow-sm border border-primary mb-2">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="card-title " style="color: white">
+            <i class="bx bx-file"></i> Ofertas
+        </h5><form method="post" asp-action="Exportar" asp-controller="Reportes">
+
+            <input type="hidden" name="tipoEntidad" id="tipoEntidad" value="Ofertas" />
+
+            <button type="submit" class="btn btn-outline-light btn-sm">
+                <i class="bx bx-download me-1"></i> Exportar
+            </button>
+
+        </form>
+    </div>
+
+    <div class="card-body">
+
+        <p class="mt-4">Obtener listado completo de las ofertas en formato Excel.</p>
+    </div>
+</div>
+<!--Oferentes-->
+<div class="card shadow-sm border border-primary mb-2">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-2" style="color: white">
+            <i class="bx bx-file"></i> Oferentes
+        </h5>
+        <form method="post" asp-action="Exportar" asp-controller="Reportes">
+
+            <input type="hidden" name="tipoEntidad" id="tipoEntidad" value="Oferentes" />
+
+            <button type="submit" class="btn btn-outline-light btn-sm">
+                <i class="bx bx-download me-1"></i> Exportar
+            </button>
+
+        </form>
+    </div>
+
+    <div class="card-body">
+
+        <p class="mt-4">Obtener listado completo de los Oferentes en formato Excel.</p>
+    </div>
+</div>
+<!--Entidades Licitantes-->
+<div class="card shadow-sm border border-primary mb-2">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-2" style="color: white">
+            <i class="bx bx-file"></i> Entidades Licitantes
+        </h5>
+        <form method="post" asp-action="Exportar" asp-controller="Reportes">
+           
+                <input type="hidden" name="tipoEntidad" id="tipoEntidad" value="EntidadesLicitantes" />
+            
+                <button type="submit" class="btn btn-outline-light btn-sm">
+                    <i class="bx bx-download me-1"></i> Exportar 
+                </button> 
+        </form>
+    </div>
+
+    <div class="card-body">
+        <p class="mt-4">Obtener listado completo de las Entidades Licitantes en formato Excel.</p>
+    </div>
+</div> 

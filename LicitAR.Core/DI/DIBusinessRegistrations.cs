@@ -1,10 +1,12 @@
 ﻿using LicitAR.Core.Business.Identidad;
 using LicitAR.Core.Business.Licitaciones;
+using LicitAR.Core.Business.Dashboard;
 using LicitAR.Core.Business.Parametros;
 using LicitAR.Core.Utils;
 using LicitAR.Core.Business.Auditoria;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using LicitAR.Core.Business.Reportes;
 
 namespace LicitAR.Core.DI
 {
@@ -26,7 +28,9 @@ namespace LicitAR.Core.DI
             services.AddScoped<IParametrosManager, ParametrosManager>();
             services.AddScoped<IEvaluacionManager, EvaluacionManager>();
             services.AddScoped<ILicitacionInvitacionManager, LicitacionInvitacionManager>();
+            services.AddScoped<IReportesManager, ReportesManager>();
             services.AddScoped<IAuditManager, AuditManager>();
+            services.AddScoped<IDashboardManager, DashboardManager>();
 
             return services;
         }

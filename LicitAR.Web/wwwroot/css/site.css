@@ -91,3 +91,15 @@ button {
         transform: rotate(360deg);
     }
 }
+
+/* Fix for distorted checkbox and select elements */
+input[type="checkbox"].form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    border-radius: 0.25em;
+    vertical-align: middle;
+    /* Remove unwanted box-shadow or appearance */
+    box-shadow: none;
+    appearance: auto;
+}
+

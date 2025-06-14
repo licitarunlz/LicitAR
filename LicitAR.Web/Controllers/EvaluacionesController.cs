@@ -13,8 +13,9 @@ using LicitAR.Core.Data.Models.Helpers;
 using LicitAR.Core.Utils;
 using LicitAR.Core.Data.Models.Historial;
 using LicitAR.Core.Business.Auditoria;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using LicitAR.Core.Data.Models.Parametros;
+using LicitAR.Web.Helpers.Auditoria;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LicitAR.Web.Controllers
 {
@@ -25,22 +26,25 @@ namespace LicitAR.Web.Controllers
         private IOfertaManager _ofertaManager;
         private IEvaluacionManager _evaluacionManager;
         private readonly IAuditManager _auditManager;
+        private readonly IConfiguration _config;
 
         public EvaluacionesController(LicitARDbContext context,
                                       ILicitacionManager licitacionManager,
                                       IOfertaManager ofertaManager,
                                       IEvaluacionManager evaluacionManager,
-                                      IAuditManager auditManager)
+                                      IAuditManager auditManager,
+                                      IConfiguration config)
         {
             _context = context;
             _licitacionManager = licitacionManager;
             _ofertaManager = ofertaManager;
             _evaluacionManager = evaluacionManager;
             _auditManager = auditManager;
+            _config = config;
         }
 
         [HttpGet("/Licitacion/Evaluaciones")]
-        // GET: Evaluaciones
+        [AuditarEvento("EvaluacionesController - Tabla", "Evaluacion", "Visualización de listado de evaluaciones")]
         public async Task<IActionResult> Index(string codigoLicitacion, int? idEstadoEvaluacion, int page = 1, int pageSize = 10)
         {
             ViewBag.EstadosEvalacion = _context.EstadoEvaluacion.ToList();
@@ -76,6 +80,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Evaluaciones/Details/5
         [HttpGet("/Licitacion/Evaluaciones/{idEvaluacion:int}/Detalles")]
+        [AuditarEvento("EvaluacionesController - Detalle", "Evaluacion", "Visualización de detalle de evaluación", "idEvaluacion")]
         public async Task<IActionResult> Details(int? idEvaluacion)
         {
 
@@ -144,9 +149,9 @@ namespace LicitAR.Web.Controllers
             ViewBag.ofertas = ofertas;
             EvaluacionModel model = new EvaluacionModel();
             model.IdLicitacion = idLicitacion;
-            model.FechaInicioEvaluacion = DateTime.UtcNow;
+            model.FechaInicioEvaluacion = DateTime.Now;
             model.IdEvaluacion = 0;
-            model.FechaFinEvaluacion = DateTime.UtcNow;
+            model.FechaFinEvaluacion = DateTime.Now;
             model.IdUsuarioEvaluador = IdentityHelper.GetUserLicitARId(User);
 
             //ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion");
@@ -158,6 +163,7 @@ namespace LicitAR.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("/Licitacion/{idLicitacion:int}/Evaluaciones/Iniciar"), ActionName("Create")]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("EvaluacionesController - Crear", "Evaluacion", "Creación de evaluación", "idLicitacion")]
         public async Task<IActionResult> Create(int idLicitacion, EvaluacionModel evaluacion)
         {
             if (ModelState.IsValid)
@@ -237,6 +243,7 @@ namespace LicitAR.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("/Licitacion/Evaluaciones/{idEvaluacion:int}/Editar")]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("EvaluacionesController - Editar", "Evaluacion", "Edición de evaluación", "idEvaluacion")]
         public async Task<IActionResult> Edit(int idEvaluacion, EvaluacionModel evaluacionModel)
         {
 
@@ -274,6 +281,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Evaluaciones/Resultado/5
         [HttpGet("/Licitacion/Evaluaciones/{idEvaluacion:int}/Resultado/{idEstadoResultado:int}")]
+        [AuditarEvento("EvaluacionesController - Resultado Generar", "Evaluacion", "Visualización de resultado de evaluación", "idEvaluacion")]
         public async Task<IActionResult> Resultado(int? idEvaluacion, int? idEstadoResultado)
         {
             if (idEvaluacion == null)
@@ -327,10 +335,12 @@ namespace LicitAR.Web.Controllers
         // POST: Evaluaciones/Delete/5
         [HttpPost("/Licitacion/Evaluaciones/{idEvaluacion:int}/Resultado/{idEstadoResultado:int}")]
         [ValidateAntiForgeryToken]
+        [AuditarEvento("EvaluacionesController - Resultado Enviar", "Evaluacion", "Actualización de resultado de evaluación", "idEvaluacion")]
         public async Task<IActionResult> Resultado(int idEvaluacion, int idEstadoResultado)
         {
             int idUser = IdentityHelper.GetUserLicitARId(User);
-            var result = await _evaluacionManager.ResultadoEvaluacionAsync(idEvaluacion, idEstadoResultado, idUser);
+            var baseUrl = _config["App:BaseUrl"] ?? "https://https://licitarappdev.azurewebsites.net/";
+            var result = await _evaluacionManager.ResultadoEvaluacionAsync(idEvaluacion, idEstadoResultado, idUser, baseUrl);
 
             return RedirectToAction(nameof(Index));
         }

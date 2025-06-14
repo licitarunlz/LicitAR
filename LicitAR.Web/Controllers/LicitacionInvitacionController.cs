@@ -5,6 +5,8 @@ using LicitAR.Core.Data.Models;
 using LicitAR.Web.Helpers;
 using System.Linq;
 using LicitAR.Core.Business.Auditoria;
+using LicitAR.Web.Helpers.Auditoria;
+using Microsoft.Extensions.Configuration;
 
 namespace LicitAR.Web.Controllers
 {
@@ -14,19 +16,23 @@ namespace LicitAR.Web.Controllers
         private readonly IPersonaManager _personaManager;
         private readonly ILicitacionManager _licitacionManager;
         private readonly IAuditManager _auditManager;
+        private readonly IConfiguration _config;
 
         public LicitacionInvitacionController(
             ILicitacionInvitacionManager manager,
             IPersonaManager personaManager,
             ILicitacionManager licitacionManager,
-            IAuditManager auditManager)
+            IAuditManager auditManager,
+            IConfiguration config)
         {
             _manager = manager;
             _personaManager = personaManager;
             _licitacionManager = licitacionManager;
             _auditManager = auditManager;
+            _config = config;
         }
 
+        [AuditarEvento("LicitacionInvitacionController - Tabla", "LicitacionInvitacion", "Visualización de invitaciones de licitación")]
         public async Task<IActionResult> Index(int? idLicitacion, string codigoLicitacion, string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
             List<LicitacionInvitacion> invitaciones;
@@ -94,6 +100,7 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpPost]
+        [AuditarEvento("LicitacionInvitacionController - Eliminar", "LicitacionInvitacion", "Eliminación de invitación de persona a licitación")]
         public async Task<IActionResult> Remove(int idLicitacion, int idPersona)
         {
             await _manager.RemoveInvitacionAsync(idLicitacion, idPersona);
@@ -121,13 +128,15 @@ namespace LicitAR.Web.Controllers
         }
 
         [HttpPost]
+        [AuditarEvento("LicitacionInvitacionController - Asignar Persona", "LicitacionInvitacion", "Asignación de personas a licitación")]
         public async Task<IActionResult> AssignPersonaToLicitacion(AssignPersonaToLicitacionViewModel model, List<int> SelectedToAdd, List<int> SelectedToRemove)
         {
             int idUsuario = IdentityHelper.GetUserLicitARId(User);
 
             if (SelectedToAdd != null && SelectedToAdd.Any())
             {
-                await _manager.AddInvitacionesAsync(model.IdLicitacion, SelectedToAdd, idUsuario);
+                var baseUrl = _config["App:BaseUrl"] ?? "https://tusitio.com";
+                await _manager.AddInvitacionesAsync(model.IdLicitacion, SelectedToAdd, idUsuario, baseUrl);
                 foreach (var idPersona in SelectedToAdd)
                 {
                     var persona = await _personaManager.GetPersonaByIdAsync(idPersona);

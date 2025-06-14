@@ -22,7 +22,7 @@ namespace LicitAR.Web.Helpers
                 throw new InvalidOperationException("The LicitARId claim was not found for the current user.");
             }
 
-            Console.WriteLine($"LicitARId claim found: {userId.Value}");
+            //Console.WriteLine($"LicitARId claim found: {userId.Value}");
             return int.Parse(userId.Value);
         }
 
@@ -69,7 +69,7 @@ namespace LicitAR.Web.Helpers
         {
             audit ??= new Audit(); // Ensure audit is not null
             audit.ModifiedBy = userId;
-            audit.ModifiedDate = DateTime.UtcNow;
+            audit.ModifiedDate = DateTime.Now;
             return audit;
         }
     }

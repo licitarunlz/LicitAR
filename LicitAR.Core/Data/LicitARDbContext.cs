@@ -23,7 +23,7 @@ namespace LicitAR.Core.Data
         public DbSet<PersonaUsuario> PersonaUsuarios { get; set; }
         public DbSet<Localidad> Localidades { get; set; }
         public DbSet<Provincia> Provincias { get; set; }
-        public DbSet<Provincia> Rubros { get; set; }
+        public DbSet<Rubro> Rubros { get; set; }
         public DbSet<TipoContacto> TiposContacto { get; set; }
         public DbSet<TipoPersona> TiposPersona { get; set; }
         public DbSet<Parametria> Parametria { get; set; }
@@ -126,6 +126,11 @@ namespace LicitAR.Core.Data
                         .OnDelete(DeleteBehavior.Cascade); // Borra ítems si se borra la licitación
 
             modelBuilder.Entity<Licitacion>()
+                .HasOne(l => l.Rubro)
+                .WithMany()
+                .HasForeignKey(l => l.IdRubro);
+
+            modelBuilder.Entity<Licitacion>()
                         .HasOne(l => l.EntidadLicitante)
                         .WithMany(e => e.Licitaciones)
                         .HasForeignKey(l => l.IdEntidadLicitante)
@@ -184,6 +189,12 @@ namespace LicitAR.Core.Data
                 .HasOne(p => p.Provincia)
                 .WithMany()
                 .HasForeignKey(p => p.IdProvincia);
+
+
+            modelBuilder.Entity<Persona>()
+                .HasOne(p => p.Rubro)
+                .WithMany()
+                .HasForeignKey(p => p.IdRubro);
 
             modelBuilder.Entity<Persona>()
                 .HasOne(p => p.Localidad)

@@ -39,8 +39,15 @@ namespace LicitAR.Web.Controllers
 
         // GET: Persona
         [AuthorizeClaim("Persona.Ver")]
+        [AuditarEvento("PersonaController - Tabla", "Persona", "Visualización de tabla oferentes", "id")]
         public async Task<IActionResult> Index(string cuit, string razonSocial, int page = 1, int pageSize = 10)
         {
+            // Redirigir a Home si el usuario es Oferente
+            if (User.HasClaim("RoleDescription", "Oferente"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var personasList = await _personaManager.GetAllPersonasAsync();
              
             var query = personasList.AsQueryable();
@@ -85,7 +92,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Persona/Details/5
         [AuthorizeClaim("Persona.Ver")]
-        [AuditarEvento("PersonaController - Details", "Persona", "Visualización de detalle de persona", "id")]
+        [AuditarEvento("PersonaController - Detalle", "Persona", "Visualización de detalle de persona", "id")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -105,7 +112,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Persona/Create
         [AuthorizeClaim("Persona.Crear")]
-        [AuditarEvento("PersonaController - Create", "Persona", "Inicio creación de persona")]
+        [AuditarEvento("PersonaController - Creacion", "Persona", "Inicio creación de persona")]
         public IActionResult Create()
         {
             var items = _context.Provincias
@@ -124,14 +131,20 @@ namespace LicitAR.Web.Controllers
                         Text = x.Descripcion.ToString() 
                     }).ToList();
 
+            var rubros = _context.Rubros
+                  .Select(x => new SelectListItem
+                  {
+                      Value = x.IdRubro.ToString(),
+                      Text = x.Descripcion.ToString()
+                  }).ToList();
             ViewBag.ComboProvincias = items;
             ViewBag.ComboLocalidades = itemsLocalidades;
             ViewBag.ComboTiposPersona = tiposPersonas;
+            ViewBag.ComboRubros = rubros;
             return View();
         }
-        // GET: Persona/CreatePersonaUsuario
+        // GET: Persona/CreatePersonaUsuario 
         [AuthorizeClaim("Persona.Crear")]
-        [AuditarEvento("PersonaController - CreatePersonaUsuario", "Persona", "Inicio creación de persona usuario")]
         public IActionResult CreatePersonaUsuario()
         {
             PersonaModel personaModel = new PersonaModel();
@@ -161,9 +174,17 @@ namespace LicitAR.Web.Controllers
                         Text = x.Descripcion.ToString()
                     }).ToList();
 
+            var rubros = _context.Rubros
+                  .Select(x => new SelectListItem
+                  {
+                      Value = x.IdRubro.ToString(),
+                      Text = x.Descripcion.ToString()
+                  }).ToList();
+
             ViewBag.ComboProvincias = items;
             ViewBag.ComboLocalidades = itemsLocalidades;
             ViewBag.ComboTiposPersona = tiposPersonas;
+            ViewBag.ComboRubros = rubros;
             return View(personaModel);
         }
 
@@ -171,7 +192,7 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Persona.Crear")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AuditarEvento("PersonaController - CreatePersonaUsuario", "Persona", "Creación de persona usuario")]
+        [AuditarEvento("PersonaController - Crear Persona", "Persona", "Creación de persona usuario")]
         public async Task<IActionResult> CreatePersonaUsuario(PersonaModel personaModel)
         {
             if (ModelState.IsValid)
@@ -228,7 +249,7 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Persona.Crear")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AuditarEvento("PersonaController - Create", "Persona", "Creación de persona")]
+        [AuditarEvento("PersonaController - Creacion", "Persona", "Creación de persona")]
         public async Task<IActionResult> Create(PersonaModel personaModel)
         {
             if (ModelState.IsValid)
@@ -256,7 +277,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Persona/Edit/5
         [AuthorizeClaim("Persona.Editar")]
-        [AuditarEvento("PersonaController - Edit", "Persona", "Inicio edición de persona", "id")]
+        [AuditarEvento("PersonaController - Editar", "Persona", "Inicio edición de persona", "id")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -292,10 +313,17 @@ namespace LicitAR.Web.Controllers
                                                 Text = x.Descripcion
                                             }).ToList();
 
+            var rubros = _context.Rubros
+                  .Select(x => new SelectListItem
+                  {
+                      Value = x.IdRubro.ToString(),
+                      Text = x.Descripcion.ToString()
+                  }).ToList();
+
             ViewBag.ComboProvincias = items;
             ViewBag.ComboLocalidades = itemsLocalidades;
             ViewBag.ComboTiposPersona = tiposPersonas;
-
+            ViewBag.ComboRubros = rubros;
 
             var personaModel = new PersonaModel();
             personaModel.SetPersonaData(persona);
@@ -307,7 +335,7 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Persona.Editar")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AuditarEvento("PersonaController - Edit", "Persona", "Edición de persona", "id")]
+        [AuditarEvento("PersonaController - Editar", "Persona", "Edición de persona", "id")]
         public async Task<IActionResult> Edit(int id, PersonaModel personaModel)
         {
             if (id != personaModel.IdPersona)
@@ -344,7 +372,7 @@ namespace LicitAR.Web.Controllers
 
         // GET: Persona/Delete/5
         [AuthorizeClaim("Persona.Eliminar")]
-        [AuditarEvento("PersonaController - Delete", "Persona", "Inicio eliminación de persona", "id")]
+        [AuditarEvento("PersonaController - Eliminar", "Persona", "Inicio eliminación de persona", "id")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -368,7 +396,7 @@ namespace LicitAR.Web.Controllers
         [AuthorizeClaim("Persona.Eliminar")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [AuditarEvento("PersonaController - DeleteConfirmed", "Persona", "Confirmación de eliminación de persona", "id")]
+        [AuditarEvento("PersonaController - Eliminar", "Persona", "Confirmación de eliminación de persona", "id")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             int idUser = IdentityHelper.GetUserLicitARId(User);
