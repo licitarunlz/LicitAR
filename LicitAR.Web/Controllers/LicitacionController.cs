@@ -181,14 +181,16 @@ namespace LicitAR.Web.Controllers
                 {
                     e.IdEntidadLicitante,
                     Texto = StringFormatHelper.FormatearCuitSeguro(e.Cuit, e.RazonSocial)
-                }).ToList();
+                }).OrderBy(x => x.Texto)
+                .ToList();
 
             var rubros = _dbContext.Rubros
                   .Select(x => new SelectListItem
                   {
                       Value = x.IdRubro.ToString(),
                       Text = x.Descripcion.ToString()
-                  }).ToList();
+                  }).OrderBy(x => x.Text)
+                  .ToList();
 
             ViewBag.EntidadesLicitantes = entidades;
             ViewBag.ComboRubros = rubros;
