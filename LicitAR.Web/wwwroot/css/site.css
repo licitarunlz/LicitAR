@@ -135,3 +135,15 @@ input[type="checkbox"].form-check-input {
             .documento-card .acciones a:hover {
                 text-decoration: underline;
             }
+
+.documento-lista .documento-item {
+    border-bottom: 1px solid #dee2e6;
+}
+
+    .documento-lista .documento-item:nth-child(odd) {
+        background-color: #f8f9fa; /* gris claro */
+    }
+
+    .documento-lista .documento-item:nth-child(even) {
+        background-color: #ffffff;
+    }

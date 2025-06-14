@@ -17,7 +17,7 @@ namespace LicitAR.Core.Business.Documentacion
     {
         Task AddLicitacionDocumentacionAsync(int idLicitacion, LicitacionDocumentacion licitacionDocumentacion, IFormFile formFile, int idUsuario);
         Task<List<LicitacionDocumentacion>> GetAllDocumentacionByIdLicitacionAsync(int idLicitacion);
-        Task<LicitacionDocumentacion?> GetByIdAsync(int idLicitacion);
+        Task<LicitacionDocumentacion?> GetByIdAsync(int id);
         Task RemoveLicitacionDocumentacionAsync(int idLicitacionDocumentacion, int idUsuario);
     }
 
@@ -36,13 +36,13 @@ namespace LicitAR.Core.Business.Documentacion
         public async Task<List<LicitacionDocumentacion>> GetAllDocumentacionByIdLicitacionAsync(int idLicitacion)
         {
             return await _context.LicitacionDocumentacion
-                           .Where(x => x.Audit.FechaBaja == null)
+                           .Where(x => x.Audit.FechaBaja == null && x.IdLicitacion == idLicitacion)
                            .ToListAsync();
         }
-        public async Task<LicitacionDocumentacion?> GetByIdAsync(int idLicitacion)
+        public async Task<LicitacionDocumentacion?> GetByIdAsync(int id)
         {
             return await _context.LicitacionDocumentacion
-                           .FirstOrDefaultAsync(x => x.Audit.FechaBaja == null);
+                           .FirstOrDefaultAsync(x => x.IdLicitacionDocumentacion == id );
         }
         public async Task AddLicitacionDocumentacionAsync(int idLicitacion, LicitacionDocumentacion licitacionDocumentacion, IFormFile formFile, int idUsuario)
         {

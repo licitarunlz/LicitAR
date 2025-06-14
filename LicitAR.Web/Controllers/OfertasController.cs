@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Humanizer;
 using LicitAR.Web.Helpers.Auditoria;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using LicitAR.Core.Business.Documentacion;
 
 namespace LicitAR.Web.Controllers
 {
@@ -27,16 +28,19 @@ namespace LicitAR.Web.Controllers
         private readonly ILicitacionManager _licitacionManager;
         private readonly IOfertaManager _ofertaManager;
         private readonly ILicitacionInvitacionManager _licitacionInvitacionManager;
+        private readonly ILicitacionDocumentacionManager _licitacionDocumentacionManager;
         private readonly LicitARDbContext _context;
 
         public OfertasController(LicitARDbContext context, 
                                  ILicitacionManager licitacionManager, 
                                  IOfertaManager ofertaManager,
+                                 ILicitacionDocumentacionManager licitacionDocumentacionManager,
                                  ILicitacionInvitacionManager licitacionInvitacionManager)
         {
             _licitacionManager = licitacionManager;
             _ofertaManager = ofertaManager;
             _licitacionInvitacionManager = licitacionInvitacionManager;
+            _licitacionDocumentacionManager = licitacionDocumentacionManager;
             _context = context;
         }
 
@@ -131,6 +135,9 @@ namespace LicitAR.Web.Controllers
                 return View("NotFound"); // Updated
             }
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
+
+            ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(id.Value);
+
             return View(licitacion);
         }
         // GET: Ofertas
@@ -177,7 +184,7 @@ namespace LicitAR.Web.Controllers
         }
 
         // GET: Ofertas/Details/5
-        [AuditarEvento("OfertasController - Detalle", "Oferta", "Visualización de detalle de oferta", "id")]
+        [AuditarEvento("OfertasController - Detalle", "Oferta", "Visualización de detalle de oferta", "idOferta")]
         public async Task<IActionResult> Details(int? idOferta)
         {
             if (idOferta == null)
