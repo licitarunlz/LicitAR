@@ -83,32 +83,46 @@
                                         <i class="bx bx-dots-vertical-rounded"></i>
                                     </button>
                                     <div class="dropdown-menu">
-                                       
-                                        <a class="dropdown-item" asp-action="DetalleLicitaciones" asp-route-id="@(item?.IdLicitacion)">
-                                            <i class="bx bx-show me-1"></i> Detalles
-                                        </a>
-
-                                        <a class="dropdown-item" asp-action="Create" asp-route-idlicitacion="@item?.IdLicitacion">
-                                            <i class="bx bx-edit me-1"></i> Postularme
-                                        </a>
+                                        @if (item != null)
+                                        {
+                                            <a class="dropdown-item" asp-action="DetalleLicitaciones" asp-route-id="@(item.IdLicitacion)">
+                                                <i class="bx bx-show me-1"></i> Detalles
+                                            </a>
+                                            <a class="dropdown-item" asp-action="Create" asp-route-idlicitacion="@item.IdLicitacion">
+                                                <i class="bx bx-edit me-1"></i> Postularme
+                                            </a>
+                                        }
                                     </div>
                                 </div>
                             </td>
-                            <td>@item.CodigoLicitacion</td>
-                            <td>@item.Titulo</td> 
-                             <td>
-                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(item.IdEstadoLicitacion)">
-                                    @(item.EstadoLicitacion?.Descripcion ?? "N/A")
-                                </span>
+                            <td>@(item?.CodigoLicitacion ?? "-")</td>
+                            <td>@(item?.Titulo ?? "-")</td>
+                            <td>
+                                @if (item != null)
+                                {
+                                    <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(item.IdEstadoLicitacion)">
+                                        @(item.EstadoLicitacion?.Descripcion ?? "N/A")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
                             </td>
                             <td>
-                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdCategoria(item.IdCategoriaLicitacion)">
-                                    @(item.CategoriaLicitacion?.Descripcion ?? "N/A")
-                                </span>
+                                @if (item != null)
+                                {
+                                    <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdCategoria(item.IdCategoriaLicitacion)">
+                                        @(item.CategoriaLicitacion?.Descripcion ?? "N/A")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
                             </td>
-                            <td>@(item.FechaPublicacion.HasValue ? item.FechaPublicacion.Value : "-")</td>
-                            <td>@(item.FechaCierre.HasValue ? item.FechaCierre.Value : "-")</td>
-
+                            <td>@(item?.FechaPublicacion.HasValue == true ? item.FechaPublicacion.Value.ToString() : "-")</td>
+                            <td>@(item?.FechaCierre.HasValue == true ? item.FechaCierre.Value.ToString() : "-")</td>
                         </tr>
                     }
                 }
