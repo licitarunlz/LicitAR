@@ -1,11 +1,15 @@
-﻿@using LicitAR.Web.Helpers
+﻿@using LicitAR.Core.Data.Models
+@using LicitAR.Web.Helpers
 @model LicitAR.Core.Data.Models.Oferta
 
 @{
     ViewData["Title"] = "Detalle de Postulación de Oferta";
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
-
-    string backgroundClass = CssClassHelper.GetOfertaBagdeCssClassByIdEstado(Model.IdEstadoOferta);;
+    List<LicitacionDocumentacion> documentacion = ViewBag.Documentacion;
+    string backgroundClass = CssClassHelper.GetOfertaBagdeCssClassByIdEstado(Model.IdEstadoOferta);
+    Licitacion licitacion = Model.Licitacion;
+    List<LicitacionChecklistItem> checklistItems = ViewBag.ChecklistItems;
+    List<OfertaChecklistItem> ofertasChecklistItems = ViewBag.OfertaChecklistItems; 
 }
 
 <div class="card mb-0">
@@ -83,6 +87,112 @@
             </tbody>
         </table>
 
+
+        <div class="mb-8">
+            <h6 class="fw-bold mb-2">Documentación</h6>
+            @if (!documentacion.Any())
+            {
+                <p>No hay documentación Asociada</p>
+            }
+            else
+            {
+                <div class="documento-lista">
+                    @foreach (var documenta in documentacion)
+                    {
+                        <div class="documento-item d-flex flex-wrap justify-content-between align-items-center p-2">
+                            <h4 class="mb-0">@documenta.TituloDocumento</h4>
+                            <a href="@documenta.BlobUri" target="_blank" class="btn btn-primary  text-end"><i class="bx bx-download"></i></a>
+
+                        </div>
+                    }
+                </div>
+            }
+       
+        </div>
+
+
+        <div id="DocumentacionChecklist" class="mt-8">
+            <div class="row mb-3">
+                <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <h4 class="mb-0">Checklist de Documentación a Presentar por el oferente</h4>
+                    @if (licitacion.IdEstadoLicitacion == 1)
+                    {
+                        <a asp-action="CreateChecklist" asp-route-idLicitacion="@licitacion.IdLicitacion" class="btn btn-success btn-sm ">
+                            <i class='bx bx-message-square-add  me-2'></i> Agregar
+                        </a>
+                    }
+                </div>
+            </div>
+            @if (!checklistItems.Any())
+            {
+                <p>No hay ningún item asociado al checklist</p>
+            }
+            else
+            {
+
+                <div class="documentos-lista">
+                    @foreach (var item in checklistItems)
+                    {
+                        <div class="documento-card">
+                            <div>
+                                <strong>Documento:</strong> @item.DescripcionItem
+                                @if (item.DocumentoObligatorio)
+                                {
+
+                                    <span class="badge bg-label-danger">Obligatorio</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-label-warning">Opcional</span>
+                                }
+                            </div>
+
+                            <div class="acciones">
+                                @{
+                                    var ofertaChecklist = ofertasChecklistItems.FirstOrDefault(x => x.IdLicitacionChecklistItem == item.IdLicitacionChecklistItem);
+                                    if (ofertaChecklist == null)
+                                    {
+                                        <form asp-action="UploadChecklistItem" method="post" enctype="multipart/form-data" class="d-inline">
+                                            <input type="hidden" name="IdOfertaChecklistItem" value="0" />
+                                            <input type="hidden" name="IdOferta" value="@Model.IdOferta" />
+                                            <input type="hidden" name="IdLicitacionChecklistItem" value="@item.IdLicitacionChecklistItem" />
+                                            <input type="hidden" name="BlobUri" value="-" />
+                                            @if (Model.IdEstadoOferta == 1)
+                                            {
+                                                <div class="col-md-4">
+                                                    <div class="mb-2">
+                                                        <label>Archivo</label>
+                                                        <input type="file" name="archivo" class="form-control" required />
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    <i class='bx bx-upload me-2'></i> Subir
+                                                </button>
+                                            }
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <a href="@ofertaChecklist.BlobUri" target="_blank" class="btn btn-primary  btn-sm text-end" style="color:white"><i class="bx bx-download me-2 "></i> Descargar</a>
+                                        @if (Model.IdEstadoOferta == 1)
+                                        {
+                                            <form asp-action="DeleteChecklistItem" method="post" onsubmit="return confirm('¿Seguro que querés eliminar este documento del checklist?');" class="d-inline">
+                                                <input type="hidden" name="id" value="@ofertaChecklist.IdOfertaChecklistItem" />
+                                                <input type="hidden" name="idOferta" value="@Model.IdOferta" />
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class='bx bx-trash me-2'></i> Eliminar
+                                                </button>
+                                            </form>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+        </div>
 
         <h5><b>Detalle</b></h5>
 

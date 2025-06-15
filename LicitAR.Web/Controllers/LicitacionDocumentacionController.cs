@@ -42,7 +42,9 @@ namespace LicitAR.Web.Controllers
             ViewBag.licitacion = licitacion;
 
             var listaDocumentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(idLicitacion);
+            var licitacionChecklistItems = await _licitacionDocumentacionManager.GetAllChecklistItemsByIdLicitacionAsync(idLicitacion);
 
+            ViewBag.checklistItems = licitacionChecklistItems;
             return View(listaDocumentacion.ToList());
         }
 
@@ -55,8 +57,8 @@ namespace LicitAR.Web.Controllers
             if (licitacion == null)
                 return NotFound();
 
-            ViewBag.licitacion = licitacion;
-
+            
+            ViewBag.licitacion = licitacion; 
             return View();
         }
 
@@ -83,7 +85,44 @@ namespace LicitAR.Web.Controllers
             return View(model);
         }
 
-      
+
+        // GET: LicitacionDocumentacion/Adjuntar
+        [HttpGet("/Licitaciones/{idLicitacion:int}/Documentacion/Checklist")]
+        public async Task<IActionResult> CreateChecklist(int idLicitacion)
+        {
+            var licitacion = await _licitacionManager.GetLicitacionByIdAsync(idLicitacion);
+            if (licitacion == null)
+                return NotFound();
+
+            ViewBag.licitacion = licitacion;
+
+            return View();
+        }
+
+        // POST: LicitacionDocumentacion/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost("/Licitaciones/{idLicitacion:int}/Documentacion/Checklist")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateChecklist(int idLicitacion, LicitacionChecklistItemModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                int idUser = IdentityHelper.GetUserLicitARId(User);
+
+                LicitacionChecklistItem licitacionChecklistItem = model.GetLicitacionChecklistItem(AuditHelper.GetCreationData(idUser));
+
+                await _licitacionDocumentacionManager.AddLicitacionChecklistItemAsync(model.IdLicitacion, licitacionChecklistItem, idUser);
+
+                return RedirectToAction(nameof(Index), new { idLicitacion = idLicitacion });
+            }
+
+            var licitacion = await _licitacionManager.GetLicitacionByIdAsync(model.IdLicitacion);
+            ViewBag.licitacion = licitacion;
+            return View(model);
+        }
+
+
         // POST: LicitacionDocumentacion/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -96,6 +135,17 @@ namespace LicitAR.Web.Controllers
             return RedirectToAction(nameof(Index), new { idLicitacion = idLicitacion });
         }
 
-        
+        // POST: LicitacionDocumentacion/Delete/5
+        [HttpPost, ActionName("DeleteChecklist")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteChecklistConfirmed(int idLicitacionChecklistItem, int idLicitacion)
+        {
+            var idUsuario = IdentityHelper.GetUserLicitARId(User);
+            await _licitacionDocumentacionManager.RemoveLicitacionChecklistItemAsync(idLicitacionChecklistItem, idUsuario);
+
+
+            return RedirectToAction(nameof(Index), new { idLicitacion = idLicitacion });
+        }
+
     }
 }

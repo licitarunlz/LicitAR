@@ -5,6 +5,7 @@
 @{
     ViewData["Title"] = "Publicar licitación";
     List<LicitacionDocumentacion> documentacion = ViewBag.Documentacion;
+    List<LicitacionChecklistItem> checklistItems = ViewBag.ChecklistItems;
 }
 
 <div class="alert alert-success alert-dismissible" role="alert">
@@ -54,7 +55,7 @@
 
 
                 <div class="mb-8">
-                    <h6 class="fw-bold mb-2">Documentación</h6>
+                    <h6 class="fw-bold mb-2">Documentación Vinculada</h6>
                     @if (!documentacion.Any())
                     {
                         <p>No hay documentación Asociada</p>
@@ -72,10 +73,45 @@
                             }
                         </div>
                     }
+
                 </div>
-                
-                
-                <p class="card-text">
+                <div class="mb-8">
+                    <h6 class="fw-bold mb-2">Checklist de Documentación a Presentar por el oferente</h6>
+                    @if (!checklistItems.Any())
+                    {
+                        <p>No hay items en el checklist asociados</p>
+                    }
+                    else
+                    {
+                        <div class="documento-lista">
+                            @foreach (var item in checklistItems)
+                            {
+                                <div class="documento-item d-flex flex-wrap justify-content-between align-items-center p-2">
+                                    <h4 class="mb-0">
+                                        @item.DescripcionItem
+
+                                        @if (item.DocumentoObligatorio)
+                                        {
+
+                                            <span class="badge bg-label-danger">Obligatorio</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-label-warning">Opcional</span>
+                                        }
+                                    </h4>
+
+
+                                </div>
+                            }
+                        </div>
+                    }
+
+                </div>
+
+
+
+                <p class="card-text mt-8">
                     <h6 class="fw-bold mb-2">Detalle de Ítems</h6>
 
                     <div class="mb-3 mt-3">

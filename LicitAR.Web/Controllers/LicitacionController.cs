@@ -138,6 +138,8 @@ namespace LicitAR.Web.Controllers
 
             ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(id.Value);
 
+            ViewBag.ChecklistItems = await _licitacionDocumentacionManager.GetAllChecklistItemsByIdLicitacionAsync(id.Value);
+           
             await _auditManager.LogLicitacionChange(
                 licitacion.IdLicitacion,
                 IdentityHelper.GetUserLicitARId(User),
@@ -378,6 +380,8 @@ namespace LicitAR.Web.Controllers
                 return View("NotFound");
             }
             ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(id.Value);
+
+            ViewBag.ChecklistItems = await _licitacionDocumentacionManager.GetAllChecklistItemsByIdLicitacionAsync(id.Value);
 
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             return View(licitacion);

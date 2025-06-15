@@ -32,4 +32,28 @@ namespace LicitAR.Web.Models
         }
 
     }
+
+    public class LicitacionChecklistItemModel
+    {
+        public int IdLicitacionChecklistItem { get; set; }
+        public int IdLicitacion { get; set; }
+        public string DescripcionItem { get; set; }
+        public bool DocumentoObligatorio { get; set; }
+
+        public LicitacionChecklistItem GetLicitacionChecklistItem(AuditTable audit)
+        {
+
+            return new LicitacionChecklistItem
+            {
+                IdLicitacionChecklistItem = this.IdLicitacionChecklistItem,
+                IdLicitacion = this.IdLicitacion,
+                DescripcionItem = this.DescripcionItem,
+                DocumentoObligatorio = this.DocumentoObligatorio,
+                OfertasChecklistItems = null,
+                Audit = audit,
+            };
+        }
+
+    }
+
 }

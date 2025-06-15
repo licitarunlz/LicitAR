@@ -99,14 +99,16 @@
                                         <td>
                                             <input name="Items[@i].Cantidad" class="form-control" value="@Model.Items[i].Cantidad" aria-label="Cantidad @(i+1)" />
                                         </td>
-                                        <td>
-                                            <input name="Items[@i].PrecioEstimadoUnitario" class="form-control" value="@Model.Items[i].PrecioEstimadoUnitario" aria-label="Precio Estimado Unitario @(i+1)" />
-                                        </td>
-                                        <td>
-                                            <button type="button" class="btn btn-danger btn-sm btn-remove" title="Eliminar ítem" aria-label="Eliminar ítem @(i+1)">
-                                                <i class="bx bx-trash" aria-hidden="true"></i>
-                                            </button>
-                                        </td>
+
+                                            <td>
+                                                <input name="Items[@i].PrecioEstimadoUnitario" class="form-control" value="@Model.Items[i].PrecioEstimadoUnitario" aria-label="Precio Estimado Unitario @(i+1)" />
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-danger btn-sm btn-remove" title="Eliminar ítem" aria-label="Eliminar ítem @(i+1)">
+                                                    <i class="bx bx-trash" aria-hidden="true"></i>
+                                                </button>
+                                            </td>
+
                                     </tr>
                                 }
                             </tbody>

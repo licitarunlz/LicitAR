@@ -20,6 +20,7 @@ using Humanizer;
 using LicitAR.Web.Helpers.Auditoria;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using LicitAR.Core.Business.Documentacion;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace LicitAR.Web.Controllers
 {
@@ -62,8 +63,12 @@ namespace LicitAR.Web.Controllers
                                         && x.FechaPublicacion < DateTime.Now
                                         && x.Audit.FechaBaja == null)?.ToList();
 
+
+
             if (licitaciones == null || !licitaciones.Any())
                 return View(licitaciones);
+
+
 
             var invitacionLicitaciones = await _licitacionInvitacionManager.GetInvitacionesByPersonaAsync(int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona").ToString()));
 
@@ -82,6 +87,8 @@ namespace LicitAR.Web.Controllers
                 }
             }
 
+            licitaciones = licitaciones.OrderByDescending(x => x.Audit.FechaAlta).ToList();
+            
             var query = licitaciones.AsQueryable();
 
             
@@ -137,7 +144,7 @@ namespace LicitAR.Web.Controllers
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
 
             ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(id.Value);
-
+            ViewBag.ChecklistItems = await _licitacionDocumentacionManager.GetAllChecklistItemsByIdLicitacionAsync(id.Value);
             return View(licitacion);
         }
         // GET: Ofertas
@@ -150,6 +157,8 @@ namespace LicitAR.Web.Controllers
             var ofertas = await _ofertaManager.GetAllOfertasPorPersonaAsync(idPersona);
             if (ofertas == null)
                 return View(ofertas);
+
+            ofertas = ofertas.OrderByDescending(x => x.Audit.FechaAlta).ToList();
 
             var query = ofertas.AsQueryable();
 
@@ -207,6 +216,9 @@ namespace LicitAR.Web.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(oferta.IdLicitacion);
+            ViewBag.ChecklistItems = await _licitacionDocumentacionManager.GetAllChecklistItemsByIdLicitacionAsync(oferta.IdLicitacion);
+            ViewBag.OfertaChecklistItems = await _licitacionDocumentacionManager.GetAllOfertaChecklistItemByIdOfertaAsync(oferta.IdOferta);
 
             return View(oferta);
         }
@@ -305,6 +317,8 @@ namespace LicitAR.Web.Controllers
                 return NotFound();
             }
 
+            ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(oferta.IdLicitacion);
+
             return View(oferta);
         }
 
@@ -395,6 +409,10 @@ namespace LicitAR.Web.Controllers
                 return NotFound();
             }
 
+            ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(oferta.IdLicitacion);
+            ViewBag.ChecklistItems = await _licitacionDocumentacionManager.GetAllChecklistItemsByIdLicitacionAsync(oferta.IdLicitacion);
+            ViewBag.OfertaChecklistItems = await _licitacionDocumentacionManager.GetAllOfertaChecklistItemByIdOfertaAsync(oferta.IdOferta);
+
             return View(oferta);
         }
 
@@ -408,6 +426,39 @@ namespace LicitAR.Web.Controllers
 
             TempData["Mensaje"] = "Oferta Publicada Exitosamente!";
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost("/Ofertas/UploadChecklistItem")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadChecklistItem(int idOferta, OfertaChecklistItemModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                int idUser = IdentityHelper.GetUserLicitARId(User);
+
+                OfertaChecklistItem ofertaChecklistItem = model.GetOfertaChecklistItem(AuditHelper.GetCreationData(idUser));
+
+                await _licitacionDocumentacionManager.AddOfertaChecklistItemAsync(model.IdOferta, ofertaChecklistItem, model.archivo, idUser);
+
+                return RedirectToAction(nameof(Publicar), new { id = idOferta });
+            }
+             
+            return RedirectToAction(nameof(Publicar), new { id = idOferta });
+        }
+        [HttpPost("/Ofertas/DeleteChecklistItem")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteChecklistItem(int id, int idOferta)
+        {
+            if (ModelState.IsValid)
+            {
+                int idUser = IdentityHelper.GetUserLicitARId(User);
+
+                await _licitacionDocumentacionManager.RemoveOfertaChecklistItemAsync(id, idUser);
+
+                return RedirectToAction(nameof(Publicar), new { id = idOferta });
+            }
+
+            return RedirectToAction(nameof(Publicar), new { id = idOferta });
         }
 
     }

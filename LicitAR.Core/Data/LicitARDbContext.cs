@@ -31,9 +31,11 @@ namespace LicitAR.Core.Data
         public DbSet<CategoriaLicitacion> CategoriasLicitacion { get; set; }
         public DbSet<Licitacion> Licitaciones { get; set; }
         public DbSet<LicitacionDetalle> LicitacionesDetalle { get; set; }
+        public DbSet<LicitacionChecklistItem> LicitacionChecklistItems { get; set; }
         public DbSet<EstadoOferta> EstadosOferta { get; set; }
         public DbSet<Oferta> Ofertas { get; set; }
         public DbSet<OfertaDetalle> OfertasDetalle { get; set; }
+        public DbSet<OfertaChecklistItem> OfertaChecklistItems { get; set; }
         public DbSet<Evaluacion> Evaluaciones { get; set; }
         public DbSet<EvaluacionOferta> EvaluacionOfertas { get; set; }
         public DbSet<EvaluacionOfertaDetalle> EvaluacionOfertasDetalle { get; set; }
@@ -149,6 +151,9 @@ namespace LicitAR.Core.Data
             modelBuilder.Entity<LicitacionDetalle>().OwnsOne(p => p.Audit);
 
 
+            modelBuilder.Entity<LicitacionChecklistItem>().OwnsOne(p => p.Audit);
+
+
 
             modelBuilder.Entity<LicitacionDocumentacion>().OwnsOne(p => p.Audit);
 
@@ -183,6 +188,21 @@ namespace LicitAR.Core.Data
                 .HasOne(p => p.LicitacionDetalle)
                 .WithMany(ld => ld.OfertasDetalle)
                 .HasForeignKey(p => p.IdLicitacionDetalle)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<OfertaChecklistItem>().OwnsOne(p => p.Audit);
+
+            modelBuilder.Entity<OfertaChecklistItem>()
+                .HasOne(p => p.LicitacionChecklistItem)
+                .WithMany(ld => ld.OfertasChecklistItems)
+                .HasForeignKey(p => p.IdLicitacionChecklistItem)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<OfertaChecklistItem>()
+                .HasOne(p=> p.Oferta)
+                .WithMany()
+                .HasForeignKey(p=> p.IdOferta)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<LicitArUser>(entity =>

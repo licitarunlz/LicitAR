@@ -19,6 +19,16 @@ namespace LicitAR.Core.Business.Documentacion
         Task<List<LicitacionDocumentacion>> GetAllDocumentacionByIdLicitacionAsync(int idLicitacion);
         Task<LicitacionDocumentacion?> GetByIdAsync(int id);
         Task RemoveLicitacionDocumentacionAsync(int idLicitacionDocumentacion, int idUsuario);
+        Task AddLicitacionChecklistItemAsync(int idLicitacion, LicitacionChecklistItem licitacionChecklistItem, int idUsuario);
+        Task<List<LicitacionChecklistItem>> GetAllChecklistItemsByIdLicitacionAsync(int idLicitacion);
+        Task<LicitacionChecklistItem?> GetChecklistItemByIdAsync(int id);
+        Task RemoveLicitacionChecklistItemAsync(int idLicitacionDocumentacion, int idUsuario);
+
+        Task<List<OfertaChecklistItem>> GetAllOfertaChecklistItemByIdOfertaAsync(int idOferta);
+        Task<OfertaChecklistItem?> GetOfertaChecklistItemByIdAsync(int id);
+
+        Task AddOfertaChecklistItemAsync(int idOferta, OfertaChecklistItem ofertaChecklistItem, IFormFile archivo, int idUsuario);
+        Task RemoveOfertaChecklistItemAsync(int idOfertaChecklistItem, int idUsuario);
     }
 
     public class LicitacionDocumentacionManager : ILicitacionDocumentacionManager
@@ -32,7 +42,7 @@ namespace LicitAR.Core.Business.Documentacion
             _blobStorageService = blobStorageService;
         }
 
-
+        /*DocumentacionAdjunta*/
         public async Task<List<LicitacionDocumentacion>> GetAllDocumentacionByIdLicitacionAsync(int idLicitacion)
         {
             return await _context.LicitacionDocumentacion
@@ -83,5 +93,106 @@ namespace LicitAR.Core.Business.Documentacion
                 throw;
             }
         }
+
+        /*Checklist*/
+        public async Task<List<LicitacionChecklistItem>> GetAllChecklistItemsByIdLicitacionAsync(int idLicitacion)
+        {
+            return await _context.LicitacionChecklistItems
+                           .Where(x => x.Audit.FechaBaja == null && x.IdLicitacion == idLicitacion)
+                           .ToListAsync();
+        }
+        public async Task<LicitacionChecklistItem?> GetChecklistItemByIdAsync(int id)
+        {
+            return await _context.LicitacionChecklistItems
+                           .FirstOrDefaultAsync(x => x.IdLicitacionChecklistItem == id);
+        }
+        public async Task AddLicitacionChecklistItemAsync(int idLicitacion, LicitacionChecklistItem licitacionChecklistItem, int idUsuario)
+        {
+            try
+            {
+                _context.LicitacionChecklistItems.Add(licitacionChecklistItem);
+
+
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
+        public async Task RemoveLicitacionChecklistItemAsync(int idLicitacionChecklistItem, int idUsuario)
+        {
+            try
+            {
+                var licitacionChecklistItem = await this.GetByIdAsync(idLicitacionChecklistItem);
+
+                if (licitacionChecklistItem == null)
+                    return;
+
+                licitacionChecklistItem.Audit = AuditHelper.SetDeletionData(licitacionChecklistItem.Audit, idUsuario);
+                _context.LicitacionDocumentacion.Update(licitacionChecklistItem);
+
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+
+        /*Oferta Item*/
+        public async Task<List<OfertaChecklistItem>> GetAllOfertaChecklistItemByIdOfertaAsync(int idOferta)
+        {
+            return await _context.OfertaChecklistItems
+                           .Where(x => x.Audit.FechaBaja == null && x.IdOferta == idOferta)
+                           .ToListAsync();
+        }
+        public async Task<OfertaChecklistItem?> GetOfertaChecklistItemByIdAsync(int id)
+        {
+            return await _context.OfertaChecklistItems
+                           .FirstOrDefaultAsync(x => x.IdOfertaChecklistItem == id);
+        }
+
+        public async Task AddOfertaChecklistItemAsync(int idOferta, OfertaChecklistItem ofertaChecklistItem, IFormFile formFile, int idUsuario)
+        {
+            try
+            {
+                ofertaChecklistItem.Audit = AuditHelper.GetCreationData(idUsuario);
+                ofertaChecklistItem.BlobUri = await _blobStorageService.SubirArchivoAsync(formFile); 
+                ofertaChecklistItem.IdOfertaChecklistItem = 0;
+                _context.OfertaChecklistItems.Add(ofertaChecklistItem);
+
+
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
+
+        public async Task RemoveOfertaChecklistItemAsync(int idOfertaChecklistItem, int idUsuario)
+        {
+            try
+            {
+                var ofertaChecklistItem = await this.GetOfertaChecklistItemByIdAsync(idOfertaChecklistItem);
+
+                if (ofertaChecklistItem == null)
+                    return;
+
+                ofertaChecklistItem.Audit = AuditHelper.SetDeletionData(ofertaChecklistItem.Audit, idUsuario);
+                _context.OfertaChecklistItems.Update(ofertaChecklistItem);
+
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
     }
 }

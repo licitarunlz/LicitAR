@@ -6,6 +6,7 @@
     ViewData["Title"] = "Detalle de la licitacion";
     string classEstado = CssClassHelper.GetEvaluacionBagdeCssClassByIdEstado(Model.IdEstadoLicitacion);
     List<LicitacionDocumentacion> documentacion = ViewBag.Documentacion;
+    List<LicitacionChecklistItem> checklistItems = ViewBag.ChecklistItems;
 }
 
 <div class="row">
@@ -63,7 +64,7 @@
                         </tr>
                     </tbody>
                 </table>
-               
+
                 <div class="mb-8">
                     <h6 class="fw-bold mb-2">Documentación</h6>
                     @if (!documentacion.Any())
@@ -73,17 +74,50 @@
                     else
                     {
                         <div class="documento-lista">
-                        @foreach (var documenta in documentacion)
-                        {
+                            @foreach (var documenta in documentacion)
+                            {
                                 <div class="documento-item d-flex flex-wrap justify-content-between align-items-center p-2">
                                     <h4 class="mb-0">@documenta.TituloDocumento</h4>
                                     <a href="@documenta.BlobUri" target="_blank" class="btn btn-primary  text-end"><i class="bx bx-download"></i></a>
-                                     
-                            </div>
-                        }
+
+                                </div>
+                            }
                         </div>
                     }
                 </div>
+
+                <div class="mb-8">
+                    <h6 class="fw-bold mb-2">Checklist de Documentación a Presentar por el oferente</h6>
+                    @if (!checklistItems.Any())
+                    {
+                        <p>No hay items en el checklist asociados</p>
+                    }
+                    else
+                    {
+                        <div class="documento-lista">
+                            @foreach (var item in checklistItems)
+                            {
+                                <div class="documento-item d-flex flex-wrap justify-content-between align-items-center p-2">
+                                    <h4 class="mb-0">
+                                        @item.DescripcionItem
+                                        @if (item.DocumentoObligatorio)
+                                        {
+
+                                            <span class="badge bg-label-danger">Obligatorio</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-label-warning">Opcional</span>
+                                        }
+                                    </h4>
+
+                                </div>
+                            }
+                        </div>
+                    }
+
+                </div>
+
 
                 <div class="mb-4 mt-4">
                     <h6 class="fw-bold mb-2">Detalle de Ítems</h6>
@@ -115,9 +149,9 @@
                     </div>
                 </div>
 
-                
-                    <div class="d-flex gap-2 mt-4">
-                    <div class="dropdown">
+
+                <div class="d-flex gap-2 mt-4">
+                    <div class="dropdown dropup">
                         <a asp-action="Index" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-label="Acciones">
                             <i class="bx bx-cog" aria-hidden="true"></i>&nbsp;Acciones
                         </a>
@@ -128,7 +162,7 @@
                                     <i class="bx bx-edit-alt me-1"></i> Editar
                                 </a>
                             }
-                            @if ((Model.IdEstadoLicitacion == 3 && Model.FechaPublicacion > DateTime.Now) || Model.IdEstadoLicitacion == 7 )
+                            @if ((Model.IdEstadoLicitacion == 3 && Model.FechaPublicacion > DateTime.Now) || Model.IdEstadoLicitacion == 7)
                             {
                                 <a class="dropdown-item" asp-action="Create" asp-controller="Evaluaciones" asp-route-idLicitacion="@Model.IdLicitacion">
                                     <i class="bx bx-upload me-1"></i> Evaluar
