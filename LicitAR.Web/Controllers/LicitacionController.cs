@@ -9,7 +9,6 @@ using LicitAR.Web.Helpers;
 using LicitAR.Web.Helpers.Authorization;
 using LicitAR.Web.Helpers.Auditoria;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace LicitAR.Web.Controllers
 {

@@ -84,8 +84,23 @@ namespace LicitAR.Core.Business.Identidad
 
                     var callbackUrl = url + "/Usuario/ConfirmarUsuario?token=" + encodedToken + "&userEmail=" + user.Email;
 
-                    //envío mail de verificación
-                    await _emailSender.SendEmailAsync(user.UserName ?? "", "LicitAR - Confirmar Email", $"Hacé click <a href='{callbackUrl}'>acá</a> para Confirmar tu cuenta.");
+                    // Mensaje HTML mejorado para el mail de confirmación de cuenta
+                    var htmlMessage = $@"
+                        <div style='font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; padding: 24px; background: #fafbfc;'>
+                            <h2 style='color: #2d3e50;'>Confirmá tu cuenta</h2>
+                            <p>Hola <b>{user.Nombre} {user.Apellido}</b>,</p>
+                            <p>¡Gracias por registrarte en <b>LicitAR</b>!</p>
+                            <p>Para activar tu cuenta, por favor hacé click en el siguiente botón:</p>
+                            <p style='text-align: center; margin: 32px 0;'>
+                                <a href='{callbackUrl}' style='background: #28a745; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 4px; font-weight: bold; display: inline-block;'>Confirmar cuenta</a>
+                            </p>
+                            <p>Si no creaste esta cuenta, podés ignorar este correo.</p>
+                            <hr style='border: none; border-top: 1px solid #eee; margin: 24px 0;'/>
+                            <p style='font-size: 12px; color: #888;'>Este enlace expirará después de su primer uso.</p>
+                        </div>
+                    ";
+
+                    await _emailSender.SendEmailAsync(user.UserName ?? "", "LicitAR - Confirmar Email", htmlMessage);
                 }
             }
             return user;
@@ -126,9 +141,24 @@ namespace LicitAR.Core.Business.Identidad
                     string encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
                     url += "/Usuario/ResetPassword?token=" + encodedToken + "&email=" + user.Email;
-                    // Enviás el mail (con SendGrid o SMTP o lo que uses)
-                    await _emailSender.SendEmailAsync(user.Email ?? "", "Resetear contraseña",
-                        $"Hacé click <a href='{url}'>acá</a> para resetear tu contraseña.");
+
+                    // Mensaje HTML mejorado para el mail de reseteo de contraseña
+                    var htmlMessage = $@"
+                        <div style='font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; padding: 24px; background: #fafbfc;'>
+                            <h2 style='color: #2d3e50;'>Restablecer tu contraseña</h2>
+                            <p>Hola <b>{user.Nombre} {user.Apellido}</b>,</p>
+                            <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta en <b>LicitAR</b>.</p>
+                            <p>Para continuar, hacé click en el siguiente botón:</p>
+                            <p style='text-align: center; margin: 32px 0;'>
+                                <a href='{url}' style='background: #007bff; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 4px; font-weight: bold; display: inline-block;'>Restablecer contraseña</a>
+                            </p>
+                            <p>Si no solicitaste este cambio, podés ignorar este correo.</p>
+                            <hr style='border: none; border-top: 1px solid #eee; margin: 24px 0;'/>
+                            <p style='font-size: 12px; color: #888;'>Este enlace expirará después de su primer uso.</p>
+                        </div>
+                    ";
+
+                    await _emailSender.SendEmailAsync(user.Email ?? "", "Resetear contraseña", htmlMessage);
                 }
             }
             return user;

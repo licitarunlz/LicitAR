@@ -12,8 +12,6 @@ namespace LicitAR.Core.DI
 {
     public static class DIBusinessRegistrations
     { 
-     
-        /*Acá se ponen las registraciones de los managers de nuestro negocio*/
         public static IServiceCollection AddAppBusinessRegistrations(this IServiceCollection services, IConfiguration config)
         {
 
