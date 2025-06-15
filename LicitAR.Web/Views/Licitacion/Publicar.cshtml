@@ -1,8 +1,10 @@
-﻿@using LicitAR.Web.Helpers
+﻿@using LicitAR.Core.Data.Models
+@using LicitAR.Web.Helpers
 @model LicitAR.Core.Data.Models.Licitacion
 
 @{
     ViewData["Title"] = "Publicar licitación";
+    List<LicitacionDocumentacion> documentacion = ViewBag.Documentacion;
 }
 
 <div class="alert alert-success alert-dismissible" role="alert">
@@ -49,6 +51,30 @@
                         </tr>
                     </tbody>
                 </table>
+
+
+                <div class="mb-8">
+                    <h6 class="fw-bold mb-2">Documentación</h6>
+                    @if (!documentacion.Any())
+                    {
+                        <p>No hay documentación Asociada</p>
+                    }
+                    else
+                    {
+                        <div class="documento-lista">
+                            @foreach (var documenta in documentacion)
+                            {
+                                <div class="documento-item d-flex flex-wrap justify-content-between align-items-center p-2">
+                                    <h4 class="mb-0">@documenta.TituloDocumento</h4>
+                                    <a href="@documenta.BlobUri" target="_blank" class="btn btn-primary  text-end"><i class="bx bx-download"></i></a>
+
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+                
+                
                 <p class="card-text">
                     <h6 class="fw-bold mb-2">Detalle de Ítems</h6>
 

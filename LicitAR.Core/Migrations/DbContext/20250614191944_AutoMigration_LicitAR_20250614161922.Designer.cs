@@ -4,6 +4,7 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LicitAR.Core.Migrations.DbContext
 {
     [DbContext(typeof(LicitARDbContext))]
-    partial class LicitARDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250614191944_AutoMigration_LicitAR_20250614161922")]
+    partial class AutoMigration_LicitAR_20250614161922
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -507,11 +510,6 @@ namespace LicitAR.Core.Migrations.DbContext
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdLicitacionDocumentacion"));
 
-                    b.Property<string>("BlobUri")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
                     b.Property<DateTime>("FechaCarga")
                         .HasColumnType("datetime2");
 
@@ -520,8 +518,8 @@ namespace LicitAR.Core.Migrations.DbContext
 
                     b.Property<string>("NombreArchivoOriginal")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(244)
+                        .HasColumnType("nvarchar(244)");
 
                     b.Property<string>("TituloDocumento")
                         .IsRequired()

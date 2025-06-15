@@ -68,6 +68,7 @@ namespace LicitAR.Core.Data.Models
                                                   // Navegación hacia los ítems (detalle)
         public virtual ICollection<LicitacionDetalle> Items { get; set; } = new List<LicitacionDetalle>();
 
+        public virtual ICollection<LicitacionDocumentacion> DocumentosAsociados { get; set; } = new List<LicitacionDocumentacion>();
         public required AuditTable Audit { get; set; }
     }
 }

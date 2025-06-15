@@ -9,6 +9,8 @@ using LicitAR.Web.Helpers;
 using LicitAR.Web.Helpers.Authorization;
 using LicitAR.Web.Helpers.Auditoria;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using LicitAR.Core.Business.Documentacion;
 
 namespace LicitAR.Web.Controllers
 {
@@ -18,6 +20,7 @@ namespace LicitAR.Web.Controllers
         private readonly ILogger<LicitacionController> _logger;
         private readonly IOfertaManager _ofertaManager;
         private readonly IEvaluacionManager _evaluacionManager;
+        private readonly ILicitacionDocumentacionManager _licitacionDocumentacionManager;
         private readonly LicitARDbContext _dbContext;
         private readonly IAuditManager _auditManager;
 
@@ -26,6 +29,7 @@ namespace LicitAR.Web.Controllers
             ILogger<LicitacionController> logger,
             IOfertaManager ofertaManager,
             IEvaluacionManager evaluacionManager,
+            ILicitacionDocumentacionManager licitacionDocumentacionManager,
             LicitARDbContext dbContext,
             IAuditManager auditManager)
         {
@@ -33,6 +37,7 @@ namespace LicitAR.Web.Controllers
             _logger = logger;
             _ofertaManager = ofertaManager;
             _evaluacionManager = evaluacionManager;
+            _licitacionDocumentacionManager = licitacionDocumentacionManager;
             _dbContext = dbContext;
             _auditManager = auditManager;
         }
@@ -130,6 +135,8 @@ namespace LicitAR.Web.Controllers
             string cuit = entidad?.Cuit;
             string razon = entidad?.RazonSocial;
             string entidadLicitanteFormateada = StringFormatHelper.FormatearCuitSeguro(cuit, razon);
+
+            ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(id.Value);
 
             await _auditManager.LogLicitacionChange(
                 licitacion.IdLicitacion,
@@ -370,6 +377,7 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound");
             }
+            ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(id.Value);
 
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
             return View(licitacion);
