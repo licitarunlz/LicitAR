@@ -12,6 +12,7 @@
 }
 
 <div class="row">
+    <!-- Mensaje de bienvenida -->
     <div class="col-xxl-8 mb-4 order-0">
         <div class="card">
             <div class="d-flex align-items-start row">
@@ -19,7 +20,7 @@
                     <div class="card-body">
                         <h5 class="card-title text-primary mb-3">Bienvenido Oferente 👋</h5>
                         <p class="mb-4">Tienes @Model.LicitacionesDisponibles licitaciones disponibles y @Model.LicitacionesEnCurso en curso.</p>
-                        <a href="javascript:;" class="btn btn-sm btn-primary">Ver Mis Licitaciones</a>
+                        <a href="/Proveedor/Licitaciones" class="btn btn-sm btn-primary">Ver mis Licitaciones</a>
                     </div>
                 </div>
                 <div class="col-sm-5 text-center text-sm-left">
@@ -30,5 +31,56 @@
             </div>
         </div>
     </div>
-    <!-- Agrega más tarjetas o estadísticas relevantes para el rol de oferente -->
+    <!-- Statistics Cards -->
+    <div class="col-xxl-4 col-lg-12 col-md-4 order-1">
+        <div class="row">
+        <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card h-120">
+            <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                <div class="avatar flex-shrink-0">
+                    <span class="avatar-initial rounded bg-label-primary"><i class='bx bx-pulse'></i></span>
+                </div>
+                <div class="dropdown">
+                    <button class="btn p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bx bx-dots-vertical-rounded text-muted"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item" href="/Proveedor/Licitaciones">Ver Detalles</a>
+                    <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+                    </div>
+                </div>
+                </div>
+                <p class="mb-1"> Activas</p>
+                <h4 class="card-title mb-2">@Model.LicitacionesActivas</h4>
+                @* <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> @Model.PorcentajeLicitacionesActivasVsMesAnterior.ToString("P2")</small> *@
+            </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card h-100">
+            <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                <div class="avatar flex-shrink-0">
+                    <span class="avatar-initial rounded bg-label-info"><i class='bx bx-award'></i></span>
+                </div>
+                <div class="dropdown">
+                    <button class="btn p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bx bx-dots-vertical-rounded text-muted"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item" href="/Proveedor/Licitaciones">Ver Detalles</a>
+                    <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+                    </div>
+                </div>
+                </div>
+                <p class="mb-1">Adjudicaciones</p>
+                <h4 class="card-title mb-2">@Model.Adjudicaciones</h4>
+                @* <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> @Model.PorcentajeAdjudicacionesVsMesAnterior.ToString("P2")</small> *@
+            </div>
+            </div>
+        </div>
+        </div>
+    </div> 
+    </div>
 </div>
