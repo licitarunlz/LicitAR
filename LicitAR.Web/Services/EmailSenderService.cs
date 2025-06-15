@@ -25,7 +25,7 @@ namespace LicitAR.Web.Services
                     config["Email:Smtp:Username"],
                     config["Email:Smtp:Password"]
                 ),
-                EnableSsl = bool.Parse(config["Email:Smtp:Ssl"] ?? "true")
+                EnableSsl = true // Always enable SSL
             };
             _logger = logger;
         }

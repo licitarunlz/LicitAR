@@ -460,7 +460,7 @@ public class UsuarioController : Controller
 
         if (result != null)
         {
-            TempData["SuccessMessage"] = "Se realiz� el blanqueo de la contrase�a, se envi� un link a su email";
+            TempData["SuccessMessage"] = "La contraseña fue restablecida. Se envió un enlace a su correo electrónico para completar el proceso.";
 
         }
 
@@ -497,7 +497,7 @@ public class UsuarioController : Controller
 
         if (user != null)
         {
-            TempData["SuccessMessage"] = "Se realiz� el blanqueo de la contrase�a de forma exitosa, por favor click en el siguiente link para iniciar sesi�n";
+            TempData["SuccessMessage"] = "La contraseña fue restablecida con éxito. Haga clic en el siguiente enlace para iniciar sesión.";
 
             return RedirectToAction("ResetPasswordOk");
         }
