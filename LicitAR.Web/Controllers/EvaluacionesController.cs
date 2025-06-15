@@ -16,7 +16,7 @@ using LicitAR.Core.Business.Auditoria;
 using LicitAR.Core.Data.Models.Parametros;
 using LicitAR.Web.Helpers.Auditoria;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-
+ 
 namespace LicitAR.Web.Controllers
 {
     public class EvaluacionesController : Controller
@@ -154,6 +154,9 @@ namespace LicitAR.Web.Controllers
             model.FechaFinEvaluacion = DateTime.Now;
             model.IdUsuarioEvaluador = IdentityHelper.GetUserLicitARId(User);
 
+            var oferentes = await _ofertaManager.GetOferentesPorLicitacionAsync(idLicitacion);
+
+            ViewBag.Oferentes = oferentes;
             //ViewData["IdLicitacion"] = new SelectList(_context.Licitaciones, "IdLicitacion", "CodigoLicitacion");
             return View(model);
         }

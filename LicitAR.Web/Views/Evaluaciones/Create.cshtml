@@ -7,6 +7,7 @@
     Layout = "~/Views/Shared/_ContentNavbarLayout.cshtml";
     Licitacion licitacion = ViewBag.licitacion;
     IEnumerable<Oferta> ofertas = ViewBag.ofertas;
+    var oferentes = ViewBag.Oferentes;
 }
 
 <div class="container-fluid py-4">
@@ -31,6 +32,51 @@
             </div>
         </div>
     </div>
+
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">Listado de Oferentes</h5> 
+        </div>
+        <div class="card-body">
+            <div class="card mb-6"> 
+                
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Razón Social</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var oferente in oferentes)
+                                {
+                                    <tr>
+                                        <td>@oferente.RazonSocial</td>
+                                        <td>@oferente.FechaOferta</td>
+                                        <td>
+                                            <span class="badge bg-label-info">
+                                                @oferente.EstadoOferta
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-sm btn-primary" href="@Url.Action("Details", "Ofertas", new { idOferta = oferente.IdOferta })">
+                                                <i class="bx bx-search"></i> Ver Detalle
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+
+        </div>
+    </div>
+
 
     <div class="card mb-6">
         <div class="card-header">
