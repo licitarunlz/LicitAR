@@ -48,9 +48,19 @@ namespace LicitAR.Core.Business.Dashboard
 
     public class OferenteDashboardDto
     {
+        public string? NombreOferente { get; set; }
         public int LicitacionesDisponibles { get; set; }
         public int LicitacionesEnCurso { get; set; }
         public int AdjudicacionesGanadas { get; set; }
+        public int TotalLicitaciones { get; set; }
+        public int TotalLicitacionesActivasMesActual { get; set; }
+        public int TotalAdjudicacionesMesActual { get; set; }
+        public int LicitacionesActivas { get; set; }
+        public int Adjudicaciones { get; set; }
+        public decimal PorcentajeLicitacionesActivasVsMesAnterior { get; set; }
+        public decimal PorcentajeAdjudicacionesVsMesAnterior { get; set; }
+
+        public List<LicitacionDto> UltimasLicitaciones { get; set; } = new List<LicitacionDto>();
 
     }
 
@@ -173,14 +183,32 @@ namespace LicitAR.Core.Business.Dashboard
 
         public async Task<OferenteDashboardDto> GetOferenteDashboardAsync(int idOferente)
         {
-            var licitacionesDisponibles = await _dbContext.Licitaciones.CountAsync(l => l.IdEstadoLicitacion == 3);
+            var oferente = await _dbContext.Personas.FirstOrDefaultAsync(x => x.IdPersona == idOferente);
+
+            var licitacionesDisponibles = await _dbContext.Licitaciones.CountAsync(l => l.IdEstadoLicitacion == 3 || l.IdEstadoLicitacion == 9);
             var licitacionesEnCurso = await _dbContext.Ofertas.CountAsync(o => o.IdPersona == idOferente && o.IdEstadoOferta == 1);
             var adjudicacionesGanadas = await _dbContext.Ofertas.CountAsync(o => o.IdPersona == idOferente && o.IdEstadoOferta == 2);
+
+            // Ultimas licitaciones (por ejemplo, las 5 más recientes)
+            var ultimasLicitaciones = await _dbContext.Licitaciones
+                .OrderByDescending(l => l.Audit.FechaAlta)
+                .Take(5)
+                .Select(l => new LicitacionDto
+                {
+                    Nombre = l.EntidadLicitante != null ? l.EntidadLicitante.RazonSocial : null,
+                    Rubro = l.Rubro != null ? l.Rubro.Descripcion : null,
+                    Titulo = l.Titulo,
+                    MontoEstimado = l.Items.Sum(i => (decimal?)i.PrecioEstimadoUnitario) ?? 0
+                })
+                .ToListAsync();
+
             return new OferenteDashboardDto
             {
+                NombreOferente = oferente?.RazonSocial,
                 LicitacionesDisponibles = licitacionesDisponibles,
                 LicitacionesEnCurso = licitacionesEnCurso,
-                AdjudicacionesGanadas = adjudicacionesGanadas
+                AdjudicacionesGanadas = adjudicacionesGanadas,
+                UltimasLicitaciones = ultimasLicitaciones
             };
         }
 

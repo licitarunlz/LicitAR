@@ -152,7 +152,12 @@ namespace LicitAR.Web.Controllers
         public async Task<IActionResult> Index(string codigoLicitacion, string titulo,   int page = 1, int pageSize = 10)
         {
 
-            int idPersona = int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona"));
+            var idPersonaClaim = IdentityHelper.GetUserLicitARClaim(User, "IdPersona");
+            if (string.IsNullOrEmpty(idPersonaClaim))
+            {
+                throw new InvalidOperationException("IdPersona claim is missing or null.");
+            }
+            int idPersona = int.Parse(idPersonaClaim);
 
             var ofertas = await _ofertaManager.GetAllOfertasPorPersonaAsync(idPersona);
             if (ofertas == null)
@@ -164,15 +169,13 @@ namespace LicitAR.Web.Controllers
 
             if (!string.IsNullOrEmpty(codigoLicitacion))
             {
-                query = query.Where(l => l.Licitacion.CodigoLicitacion.Contains(codigoLicitacion));
+                query = query.Where(l => l.Licitacion != null && l.Licitacion.CodigoLicitacion != null && l.Licitacion.CodigoLicitacion.Contains(codigoLicitacion));
             }
 
             if (!string.IsNullOrEmpty(titulo))
             {
-                query = query.Where(l => l.Licitacion.Titulo.Contains(titulo, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(l => l.Licitacion != null && l.Licitacion.Titulo != null && l.Licitacion.Titulo.Contains(titulo, StringComparison.OrdinalIgnoreCase));
             }
-
-             
 
             var totalItems = query.Count();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
@@ -184,12 +187,8 @@ namespace LicitAR.Web.Controllers
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
-
-
+            
             return View(ofertasVista);
-             
-           
-           
         }
 
         // GET: Ofertas/Details/5

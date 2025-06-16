@@ -18,8 +18,14 @@
             <div class="d-flex align-items-start row">
                 <div class="col-sm-7">
                     <div class="card-body">
-                        <h5 class="card-title text-primary mb-3">Bienvenido Oferente 👋</h5>
-                        <p class="mb-4">Tienes @Model.LicitacionesDisponibles licitaciones disponibles y @Model.LicitacionesEnCurso en curso.</p>
+                        <h5 class="card-title text-primary mb-3">
+                            @{
+                                var nombre = string.IsNullOrWhiteSpace(Model.NombreOferente) ? "Oferente" : Model.NombreOferente;
+                            }
+                            Bienvenido @nombre 👋
+                        </h5>
+                        <p class="mb-4">Tienes @Model.LicitacionesDisponibles licitaciones disponibles y
+                            @Model.LicitacionesEnCurso en curso.</p>
                         <a href="/Proveedor/Licitaciones" class="btn btn-sm btn-primary">Ver mis Licitaciones</a>
                     </div>
                 </div>
@@ -34,53 +40,94 @@
     <!-- Statistics Cards -->
     <div class="col-xxl-4 col-lg-12 col-md-4 order-1">
         <div class="row">
-        <div class="col-lg-6 col-md-12 col-6 mb-4">
-            <div class="card h-120">
-            <div class="card-body">
-                <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                <div class="avatar flex-shrink-0">
-                    <span class="avatar-initial rounded bg-label-primary"><i class='bx bx-pulse'></i></span>
-                </div>
-                <div class="dropdown">
-                    <button class="btn p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bx bx-dots-vertical-rounded text-muted"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                    <a class="dropdown-item" href="/Proveedor/Licitaciones">Ver Detalles</a>
-                    <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+            <div class="col-lg-6 col-md-12 col-6 mb-4">
+                <div class="card h-120">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <span class="avatar-initial rounded bg-label-primary"><i class='bx bx-pulse'></i></span>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bx bx-dots-vertical-rounded text-muted"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="/Proveedor/Licitaciones">Ver Detalles</a>
+                                    <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mb-1"> Activas</p>
+                        <h4 class="card-title mb-2">@Model.LicitacionesActivas</h4>
+                        @* <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i>
+                        @Model.PorcentajeLicitacionesActivasVsMesAnterior.ToString("P2")</small> *@
                     </div>
                 </div>
-                </div>
-                <p class="mb-1"> Activas</p>
-                <h4 class="card-title mb-2">@Model.LicitacionesActivas</h4>
-                @* <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> @Model.PorcentajeLicitacionesActivasVsMesAnterior.ToString("P2")</small> *@
             </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-12 col-6 mb-4">
-            <div class="card h-100">
-            <div class="card-body">
-                <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                <div class="avatar flex-shrink-0">
-                    <span class="avatar-initial rounded bg-label-info"><i class='bx bx-award'></i></span>
-                </div>
-                <div class="dropdown">
-                    <button class="btn p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bx bx-dots-vertical-rounded text-muted"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                    <a class="dropdown-item" href="/Proveedor/Licitaciones">Ver Detalles</a>
-                    <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+            <div class="col-lg-6 col-md-12 col-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <span class="avatar-initial rounded bg-label-info"><i class='bx bx-award'></i></span>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bx bx-dots-vertical-rounded text-muted"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="/Proveedor/Licitaciones">Ver Detalles</a>
+                                    <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mb-1">Adjudicaciones</p>
+                        <h4 class="card-title mb-2">@Model.Adjudicaciones</h4>
+                        @* <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i>
+                        @Model.PorcentajeAdjudicacionesVsMesAnterior.ToString("P2")</small> *@
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <!-- Últimas Licitaciones -->
+    <div class="col-md-6 col-lg-12 order-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title m-0 me-2">Últimas Licitaciones</h5>
+                <div class="dropdown">
+                    <button class="btn text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bx bx-dots-vertical-rounded"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" href="/Proveedor/Licitaciones">Ver Todas</a>
+                        <a class="dropdown-item" href="javascript:void(0);">Actualizar</a>
+                    </div>
                 </div>
-                <p class="mb-1">Adjudicaciones</p>
-                <h4 class="card-title mb-2">@Model.Adjudicaciones</h4>
-                @* <small class="text-success fw-medium"><i class='bx bx-up-arrow-alt'></i> @Model.PorcentajeAdjudicacionesVsMesAnterior.ToString("P2")</small> *@
             </div>
+            <div class="card-body pt-0">
+                <ul class="p-0 m-0">
+                    @foreach (var lic in Model.UltimasLicitaciones)
+                    {
+                        var rubro = lic.Rubro ?? "";
+                        var avatarText = rubro.Length >= 3 ? rubro.Substring(0, 3).ToUpper() : rubro.ToUpper();
+                        <li class="d-flex align-items-center py-2 border-bottom">
+                            <div class="avatar flex-shrink-0 me-3">
+                                <span class="avatar-initial rounded">@avatarText</span>
+                            </div>
+                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                <div class="me-2">
+                                    <small class="text-muted d-block">@lic.Rubro</small>
+                                    <h6 class="mb-0">@lic.Titulo</h6>
+                                    <span class="mb-0 d-block">@lic.MontoEstimado.ToString("C0")</span>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
             </div>
         </div>
-        </div>
-    </div> 
     </div>
 </div>
