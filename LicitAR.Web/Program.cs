@@ -69,6 +69,8 @@ public partial class Program
 
         // Configuración de cultura global
         var defaultCulture = new CultureInfo("es-AR");
+
+
         var localizationOptions = new RequestLocalizationOptions
         {
             DefaultRequestCulture = new RequestCulture(defaultCulture),

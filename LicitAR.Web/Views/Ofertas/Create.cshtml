@@ -72,81 +72,81 @@
                         </tbody>
                     </table>
                     <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="text-center"><b>NRO ITEM</b></th>
-                                    <th class="text-center"><b>ITEM</b></th>
-                                    <th class="text-center"><b>DESCRIPCIÓN</b></th>
-                                    <th class="text-center"><b>CANTIDAD</b></th>
-                                    <th class="text-center"><b>PRECIO UNITARIO</b></th>
-                                    <th class="text-center"><b>OBSERVACIÓN</b></th>
-                                    <th class="text-center"><b>SUBTOTAL</b></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < licitacion.Items.Count; i++)
-                                {
-                                    var item = licitacion.Items.ToArray()[i];
-                                    <tr>
-                                        <td class="text-center">
-                                            #@(item.NroItem + 1)
-                                            <input name="Items[@i].IdLicitacionDetalle" type="hidden" class="form-control" value="@item.IdLicitacionDetalle" />
+                        <div id="items-container">
+                            @for (int i = 0; i < licitacion.Items.Count; i++)
+                            {
+                                var item = licitacion.Items.ToList()[i];
+                                <div class="card mb-3 shadow-sm @(i % 2 == 0 ? "bg-extralight" : "")">
+                                    <div class="card-body">
+                                        <input name="Items[@i].IdLicitacionDetalle" type="hidden" value="@item.IdLicitacionDetalle" />
+                                        <input name="Items[@i].IdOfertaDetalle" type="hidden" value="0" />
+                                        <input name="Items[@i].IdOferta" type="hidden" value="0" />
+                                        <input name="Items[@i].Cantidad" type="hidden" value="@item.Cantidad" />
+                                        <input name="Items[@i].ImporteSubtotal" type="hidden" value="0" />
 
-                                        </td>
+                                        <div class="row g-2">
+                                            <div class="col-12 col-md-2">
+                                                <label class="form-label fw-bold text-muted">Nro Item</label>
+                                                <div class="pt-2">#@(item.NroItem + 1)</div>
+                                            </div>
 
-                                        <td class="text-center">
-                                            @(item.Item)
-                                            <input name="Items[@i].IdOfertaDetalle" type="hidden" class="form-control" value="0" />
+                                            <div class="col-12 col-md-4">
+                                                <label class="form-label fw-bold text-muted">Item</label>
+                                                <div class="pt-2">@item.Item</div>
+                                            </div>
 
+                                            <div class="col-12 col-md-4">
+                                                <label class="form-label fw-bold text-muted">Descripción</label>
+                                                <div class="pt-2">@item.Descripcion</div>
+                                            </div>
 
-                                        </td>
+                                            <div class="col-12 col-md-2  text-md-end">
+                                                <label class="form-label fw-bold text-muted">Cantidad</label>
+                                                <div class="pt-2">@item.Cantidad</div>
+                                            </div>
+                                             
+                                            <div class="col-12 col-md-2">
+                                                <label class="form-label fw-bold">Precio Unitario</label>
+                                                <input name="Items[@i].ImporteUnitario"
+                                                       type="number"
+                                                       step="0.01"
+                                                       class="form-control item-precio"
+                                                       data-index="@i" />
+                                                <span data-valmsg-for="Items[@i].ImporteUnitario" class="text-danger small"></span>
+                                            </div>
 
+                                            <div class="col-12 col-md-8">
+                                                <label class="form-label fw-bold">Observación</label>
+                                                <input name="Items[@i].Observacion"
+                                                       type="text"
+                                                       maxlength="200"
+                                                       class="form-control"
+                                                       data-index="@i" />
+                                                <span data-valmsg-for="Items[@i].Observacion" class="text-danger small"></span>
+                                            </div>
 
+                                            <div class="col-12 col-md-2 text-md-end">
+                                                <label class="form-label fw-bold text-muted">Subtotal</label>
+                                                <div class="pt-2 fw-bold">
+                                                    <span class="item-subtotal" id="subtotal-@i">0.00</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div> 
 
+                        <!-- Total general -->
+                        <div class="d-flex justify-content-end mt-4">
+                            <div class="card shadow-sm w-100 w-md-50">
+                                <div class="card-body d-flex justify-content-between">
+                                    <strong>TOTAL GENERAL:</strong>
+                                    <strong><span id="total-general">0.00</span></strong>
+                                </div>
+                            </div>
+                        </div>
 
-                                        <td class="text-center">
-                                            @(item.Descripcion)
-
-                                            <input name="Items[@i].IdOferta" type="hidden" class="form-control" value="0" />
-
-                                        </td>
-
-                                        <td class="text-center">@(item.Cantidad)</td>
-                                        <input name="Items[@i].Cantidad" disabled type="hidden" class="form-control" value="@item.Cantidad" />
-
-                                        <td>
-                                            <input name="Items[@i].ImporteUnitario"
-                                                   type="number"
-                                                   step="0.01"
-                                                   class="form-control item-precio"
-                                                   data-index="@i" />
-                                            <span data-valmsg-for="Items[@i].ImporteUnitario" class="text-danger"></span>
-                                        </td>
-                                        <td>
-                                            <input name="Items[@i].Observacion"
-                                                   type="text"
-                                                   maxlength="200"
-                                                   class="form-control"
-                                                   data-index="@i" />
-                                            <span data-valmsg-for="Items[@i].Observacion" class="text-danger"></span>
-                                        </td>
-
-                                        <td class="text-center">
-                                            <span class="item-subtotal" id="subtotal-@i">0.00</span>
-                                            <input name="Items[@i].ImporteSubtotal" type="hidden" class="form-control" value="0" />
-
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="6" class="text-start"><strong>TOTAL GENERAL:</strong></td>
-                                    <td class="text-center"><strong><span id="total-general">0.00</span></strong></td>
-                                </tr>
-                            </tfoot>
-                        </table>
 
 
                         <div class="alert alert-danger alert-dismissible fade show py-6 mt-2" role="alert" id="validacion-errores" style="display:none">
