@@ -233,7 +233,10 @@ namespace LicitAR.Web.Controllers
 
                     await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
 
-                    return RedirectToAction("Index","Home");
+                    // Desloguear al usuario antes de redirigir
+                    await _signInManager.SignOutAsync();
+
+                    return RedirectToAction("Login","Usuario");
 
                 }
                 else
