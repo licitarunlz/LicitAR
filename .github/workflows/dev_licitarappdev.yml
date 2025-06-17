@@ -29,9 +29,9 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.x'
+          dotnet-version: '9.0.301'
 
-      - name: Reemplazar secretos en appsettings.json
+      - name: Replace secrets in appsettings.json
         shell: pwsh
         run: |
           $configFile = "LicitAR.Web/appsettings.json"
@@ -46,7 +46,7 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-      - name: dotnet publish
+      - name: Publish artifact
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
