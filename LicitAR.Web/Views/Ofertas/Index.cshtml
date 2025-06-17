@@ -13,10 +13,10 @@
 @if (!string.IsNullOrEmpty(mensaje))
 {
     <div class="alert alert-success alert-dismissible" role="alert">
-        @mensaje
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-        </button>
-    </div>
+    @mensaje
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+    </button>
+</div>
 }
 <div class="card">
     <div class="card-body">
@@ -24,10 +24,12 @@
             <!-- First row: Filter fields -->
             <div class="row mb-3">
                 <div class="col-md-3">
-                    <input type="text" name="codigoLicitacion" class="form-control form-control-sm" placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
+                    <input type="text" name="codigoLicitacion" class="form-control form-control-sm"
+                        placeholder="Código Licitación" value="@query["codigoLicitacion"]" />
                 </div>
                 <div class="col-md-3">
-                    <input type="text" name="titulo" class="form-control form-control-sm" placeholder="Título" value="@query["titulo"]" />
+                    <input type="text" name="titulo" class="form-control form-control-sm" placeholder="Título"
+                        value="@query["titulo"]" />
                 </div>
             </div>
             <!-- Second row: Action buttons -->
@@ -56,6 +58,9 @@
             <thead>
                 <tr>
                     <th></th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Licitacion.CodigoLicitacion)
+                    </th>
                     <th>
                         @Html.DisplayNameFor(model => model.CodigoOfertaLicitacion)
                     </th>
@@ -89,12 +94,13 @@
                                     </button>
                                     <div class="dropdown-menu">
 
-                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.IdOferta">
+                                        <a class="dropdown-item" asp-controller="Ofertas" asp-action="Details"
+                                            asp-route-idOferta="@item.IdOferta">
                                             <i class="bx bx-show me-1"></i> Detalles
                                         </a>
                                         @if (item.IdEstadoOferta == 1)
                                         {
-                                            <a class="dropdown-item" asp-action="Edit" asp-route-idoferta="@item?.IdOferta">
+                                            <a class="dropdown-item" asp-action="Edit" asp-route-idOferta="@item?.IdOferta">
                                                 <i class="bx bx-edit me-1"></i> Editar
                                             </a>
                                             <a class="dropdown-item" asp-action="Publicar" asp-route-id="@item?.IdOferta">
@@ -108,16 +114,20 @@
                                 </div>
                             </td>
                             <td>
+                                @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion)
+                            </td>
+                            <td>
                                 @Html.DisplayFor(modelItem => item.CodigoOfertaLicitacion)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Licitacion.CodigoLicitacion) - @Html.DisplayFor(modelItem => item.Licitacion.Titulo)
+                                @Html.DisplayFor(modelItem => item.Licitacion.Titulo)
                             </td>
                             <td>
-                                <span class="@CssClassHelper.GetOfertaBagdeCssClassByIdEstado(item.IdEstadoOferta)" data-bs-toggle="tooltip" title="@item.EstadoOferta.Descripcion">
+                                <span class="@CssClassHelper.GetOfertaBagdeCssClassByIdEstado(item.IdEstadoOferta)"
+                                    data-bs-toggle="tooltip" title="@item.EstadoOferta.Descripcion">
                                     @Html.DisplayFor(modelItem => item.EstadoOferta.Descripcion)
                                 </span>
-                                
+
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.FechaOferta)
@@ -134,34 +144,25 @@
                 @if (ViewBag.CurrentPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link"
-                           asp-action="Index"
-                           asp-route-page="@(ViewBag.CurrentPage - 1)"
-                           asp-route-pageSize="10"
-                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
-                           asp-route-titulo="@query["titulo"]">&laquo;</a>
+                        <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)"
+                            asp-route-pageSize="10" asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                            asp-route-titulo="@query["titulo"]">&laquo;</a>
                     </li>
                 }
                 @for (int i = 1; i <= ViewBag.TotalPages; i++)
                 {
                     <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                        <a class="page-link"
-                           asp-action="Index"
-                           asp-route-page="@i"
-                           asp-route-pageSize="10"
-                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
-                           asp-route-titulo="@query["titulo"]">@i</a>
+                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-pageSize="10"
+                            asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                            asp-route-titulo="@query["titulo"]">@i</a>
                     </li>
                 }
                 @if (ViewBag.CurrentPage < ViewBag.TotalPages)
                 {
                     <li class="page-item">
-                        <a class="page-link"
-                           asp-action="Index"
-                           asp-route-page="@(ViewBag.CurrentPage + 1)"
-                           asp-route-pageSize="10"
-                           asp-route-codigoLicitacion="@query["codigoLicitacion"]"
-                           asp-route-titulo="@query["titulo"]">&raquo;</a>
+                        <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)"
+                            asp-route-pageSize="10" asp-route-codigoLicitacion="@query["codigoLicitacion"]"
+                            asp-route-titulo="@query["titulo"]">&raquo;</a>
                     </li>
                 }
             </ul>

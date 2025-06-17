@@ -87,6 +87,8 @@ namespace LicitAR.Web.Models
         public int IdOferta { get; set; } 
         public int IdLicitacionDetalle { get; set; }
         public decimal ImporteUnitario { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:n2}", ApplyFormatInEditMode = true)]
         public decimal ImporteSubtotal { get; set; } 
         public string? Observacion { get; set; }
         public OfertaDetalle GetOfertaDetalle(AuditTable audit, Oferta? oferta = null)

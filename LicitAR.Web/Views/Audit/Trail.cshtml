@@ -106,9 +106,35 @@
                 }
                 @{
                     int totalPages = (int)Math.Ceiling((double)(ViewBag.Total ?? 0) / (ViewBag.PageSize ?? 20));
-                    for (int i = 1; i <= totalPages; i++)
+                    int currentPage = ViewBag.Page ?? 1;
+                    int pageWindow = 2; // cantidad de páginas antes y después de la actual
+                    int startPage = Math.Max(1, currentPage - pageWindow);
+                    int endPage = Math.Min(totalPages, currentPage + pageWindow);
+
+                    if (startPage > 1)
                     {
-                        <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                        <li class="page-item">
+                            <a class="page-link"
+                               asp-action="Trail"
+                               asp-route-page="1"
+                               asp-route-pageSize="@ViewBag.PageSize"
+                               asp-route-accion="@query["accion"]"
+                               asp-route-entidad="@query["entidad"]"
+                               asp-route-usuarioMail="@query["usuarioMail"]"
+                               asp-route-usuarioNombreCompleto="@query["usuarioNombreCompleto"]"
+                               asp-route-desde="@query["desde"]"
+                               asp-route-hasta="@query["hasta"]"
+                            >1</a>
+                        </li>
+                        if (startPage > 2)
+                        {
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        }
+                    }
+
+                    for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
                             <a class="page-link"
                                asp-action="Trail"
                                asp-route-page="@i"
@@ -120,6 +146,27 @@
                                asp-route-desde="@query["desde"]"
                                asp-route-hasta="@query["hasta"]"
                             >@i</a>
+                        </li>
+                    }
+
+                    if (endPage < totalPages)
+                    {
+                        if (endPage < totalPages - 1)
+                        {
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        }
+                        <li class="page-item">
+                            <a class="page-link"
+                               asp-action="Trail"
+                               asp-route-page="@totalPages"
+                               asp-route-pageSize="@ViewBag.PageSize"
+                               asp-route-accion="@query["accion"]"
+                               asp-route-entidad="@query["entidad"]"
+                               asp-route-usuarioMail="@query["usuarioMail"]"
+                               asp-route-usuarioNombreCompleto="@query["usuarioNombreCompleto"]"
+                               asp-route-desde="@query["desde"]"
+                               asp-route-hasta="@query["hasta"]"
+                            >@totalPages</a>
                         </li>
                     }
                 }

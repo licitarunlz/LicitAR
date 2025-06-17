@@ -41,10 +41,10 @@ public partial class Program
             .AddEnvironmentVariables();
 
         builder.Services.AddContextRegistrations(builder.Configuration);
+        builder.Services.AddFileStorageRegistrations(builder.Configuration);
         builder.Services.AddIdentityRegistrations(builder.Configuration);
         builder.Services.AddAppBusinessRegistrations(builder.Configuration);
         builder.Services.AddServicesRegistrations(builder.Configuration);
-        builder.Services.AddFileStorageRegistrations(builder.Configuration);
         
         // Envío de mails con vistas
         builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
@@ -69,6 +69,8 @@ public partial class Program
 
         // Configuración de cultura global
         var defaultCulture = new CultureInfo("es-AR");
+
+
         var localizationOptions = new RequestLocalizationOptions
         {
             DefaultRequestCulture = new RequestCulture(defaultCulture),

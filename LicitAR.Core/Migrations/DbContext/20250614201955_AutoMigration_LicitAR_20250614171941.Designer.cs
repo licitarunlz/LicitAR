@@ -4,6 +4,7 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LicitAR.Core.Migrations.DbContext
 {
     [DbContext(typeof(LicitARDbContext))]
-    partial class LicitARDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250614201955_AutoMigration_LicitAR_20250614171941")]
+    partial class AutoMigration_LicitAR_20250614171941
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -464,31 +467,6 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.ToTable("Licitaciones");
                 });
 
-            modelBuilder.Entity("LicitAR.Core.Data.Models.LicitacionChecklistItem", b =>
-                {
-                    b.Property<int>("IdLicitacionChecklistItem")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdLicitacionChecklistItem"));
-
-                    b.Property<string>("DescripcionItem")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("DocumentoObligatorio")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("IdLicitacion")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdLicitacionChecklistItem");
-
-                    b.HasIndex("IdLicitacion");
-
-                    b.ToTable("LicitacionChecklistItems");
-                });
-
             modelBuilder.Entity("LicitAR.Core.Data.Models.LicitacionDetalle", b =>
                 {
                     b.Property<int>("IdLicitacionDetalle")
@@ -616,33 +594,6 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.HasIndex("IdPersona");
 
                     b.ToTable("Ofertas");
-                });
-
-            modelBuilder.Entity("LicitAR.Core.Data.Models.OfertaChecklistItem", b =>
-                {
-                    b.Property<int>("IdOfertaChecklistItem")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdOfertaChecklistItem"));
-
-                    b.Property<string>("BlobUri")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<int>("IdLicitacionChecklistItem")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdOferta")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdOfertaChecklistItem");
-
-                    b.HasIndex("IdLicitacionChecklistItem");
-
-                    b.HasIndex("IdOferta");
-
-                    b.ToTable("OfertaChecklistItems");
                 });
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.OfertaDetalle", b =>
@@ -1545,51 +1496,6 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.Navigation("Rubro");
                 });
 
-            modelBuilder.Entity("LicitAR.Core.Data.Models.LicitacionChecklistItem", b =>
-                {
-                    b.HasOne("LicitAR.Core.Data.Models.Licitacion", "Licitacion")
-                        .WithMany()
-                        .HasForeignKey("IdLicitacion")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
-                        {
-                            b1.Property<int>("LicitacionChecklistItemIdLicitacionChecklistItem")
-                                .HasColumnType("int");
-
-                            b1.Property<DateTime>("FechaAlta")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<DateTime?>("FechaBaja")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<DateTime?>("FechaModificacion")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<int>("IdUsuarioAlta")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("IdUsuarioBaja")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("IdUsuarioModificacion")
-                                .HasColumnType("int");
-
-                            b1.HasKey("LicitacionChecklistItemIdLicitacionChecklistItem");
-
-                            b1.ToTable("LicitacionChecklistItems");
-
-                            b1.WithOwner()
-                                .HasForeignKey("LicitacionChecklistItemIdLicitacionChecklistItem");
-                        });
-
-                    b.Navigation("Audit")
-                        .IsRequired();
-
-                    b.Navigation("Licitacion");
-                });
-
             modelBuilder.Entity("LicitAR.Core.Data.Models.LicitacionDetalle", b =>
                 {
                     b.HasOne("LicitAR.Core.Data.Models.Licitacion", "Licitacion")
@@ -1795,59 +1701,6 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.Navigation("Licitacion");
 
                     b.Navigation("Persona");
-                });
-
-            modelBuilder.Entity("LicitAR.Core.Data.Models.OfertaChecklistItem", b =>
-                {
-                    b.HasOne("LicitAR.Core.Data.Models.LicitacionChecklistItem", "LicitacionChecklistItem")
-                        .WithMany("OfertasChecklistItems")
-                        .HasForeignKey("IdLicitacionChecklistItem")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("LicitAR.Core.Data.Models.Oferta", "Oferta")
-                        .WithMany()
-                        .HasForeignKey("IdOferta")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
-                        {
-                            b1.Property<int>("OfertaChecklistItemIdOfertaChecklistItem")
-                                .HasColumnType("int");
-
-                            b1.Property<DateTime>("FechaAlta")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<DateTime?>("FechaBaja")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<DateTime?>("FechaModificacion")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<int>("IdUsuarioAlta")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("IdUsuarioBaja")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("IdUsuarioModificacion")
-                                .HasColumnType("int");
-
-                            b1.HasKey("OfertaChecklistItemIdOfertaChecklistItem");
-
-                            b1.ToTable("OfertaChecklistItems");
-
-                            b1.WithOwner()
-                                .HasForeignKey("OfertaChecklistItemIdOfertaChecklistItem");
-                        });
-
-                    b.Navigation("Audit")
-                        .IsRequired();
-
-                    b.Navigation("LicitacionChecklistItem");
-
-                    b.Navigation("Oferta");
                 });
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.OfertaDetalle", b =>
@@ -2481,11 +2334,6 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.Navigation("DocumentosAsociados");
 
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("LicitAR.Core.Data.Models.LicitacionChecklistItem", b =>
-                {
-                    b.Navigation("OfertasChecklistItems");
                 });
 
             modelBuilder.Entity("LicitAR.Core.Data.Models.LicitacionDetalle", b =>

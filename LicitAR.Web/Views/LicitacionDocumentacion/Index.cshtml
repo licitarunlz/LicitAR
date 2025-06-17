@@ -1,51 +1,50 @@
 ﻿@using LicitAR.Core.Data.Models
 @using LicitAR.Web.Helpers
-@model LicitAR.Core.Data.Models.Licitacion
+@model IEnumerable<LicitAR.Core.Data.Models.LicitacionDocumentacion>
 
 @{
-    ViewData["Title"] = "Detalle de la licitación";
-    List<LicitacionDocumentacion> documentacion = ViewBag.Documentacion;
-    List<LicitacionChecklistItem> checklistItems = ViewBag.ChecklistItems;
-    var licitacion = Model;
+    ViewData["Title"] = "Documentación";
+    Licitacion licitacion = ViewBag.licitacion;
+    List<LicitacionChecklistItem> checklistItems = ViewBag.checklistItems;
 }
 
+
 <div class="row">
-    <div class="col-xl"> 
+    <div class="col-xl">
         <div class="card mb-6">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0"><b>@Html.DisplayFor(model => model.CodigoLicitacion)</b> - @Html.DisplayFor(model => model.Titulo) </h4>
-
-            </div>  
+            <div class="card-header d-flex justify-content-between align-items-center ">
+                <h5 class="mb-0">
+                    <b>@licitacion.CodigoLicitacion</b> - @licitacion.Titulo
+                </h5>
+            </div>
             <div class="card-body">
-               
-
                 <table class="table table-borderless align-middle mb-4">
                     <tbody>
                         <tr>
                             <th class="w-25 text-end">Descripción:</th>
-                            <td>@Html.DisplayFor(model => model.Descripcion)</td>
+                            <td>@licitacion.Descripcion</td>
                         </tr>
                         <tr>
                             <th class="w-25 text-end">Rubro:</th>
-                            <td>@Html.DisplayFor(model => model.Rubro.Descripcion)</td>
+                            <td>@licitacion.Rubro.Descripcion</td>
                         </tr>
                         <tr>
                             <th class="text-end">Entidad Licitante:</th>
-                            <td>@StringFormatHelper.FormatearCuitSeguro(Model.EntidadLicitante.Cuit, Model.EntidadLicitante.RazonSocial)</td>
+                            <td>@StringFormatHelper.FormatearCuitSeguro(licitacion.EntidadLicitante.Cuit, licitacion.EntidadLicitante.RazonSocial)</td>
                         </tr>
                         <tr>
                             <th class="text-end">Estado Licitación:</th>
                             <td>
-                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(Model.IdEstadoLicitacion)" data-bs-toggle="tooltip" title="@Model.EstadoLicitacion.Descripcion">
-                                    @Html.DisplayFor(model => model.EstadoLicitacion.Descripcion)
+                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdEstado(licitacion.IdEstadoLicitacion)" data-bs-toggle="tooltip" title="@licitacion.EstadoLicitacion.Descripcion">
+                                    @licitacion.EstadoLicitacion.Descripcion
                                 </span>
                             </td>
                         </tr>
                         <tr>
                             <th class="text-end">Categoría Licitación:</th>
                             <td>
-                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdCategoria(Model.IdCategoriaLicitacion)">
-                                    @Model.CategoriaLicitacion.Descripcion 
+                                <span class="@CssClassHelper.GetLicitacionBagdeCssClassByIdCategoria(licitacion.IdCategoriaLicitacion)" data-bs-toggle="tooltip" title="@licitacion.CategoriaLicitacion.Descripcion">
+                                    @(licitacion.CategoriaLicitacion.Descripcion)
                                 </span>
                             </td>
                         </tr>
@@ -53,46 +52,66 @@
                             <th class="text-end">Fecha Publicación:</th>
                             <td>
                                 <i class="bx bx-calendar"></i>
-                                @Html.DisplayFor(model => model.FechaPublicacion)
+                                @licitacion.FechaPublicacion
                             </td>
                         </tr>
                         <tr>
                             <th class="text-end">Fecha Cierre:</th>
                             <td>
                                 <i class="bx bx-calendar"></i>
-                                @Html.DisplayFor(model => model.FechaCierre)
+                                @licitacion.FechaCierre
                             </td>
                         </tr>
                     </tbody>
                 </table>
-
-
-                <div class="mb-8">
-                    <h6 class="fw-bold mb-2">Documentación</h6>
-                    @if (!documentacion.Any())
-                    {
-                        <p>No hay documentación Asociada</p>
-                    }
-                    else
-                    {
-                        <div class="documento-lista">
-                            @foreach (var documenta in documentacion)
+                <div id="DocumentacionAdjunta" class="mb-8">
+                    <div class="row mb-3">
+                        <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <h4 class="mb-0">Documentación Vinculada</h4>
+                            @if (licitacion.IdEstadoLicitacion == 1)
                             {
-                                <div class="documento-item d-flex flex-wrap justify-content-between align-items-center p-2">
-                                    <h4 class="mb-0">@documenta.TituloDocumento</h4>
-                                    <a href="@documenta.BlobUri" target="_blank" class="btn btn-primary  text-end"><i class="bx bx-download"></i></a>
-
-                                </div>
+                                <a asp-action="Create" asp-route-idLicitacion="@licitacion.IdLicitacion" class="btn btn-success btn-sm ">
+                                    <i class='bx bx-message-square-add  me-2'></i> Agregar
+                                </a>
                             }
                         </div>
+                    </div>
+                    @if (!Model.Any())
+                    {
+                        <p>No hay documentación Vinculada</p>
                     }
+
+                    <div class="documentos-lista">
+                        @foreach (var item in Model)
+                        {
+                            <div class="documento-card">
+                                <div><strong>Documento:</strong> @item.TituloDocumento</div>
+                                <div><strong>@Html.DisplayNameFor(m => item.FechaCarga):</strong> @item.FechaCarga.ToString()</div>
+                                <div class="acciones">
+                                    <a href="@item.BlobUri" target="_blank" class="btn btn-info btn-sm" style="color:white">
+                                        <i class='bx bx-download me-2'></i> Descargar
+                                    </a>
+                                    @if (licitacion.IdEstadoLicitacion == 1)
+                                    {
+                                        <form asp-action="Delete" method="post" onsubmit="return confirm('¿Seguro que querés eliminar este documento?');" class="d-inline">
+                                            <input type="hidden" name="id" value="@item.IdLicitacionDocumentacion " />
+                                            <input type="hidden" name="idLicitacion" value="@licitacion.IdLicitacion" />
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class='bx bx-trash me-2'></i> Eliminar
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
 
-
+                <hr />
                 <div id="DocumentacionChecklist" class="mt-8">
                     <div class="row mb-3">
                         <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                            <h4 class="mb-0">Checklist de Documentación a Presentar</h4>
+                            <h4 class="mb-0">Checklist de Documentación a Presentar por el oferente</h4>
                             @if (licitacion.IdEstadoLicitacion == 1)
                             {
                                 <a asp-action="CreateChecklist" asp-route-idLicitacion="@licitacion.IdLicitacion" class="btn btn-success btn-sm ">
@@ -123,6 +142,7 @@
                                             <span class="badge bg-label-warning">Opcional</span>
                                         }
                                     </div>
+                                   
                                     <div class="acciones">
                                         @if (licitacion.IdEstadoLicitacion == 1)
                                         {
@@ -142,51 +162,17 @@
 
                 </div>
 
-                <div class="row mt-8"> 
-
-
-                    <h6 class="fw-bold mb-2">Detalle de Ítems</h6>
-                    <div class="mb-3 mt-3">
-                        <div class="table-responsive">
-                            <table class="table  table-striped table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th scope="col" class="text-center" style="width: 10%;">NRO ITEM</th>
-                                        <th scope="col" class="text-center" style="width: 30%;">ITEM</th>
-                                        <th scope="col" class="text-center" style="width: 45%;">DESCRIPCIÓN</th>
-                                        <th scope="col" class="text-center" style="width: 15%;">CANTIDAD</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (int i = 0; i < Model.Items.Count; i++)
-                                    {
-                                        var item = Model.Items.ToArray()[i];
-                                        <tr>
-                                            <td class="text-center">#@(item.NroItem + 1)</td>
-
-                                            <td class="text-center">@(item.Item)</td>
-
-                                            <td class="text-center">@(item.Descripcion)</td>
-
-                                            <td class="text-center">@(item.Cantidad)</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mt-4">
+                            <a asp-action="Index" asp-controller="Licitacion" class="btn btn-secondary btn-sm ">
+                                <i class='bx bx-arrow-back me-2'></i> Volver al listado
+                            </a>
                         </div>
                     </div>
-
-
                 </div>
-            </div>
-            <div class="card-footer text-start">
-                <a asp-action="Create" asp-route-idlicitacion="@Model?.IdLicitacion" class="btn btn-primary">
-                    <i class="bx bx-edit"></i>&nbsp;Postularme
-                </a>
-                <a asp-action="IndexLicitaciones" class="btn btn-secondary">
-                    <i class="bx bx-arrow-back"></i>&nbsp;Volver al Listado
-                </a>
             </div>
         </div>
     </div>
 </div>
+

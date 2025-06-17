@@ -27,5 +27,9 @@
             return $"[{cuitFormateado}] - {razon}";
         }
 
+        public static string FormatearDecimalesSeguro(decimal value)
+        {
+            return value.ToString().Replace(',', '.');
+        }
     }
 }

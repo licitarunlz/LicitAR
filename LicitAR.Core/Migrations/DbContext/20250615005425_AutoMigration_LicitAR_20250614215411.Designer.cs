@@ -4,6 +4,7 @@ using LicitAR.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LicitAR.Core.Migrations.DbContext
 {
     [DbContext(typeof(LicitARDbContext))]
-    partial class LicitARDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250615005425_AutoMigration_LicitAR_20250614215411")]
+    partial class AutoMigration_LicitAR_20250614215411
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -636,11 +639,14 @@ namespace LicitAR.Core.Migrations.DbContext
                     b.Property<int>("IdOferta")
                         .HasColumnType("int");
 
+                    b.Property<int?>("OfertaIdOferta")
+                        .HasColumnType("int");
+
                     b.HasKey("IdOfertaChecklistItem");
 
                     b.HasIndex("IdLicitacionChecklistItem");
 
-                    b.HasIndex("IdOferta");
+                    b.HasIndex("OfertaIdOferta");
 
                     b.ToTable("OfertaChecklistItems");
                 });
@@ -1807,9 +1813,7 @@ namespace LicitAR.Core.Migrations.DbContext
 
                     b.HasOne("LicitAR.Core.Data.Models.Oferta", "Oferta")
                         .WithMany()
-                        .HasForeignKey("IdOferta")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("OfertaIdOferta");
 
                     b.OwnsOne("LicitAR.Core.Data.Models.Helpers.AuditTable", "Audit", b1 =>
                         {

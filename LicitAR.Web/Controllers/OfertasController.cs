@@ -19,6 +19,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Humanizer;
 using LicitAR.Web.Helpers.Auditoria;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using LicitAR.Core.Business.Documentacion;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace LicitAR.Web.Controllers
 {
@@ -27,16 +29,19 @@ namespace LicitAR.Web.Controllers
         private readonly ILicitacionManager _licitacionManager;
         private readonly IOfertaManager _ofertaManager;
         private readonly ILicitacionInvitacionManager _licitacionInvitacionManager;
+        private readonly ILicitacionDocumentacionManager _licitacionDocumentacionManager;
         private readonly LicitARDbContext _context;
 
         public OfertasController(LicitARDbContext context, 
                                  ILicitacionManager licitacionManager, 
                                  IOfertaManager ofertaManager,
+                                 ILicitacionDocumentacionManager licitacionDocumentacionManager,
                                  ILicitacionInvitacionManager licitacionInvitacionManager)
         {
             _licitacionManager = licitacionManager;
             _ofertaManager = ofertaManager;
             _licitacionInvitacionManager = licitacionInvitacionManager;
+            _licitacionDocumentacionManager = licitacionDocumentacionManager;
             _context = context;
         }
 
@@ -58,8 +63,12 @@ namespace LicitAR.Web.Controllers
                                         && x.FechaPublicacion < DateTime.Now
                                         && x.Audit.FechaBaja == null)?.ToList();
 
+
+
             if (licitaciones == null || !licitaciones.Any())
                 return View(licitaciones);
+
+
 
             var invitacionLicitaciones = await _licitacionInvitacionManager.GetInvitacionesByPersonaAsync(int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona").ToString()));
 
@@ -78,6 +87,8 @@ namespace LicitAR.Web.Controllers
                 }
             }
 
+            licitaciones = licitaciones.OrderByDescending(x => x.Audit.FechaAlta).ToList();
+            
             var query = licitaciones.AsQueryable();
 
             
@@ -131,6 +142,9 @@ namespace LicitAR.Web.Controllers
                 return View("NotFound"); // Updated
             }
             licitacion.Items = licitacion.Items.Where(x => x.Audit.FechaBaja == null).ToList();
+
+            ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(id.Value);
+            ViewBag.ChecklistItems = await _licitacionDocumentacionManager.GetAllChecklistItemsByIdLicitacionAsync(id.Value);
             return View(licitacion);
         }
         // GET: Ofertas
@@ -138,25 +152,30 @@ namespace LicitAR.Web.Controllers
         public async Task<IActionResult> Index(string codigoLicitacion, string titulo,   int page = 1, int pageSize = 10)
         {
 
-            int idPersona = int.Parse(IdentityHelper.GetUserLicitARClaim(User, "IdPersona"));
+            var idPersonaClaim = IdentityHelper.GetUserLicitARClaim(User, "IdPersona");
+            if (string.IsNullOrEmpty(idPersonaClaim))
+            {
+                throw new InvalidOperationException("IdPersona claim is missing or null.");
+            }
+            int idPersona = int.Parse(idPersonaClaim);
 
             var ofertas = await _ofertaManager.GetAllOfertasPorPersonaAsync(idPersona);
             if (ofertas == null)
                 return View(ofertas);
 
+            ofertas = ofertas.OrderByDescending(x => x.Audit.FechaAlta).ToList();
+
             var query = ofertas.AsQueryable();
 
             if (!string.IsNullOrEmpty(codigoLicitacion))
             {
-                query = query.Where(l => l.Licitacion.CodigoLicitacion.Contains(codigoLicitacion));
+                query = query.Where(l => l.Licitacion != null && l.Licitacion.CodigoLicitacion != null && l.Licitacion.CodigoLicitacion.Contains(codigoLicitacion));
             }
 
             if (!string.IsNullOrEmpty(titulo))
             {
-                query = query.Where(l => l.Licitacion.Titulo.Contains(titulo, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(l => l.Licitacion != null && l.Licitacion.Titulo != null && l.Licitacion.Titulo.Contains(titulo, StringComparison.OrdinalIgnoreCase));
             }
-
-             
 
             var totalItems = query.Count();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
@@ -168,16 +187,12 @@ namespace LicitAR.Web.Controllers
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
-
-
+            
             return View(ofertasVista);
-             
-           
-           
         }
 
         // GET: Ofertas/Details/5
-        [AuditarEvento("OfertasController - Detalle", "Oferta", "Visualización de detalle de oferta", "id")]
+        [AuditarEvento("OfertasController - Detalle", "Oferta", "Visualización de detalle de oferta", "idOferta")]
         public async Task<IActionResult> Details(int? idOferta)
         {
             if (idOferta == null)
@@ -200,6 +215,9 @@ namespace LicitAR.Web.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(oferta.IdLicitacion);
+            ViewBag.ChecklistItems = await _licitacionDocumentacionManager.GetAllChecklistItemsByIdLicitacionAsync(oferta.IdLicitacion);
+            ViewBag.OfertaChecklistItems = await _licitacionDocumentacionManager.GetAllOfertaChecklistItemByIdOfertaAsync(oferta.IdOferta);
 
             return View(oferta);
         }
@@ -298,6 +316,8 @@ namespace LicitAR.Web.Controllers
                 return NotFound();
             }
 
+            ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(oferta.IdLicitacion);
+
             return View(oferta);
         }
 
@@ -388,6 +408,10 @@ namespace LicitAR.Web.Controllers
                 return NotFound();
             }
 
+            ViewBag.Documentacion = await _licitacionDocumentacionManager.GetAllDocumentacionByIdLicitacionAsync(oferta.IdLicitacion);
+            ViewBag.ChecklistItems = await _licitacionDocumentacionManager.GetAllChecklistItemsByIdLicitacionAsync(oferta.IdLicitacion);
+            ViewBag.OfertaChecklistItems = await _licitacionDocumentacionManager.GetAllOfertaChecklistItemByIdOfertaAsync(oferta.IdOferta);
+
             return View(oferta);
         }
 
@@ -401,6 +425,39 @@ namespace LicitAR.Web.Controllers
 
             TempData["Mensaje"] = "Oferta Publicada Exitosamente!";
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost("/Ofertas/UploadChecklistItem")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadChecklistItem(int idOferta, OfertaChecklistItemModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                int idUser = IdentityHelper.GetUserLicitARId(User);
+
+                OfertaChecklistItem ofertaChecklistItem = model.GetOfertaChecklistItem(AuditHelper.GetCreationData(idUser));
+
+                await _licitacionDocumentacionManager.AddOfertaChecklistItemAsync(model.IdOferta, ofertaChecklistItem, model.archivo, idUser);
+
+                return RedirectToAction(nameof(Publicar), new { id = idOferta });
+            }
+             
+            return RedirectToAction(nameof(Publicar), new { id = idOferta });
+        }
+        [HttpPost("/Ofertas/DeleteChecklistItem")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteChecklistItem(int id, int idOferta)
+        {
+            if (ModelState.IsValid)
+            {
+                int idUser = IdentityHelper.GetUserLicitARId(User);
+
+                await _licitacionDocumentacionManager.RemoveOfertaChecklistItemAsync(id, idUser);
+
+                return RedirectToAction(nameof(Publicar), new { id = idOferta });
+            }
+
+            return RedirectToAction(nameof(Publicar), new { id = idOferta });
         }
 
     }
