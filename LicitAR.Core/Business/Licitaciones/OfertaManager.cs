@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using DocumentFormat.OpenXml.Office2013.Excel;
 
 namespace LicitAR.Core.Business.Licitaciones
 {
@@ -100,7 +101,9 @@ namespace LicitAR.Core.Business.Licitaciones
                 _dbContext.Ofertas.Add(oferta);
                 foreach (var detalle in oferta.Items)
                 {
+                    var licitacionDetalle = _dbContext.LicitacionesDetalle.FirstOrDefault(x => x.IdLicitacionDetalle == detalle.IdLicitacionDetalle);
                     detalle.IdOferta = oferta.IdOferta;
+                    detalle.ImporteSubtotal = detalle.ImporteUnitario * licitacionDetalle.Cantidad;
                     detalle.Audit = AuditHelper.GetCreationData(userId);
                 }
 
@@ -126,7 +129,16 @@ namespace LicitAR.Core.Business.Licitaciones
                 
                 ofertaFromDdbb.Audit = AuditHelper.SetModificationData(ofertaFromDdbb.Audit, userId);
                 
+                foreach(var item in oferta.Items)
+                {
+                    var licitacionDetalle = _dbContext.LicitacionesDetalle.FirstOrDefault(x => x.IdLicitacionDetalle == item.IdLicitacionDetalle);
+                    item.ImporteSubtotal = item.ImporteUnitario * licitacionDetalle.Cantidad;
+
+                }
+
                 ofertaFromDdbb.Items = oferta.Items;
+
+
 
                 _dbContext.Ofertas.Update(ofertaFromDdbb);
 
