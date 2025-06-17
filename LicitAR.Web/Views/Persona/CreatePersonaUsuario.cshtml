@@ -6,16 +6,16 @@
 <div class="container-xxl">
     <div class="authentication-wrapper authentication-basic container-p-y">
         <div class="authentication-inner d-flex justify-content-center">
-            <div class="card px-sm-6 px-0" style="min-width: 600px; width: 50vw; max-width: 900px;">
+            <div class="card px-2 px-sm-4 w-100" style="max-width: 900px;">
                 <div class="card-body">
                     <div class="d-flex flex-column align-items-center mb-2">
-                        <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
                             <a href="/" class="app-brand-link">
                                 <img src="/images/Logo_LicitAR_rectangle_small.png" alt="Logo LicitAR" class="app-brand-logo" style="height: 40px; width: 70px;" />
                             </a>
-                            <h3 class="fw-bold mb-0">Completar datos de Oferente</h3>
+                            <h3 class="fw-bold mb-0 text-center">Completar datos de Oferente</h3>
                         </div>
-                        <small class="text-body">Ingrese los detalles para poder compulsar en las licitaciones</small>
+                        <small class="text-body text-center">Ingrese los detalles para poder compulsar en las licitaciones</small>
                     </div>
                     <br>
                     <form asp-action="CreatePersonaUsuario">
@@ -23,24 +23,24 @@
                         <div class="form-group mb-3">
                             <h5 class="mt-3 mb-3"><i class='bx bx-id-card me-2'></i>Datos de Oferente</h5>
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-12 col-md-6 mb-3">
                                     <label asp-for="IdTipoPersona" class="form-label"></label>
                                     <select asp-for="IdTipoPersona" asp-items="ViewBag.ComboTiposPersona" class="form-control">
                                         <option value="">Seleccione un Tipo Persona</option>
                                     </select>
                                     <span asp-validation-for="IdTipoPersona" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-12 col-md-6 mb-3">
                                     <label asp-for="Cuit" class="form-label"></label>
                                     <input asp-for="Cuit" class="form-control" readonly="true" />
                                     <span asp-validation-for="Cuit" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-12 mb-3">
+                                <div class="col-12 mb-3">
                                     <label asp-for="RazonSocial" class="form-label"></label>
                                     <input asp-for="RazonSocial" class="form-control" readonly="true" />
                                     <span asp-validation-for="RazonSocial" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-12 mb-3">
+                                <div class="col-12 mb-3">
                                     <label asp-for="IdRubro" class="form-label"></label>
                                     <select asp-for="IdRubro" asp-items="ViewBag.ComboRubros" class="form-control">
                                         <option value="">Seleccione un Rubro</option>
@@ -50,12 +50,12 @@
                             </div>
                             <h5 class="mt-4 mb-3"><i class='bx bx-envelope me-2'></i>Contacto</h5>
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-12 col-md-6 mb-3">
                                     <label asp-for="Email" class="form-label"></label>
                                     <input asp-for="Email" class="form-control" readonly="true" />
                                     <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-12 col-md-6 mb-3">
                                     <label asp-for="Telefono" class="form-label"></label>
                                     <input asp-for="Telefono" class="form-control" maxlength="20" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
                                     <span asp-validation-for="Telefono" class="text-danger"></span>
@@ -63,53 +63,53 @@
                             </div>
                             <h5 class="mt-4 mb-3"><i class='bx bx-home me-2'></i>Domicilio</h5>
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-12 col-md-6 mb-3">
                                     <label asp-for="IdProvincia" class="form-label"></label>
                                     <select asp-for="IdProvincia" asp-items="ViewBag.ComboProvincias" class="form-control">
                                         <option value="">Seleccione una provincia</option>
                                     </select>
                                     <span asp-validation-for="IdProvincia" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-12 col-md-6 mb-3">
                                     <label asp-for="IdLocalidad" class="form-label"></label>
                                     <select asp-for="IdLocalidad" class="form-control">
                                         <option value="">Seleccione una localidad</option>
                                     </select>
                                     <span asp-validation-for="IdLocalidad" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-12 col-md-6 mb-3">
                                     <label asp-for="DireccionBarrio" class="form-label"></label>
                                     <input asp-for="DireccionBarrio" class="form-control" />
                                     <span asp-validation-for="DireccionBarrio" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-12 col-md-6 mb-3">
                                     <label asp-for="DireccionCalle" class="form-label"></label>
                                     <input asp-for="DireccionCalle" class="form-control" />
                                     <span asp-validation-for="DireccionCalle" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-6 col-md-4 mb-3">
                                     <label asp-for="DireccionNumero" class="form-label"></label>
                                     <input asp-for="DireccionNumero" class="form-control" maxlength="7" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
                                     <span asp-validation-for="DireccionNumero" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-6 col-md-4 mb-3">
                                     <label asp-for="DireccionPiso" class="form-label"></label>
                                     <input asp-for="DireccionPiso" class="form-control" maxlength="7" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
                                     <span asp-validation-for="DireccionPiso" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-12 col-md-4 mb-3">
                                     <label asp-for="DireccionDepto" class="form-label"></label>
                                     <input asp-for="DireccionDepto" class="form-control" maxlength="5" pattern="[A-Za-z0-9]*" inputmode="text" oninput="this.value=this.value.replace(/[^A-Za-z0-9]/g,'')" />
                                     <span asp-validation-for="DireccionDepto" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-12 col-md-6 mb-3">
                                     <label asp-for="DireccionCodigoPostal" class="form-label"></label>
                                     <input asp-for="DireccionCodigoPostal" class="form-control" maxlength="7" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
                                     <span asp-validation-for="DireccionCodigoPostal" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end mt-4">
-                                <button type="submit" class="btn btn-primary d-flex align-items-center">
+                                <button type="submit" class="btn btn-primary d-flex align-items-center w-100 w-md-auto">
                                     <i class='bx bx-save me-2'></i>Crear
                                 </button>
                             </div>
@@ -152,5 +152,16 @@
     </script>
     <!-- Boxicons CDN -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        @media (max-width: 767.98px) {
+            .authentication-inner .card {
+                min-width: 100% !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+        }
+    </style>
 }
 
