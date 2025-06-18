@@ -33,7 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // Badge
             const countResp = await fetch(window.notificacionesUrls.cantidadNoLeidas);
             const count = (await countResp.json()).count;
-            notificacionesBadge.textContent = count;
+            // Limitar el número mostrado en el badge
+            notificacionesBadge.textContent = count > 99 ? '99+' : count;
             notificacionesBadge.style.display = count > 0 ? 'inline-block' : 'none';
         }
 
