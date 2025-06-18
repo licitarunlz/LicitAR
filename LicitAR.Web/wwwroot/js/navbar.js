@@ -22,8 +22,15 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 notificacionesList.className = "";
                 notifs.forEach(n => {
+                    let href = n.urlDestino || '#';
+                    // Si no es absoluta ni comienza con "/", la convertimos a absoluta
+                    if (href && !href.startsWith('http') && !href.startsWith('/')) {
+                        href = window.location.origin + '/' + href.replace(/^\/+/, '');
+                    } else if (href && href.startsWith('/')) {
+                        href = window.location.origin + href;
+                    }
                     const a = document.createElement('a');
-                    a.href = n.urlDestino || '#';
+                    a.href = href;
                     a.onclick = () => { marcarNotificacionLeida(n.idNotificacion); };
                     a.innerHTML = `${n.titulo}<br/><small>${n.detalle}</small>`;
                     a.className = 'dropdown-item' + (n.read ? '' : ' fw-bold');
