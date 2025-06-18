@@ -58,7 +58,7 @@ namespace LicitAR.Web.Controllers
             {
                 idOferente = idPersona;
             }
-            Console.WriteLine($"[GetNotificaciones] idPersona: {idOferente}"); // <-- Log en consola .NET
+            //Console.WriteLine($"[GetNotificaciones] idPersona: {idOferente}"); // <-- Log en consola .NET
             var notificaciones = await _notificacionService.GetNotificacionesPorUsuarioAsync(idOferente, 10);
             return Json(notificaciones);
         }

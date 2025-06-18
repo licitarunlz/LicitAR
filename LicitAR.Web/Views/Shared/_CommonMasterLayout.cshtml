@@ -56,6 +56,15 @@
     <!-- Main JS -->
     <script src="~/js/main.js"></script>
 
+    <!-- Notificaciones URLs para navbar.js -->
+    <script>
+        window.notificacionesUrls = {
+            getNotificaciones: '@Url.Action("GetNotificaciones", "LicitacionNotificacion")',
+            cantidadNoLeidas: '@Url.Action("CantidadNoLeidas", "LicitacionNotificacion")',
+            marcarComoLeida: '@Url.Action("MarcarComoLeida", "LicitacionNotificacion")'
+        };
+    </script>
+
     <!-- Page Scripts -->
     @RenderSection("PageScripts", required: false)
 
@@ -70,7 +79,7 @@
     <script src="~/vendor/js/bootstrap.js"></script>
     <script src="~/js/validators.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
+    <script src="~/js/navbar.js" asp-append-version="true"></script>
     <script src="~/vendor/js/autoNumeric.min.js" asp-append-version="true"></script>
     <!-- jQuery Validation + Unobtrusive -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
