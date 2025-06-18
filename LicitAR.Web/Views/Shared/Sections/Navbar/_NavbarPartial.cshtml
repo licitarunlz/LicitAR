@@ -2,11 +2,11 @@
   var userName = User?.FindFirst("FullName")?.Value ?? "Guest";
   var roleDescription = User?.FindFirst("RoleDescription")?.Value ?? "Sin Rol";
   var iniciales = string.Join(
-    "",
-    userName
-      .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-      .Take(2)
-      .Select(n => n[0])
+  "",
+  userName
+  .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+  .Take(2)
+  .Select(n => n[0])
   ).ToUpper();
 }
 
@@ -15,9 +15,9 @@
 {
   <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4">
   <a asp-controller="Dashboards" asp-action="Index" class="app-brand-link gap-2">
-            <span class="app-brand-logo demo">
-                <img src="~/images/Logo_LicitAR_circle_clear_small.png" alt="Logo" style="height: 40px;" />
-            </span>
+    <span class="app-brand-logo demo">
+      <img src="~/images/Logo_LicitAR_circle_clear_small.png" alt="Logo" style="height: 40px;" />
+    </span>
     <span class="app-brand-text demo menu-text fw-bold">@TempData.Peek("appName")</span>
   </a>
 </div>
@@ -38,20 +38,42 @@
   <!-- Search -->
   <div class="navbar-nav align-items-center">
     <div class="nav-item d-flex align-items-center">
-            <h2 class="mt-4"> @ViewData["Title"]</h2>
+      <h2 class="mt-4"> @ViewData["Title"]</h2>
     </div>
   </div>
   <!-- /Search -->
 
   <ul class="navbar-nav flex-row align-items-center ms-auto">
-    <!-- Place this tag where you want the button to render. -->
-
+    <!-- Notificaciones -->
+    <li class="nav-item dropdown me-3" style="display:flex;align-items:center;">
+      <a class="nav-link p-0" href="#" id="notificacionesDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+        aria-label="Notificaciones" style="display:flex;align-items:center;">
+        <div class="avatar avatar-online" style="background:transparent;">
+          <i class="bx bx-bell" style="font-size:2.5rem;color:#bbb;"></i>
+          <span id="notificaciones-badge" class="badge bg-danger"
+            style="position:absolute;top:0;right:0;display:none;">0</span>
+        </div>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificacionesDropdown"
+        style="min-width: 350px;max-width:400px;">
+        <li class="dropdown-header">Notificaciones</li>
+        <li id="notificaciones-list" class="text-center text-muted py-2" style="max-height:300px;overflow-y:auto;">
+          Cargando...
+        </li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li class="text-center">
+          <a href="@Url.Action("Index", "LicitacionNotificacion")" class="dropdown-item">Ver todas</a>
+        </li>
+      </ul>
+    </li>
+    <!-- /Notificaciones -->
     <!-- User -->
-    <li class="nav-item navbar-dropdown dropdown-user dropdown">
+    <li class="nav-item navbar-dropdown dropdown-user dropdown" style="display:flex;align-items:center;">
       <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
         <div class="avatar avatar-online">
           <div class="avatar-iniciales">@iniciales</div>
-
         </div>
       </a>
       <ul class="dropdown-menu dropdown-menu-end">
@@ -98,6 +120,49 @@
       </ul>
     </li>
     <!--/ User -->
-
   </ul>
 </div>
+
+@section BusinessScripts {
+  <script>
+    console.log("Script de notificaciones cargado"); // <-- Log para saber si el script corre
+
+    async function cargarNotificaciones() {
+      const resp = await fetch('@Url.Action("GetNotificaciones", "LicitacionNotificacion")');
+      const notifs = await resp.json();
+      console.log("Notificaciones recibidas:", notifs); // <-- Log en consola
+      const list = document.getElementById('notificaciones-list');
+      list.innerHTML = '';
+      if (notifs.length === 0) {
+        list.className = "text-center text-muted py-2";
+        list.innerHTML = 'Sin notificaciones';
+      } else {
+        list.className = "";
+        notifs.forEach(n => {
+          const a = document.createElement('a');
+          a.href = n.urlDestino || '#';
+          a.onclick = () => { marcarNotificacionLeida(n.idNotificacion); };
+          a.innerHTML = `${n.titulo}<br/><small>${n.detalle}</small>`;
+          a.className = 'dropdown-item' + (n.read ? '' : ' fw-bold');
+          list.appendChild(a);
+        });
+      }
+      // Badge
+      const badge = document.getElementById('notificaciones-badge');
+      const countResp = await fetch('@Url.Action("CantidadNoLeidas", "LicitacionNotificacion")');
+      const count = (await countResp.json()).count;
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+    async function marcarNotificacionLeida(id) {
+      await fetch('@Url.Action("MarcarComoLeida", "LicitacionNotificacion")', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
+        body: JSON.stringify({ id })
+      });
+      setTimeout(cargarNotificaciones, 500);
+    }
+    document.addEventListener('DOMContentLoaded', cargarNotificaciones);
+    document.getElementById('notificacionesDropdown').addEventListener('show.bs.dropdown', cargarNotificaciones);
+  </script>
+}

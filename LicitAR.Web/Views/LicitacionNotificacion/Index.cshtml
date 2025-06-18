@@ -1,0 +1,146 @@
+@model IEnumerable<LicitAR.Core.Data.Models.LicitacionNotificacion>
+@{
+    ViewData["Title"] = "Notificaciones";
+    var query = Context.Request.Query;
+    var filtros = ViewBag.Filtros;
+    var mensaje = TempData["Mensaje"] as string;
+    TempData.Remove("Mensaje");
+}
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <div class="alert alert-success alert-dismissible" role="alert" aria-live="polite">
+        @mensaje
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
+<div class="card" role="main">
+    <div class="card-body">
+        <form method="get" asp-action="Index" role="form" aria-label="Filtrar notificaciones">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="titulo" class="visually-hidden">Título</label>
+                    <input type="text" id="titulo" name="titulo" class="form-control form-control-sm" placeholder="Título" value="@query["titulo"]" aria-label="Título" />
+                </div>
+                <div class="col-md-3">
+                    <label for="detalle" class="visually-hidden">Detalle</label>
+                    <input type="text" id="detalle" name="detalle" class="form-control form-control-sm" placeholder="Detalle" value="@query["detalle"]" aria-label="Detalle" />
+                </div>
+                <div class="col-md-2">
+                    <label for="read" class="visually-hidden">Leída</label>
+                    <select id="read" name="read" class="form-select form-select-sm" aria-label="Leída">
+                        <option value="">Todas</option>
+                        @{
+                            var readVal = query["read"].ToString();
+                        }
+                        <option value="false" selected="@(readVal == "false" ? "selected" : null)">No leída</option>
+                        <option value="true" selected="@(readVal == "true" ? "selected" : null)">Leída</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="important" class="visually-hidden">Importante</label>
+                    <select id="important" name="important" class="form-select form-select-sm" aria-label="Importante">
+                        <option value="">Todas</option>
+                        @{
+                            var importantVal = query["important"].ToString();
+                        }
+                        <option value="true" selected="@(importantVal == "true" ? "selected" : null)">Sí</option>
+                        <option value="false" selected="@(importantVal == "false" ? "selected" : null)">No</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm" aria-label="Filtrar notificaciones">
+                        <i class="bx bx-filter-alt" aria-hidden="true"></i> &nbsp;Filtrar
+                    </button>
+                    <a asp-action="Index" class="btn btn-warning btn-sm" title="Limpiar filtros" aria-label="Limpiar filtros">
+                        <i class="bx bx-reset" aria-hidden="true"></i>&nbsp;
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="table-responsive text-nowrap" role="region" aria-label="Listado de notificaciones">
+        <table class="table" role="table">
+            <thead>
+                <tr>
+                    <th scope="col">Título</th>
+                    <th scope="col">Detalle</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Importante</th>
+                    <th scope="col">Leída</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No se han encontrado notificaciones</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var n in Model)
+                    {
+                        <tr class="@(n.Read ? "" : "fw-bold")">
+                            <td>@n.Titulo</td>
+                            <td>@n.Detalle</td>
+                            <td>@n.Audit.FechaAlta</td>
+                            <td>@(n.Important ? "Sí" : "No")</td>
+                            <td>@(n.Read ? "Sí" : "No")</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex justify-content-center" role="navigation" aria-label="Paginación de notificaciones">
+        <nav aria-label="Paginación">
+            <ul class="pagination pagination-rounded mb-0">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           asp-route-pageSize="10"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-detalle="@query["detalle"]"
+                           asp-route-read="@query["read"]"
+                           asp-route-important="@query["important"]"
+                           aria-label="Página anterior"
+                        >&laquo;</a>
+                    </li>
+                }
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-pageSize="10"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-detalle="@query["detalle"]"
+                           asp-route-read="@query["read"]"
+                           asp-route-important="@query["important"]"
+                           aria-label="Página @i"
+                        >@i</a>
+                    </li>
+                }
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           asp-route-pageSize="10"
+                           asp-route-titulo="@query["titulo"]"
+                           asp-route-detalle="@query["detalle"]"
+                           asp-route-read="@query["read"]"
+                           asp-route-important="@query["important"]"
+                           aria-label="Página siguiente"
+                        >&raquo;</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

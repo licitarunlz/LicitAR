@@ -11,6 +11,7 @@ using LicitAR.Web.Helpers.Auditoria;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LicitAR.Core.Business.Documentacion;
+using LicitAR.Core.Services;
 
 namespace LicitAR.Web.Controllers
 {
@@ -23,6 +24,7 @@ namespace LicitAR.Web.Controllers
         private readonly ILicitacionDocumentacionManager _licitacionDocumentacionManager;
         private readonly LicitARDbContext _dbContext;
         private readonly IAuditManager _auditManager;
+        private readonly ILicitacionNotificationService _notificacionService;
 
         public LicitacionController(
             ILicitacionManager licitacionManager,
@@ -31,7 +33,8 @@ namespace LicitAR.Web.Controllers
             IEvaluacionManager evaluacionManager,
             ILicitacionDocumentacionManager licitacionDocumentacionManager,
             LicitARDbContext dbContext,
-            IAuditManager auditManager)
+            IAuditManager auditManager,
+            ILicitacionNotificationService notificacionService)
         {
             _licitacionManager = licitacionManager;
             _logger = logger;
@@ -40,6 +43,7 @@ namespace LicitAR.Web.Controllers
             _licitacionDocumentacionManager = licitacionDocumentacionManager;
             _dbContext = dbContext;
             _auditManager = auditManager;
+            _notificacionService = notificacionService;
         }
 
         private static string FormatearCuit(string cuit)
@@ -218,10 +222,28 @@ namespace LicitAR.Web.Controllers
                 var audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User));
                 var estadoLicitacion = await _licitacionManager.GetEstadoLicitacionByIdAsync(licitacionModel.IdEstadoLicitacion);
                 var categoriaLicitacion = await _licitacionManager.GetCategoriaLicitacionByIdAsync(licitacionModel.IdCategoriaLicitacion);
+                int idOferente = 1;
+                var claim = User.Claims.FirstOrDefault(c => c.Type == "IdPersona");
+                if (claim != null && int.TryParse(claim.Value, out int idPersona))
+                {
+                    idOferente = idPersona;
+                }
 
                 Licitacion licitacion = licitacionModel.GetLicitacion(audit, estadoLicitacion, categoriaLicitacion);
                 licitacion.Items = licitacionModel.GetLicitacionDetalles(audit);
                 await _licitacionManager.CreateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
+                await _notificacionService.CrearNotificacionAsync(new LicitacionNotificacion
+                {
+                    IdPersona = idOferente,
+                    IdUsuario = IdentityHelper.GetUserLicitARId(User),
+                    IdLicitacion = licitacion.IdLicitacion,
+                    Titulo = "Licitación creada",
+                    Detalle = $"Se creó la licitación {licitacion.Titulo}",
+                    UrlDestino = Url.Action("Details", "Licitacion", new { id = licitacion.IdLicitacion }),
+                    Important = true,
+                    Read = false,
+                    Audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User))
+                });
                 await _auditManager.LogLicitacionChange(
                     licitacion.IdLicitacion,
                     IdentityHelper.GetUserLicitARId(User),
@@ -300,11 +322,30 @@ namespace LicitAR.Web.Controllers
                 var licitacion = licitacionModel.GetLicitacion(audit, estadoLicitacion, categoriaLicitacion);
                 licitacion.IdLicitacion = licitacionModel.IdLicitacion;
 
+                int idOferente = 1;
+                var claim = User.Claims.FirstOrDefault(c => c.Type == "IdPersona");
+                if (claim != null && int.TryParse(claim.Value, out int idPersona))
+                {
+                    idOferente = idPersona;
+                }
+
                 var result = await _licitacionManager.UpdateLicitacionAsync(licitacion, IdentityHelper.GetUserLicitARId(User));
                 if (!result)
                 {
                     return View("NotFound");
                 }
+                await _notificacionService.CrearNotificacionAsync(new LicitacionNotificacion
+                {
+                    IdPersona = idOferente,
+                    IdUsuario = IdentityHelper.GetUserLicitARId(User),
+                    IdLicitacion = licitacion.IdLicitacion,
+                    Titulo = "Licitación modificada",
+                    Detalle = $"Se modificó la licitación {licitacion.Titulo}",
+                    UrlDestino = Url.Action("Details", "Licitacion", new { id = licitacion.IdLicitacion }),
+                    Important = true,
+                    Read = false,
+                    Audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User))
+                });
                 await _auditManager.LogLicitacionChange(
                     licitacion.IdLicitacion,
                     IdentityHelper.GetUserLicitARId(User),
@@ -354,6 +395,25 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound");
             }
+
+            int idOferente = 1;
+            var claim = User.Claims.FirstOrDefault(c => c.Type == "IdPersona");
+            if (claim != null && int.TryParse(claim.Value, out int idPersona))
+            {
+                idOferente = idPersona;
+            }
+            await _notificacionService.CrearNotificacionAsync(new LicitacionNotificacion
+            {
+                IdPersona = idOferente,
+                IdUsuario = IdentityHelper.GetUserLicitARId(User),
+                IdLicitacion = id,
+                Titulo = "Licitación eliminada",
+                Detalle = $"Se eliminó la licitación con ID {id}",
+                UrlDestino = Url.Action("Index", "Licitacion"),
+                Important = true,
+                Read = false,
+                Audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User))
+            });
             await _auditManager.LogLicitacionChange(
                 id,
                 IdentityHelper.GetUserLicitARId(User),
@@ -408,6 +468,26 @@ namespace LicitAR.Web.Controllers
             {
                 return View("NotFound");
             }
+
+            int idOferente = 1;
+            var claim = User.Claims.FirstOrDefault(c => c.Type == "IdPersona");
+            if (claim != null && int.TryParse(claim.Value, out int idPersona))
+            {
+                idOferente = idPersona;
+            }
+            
+            await _notificacionService.CrearNotificacionAsync(new LicitacionNotificacion
+            {
+                IdPersona = idOferente,
+                IdUsuario = IdentityHelper.GetUserLicitARId(User),
+                IdLicitacion = licitacion.IdLicitacion,
+                Titulo = "Licitación publicada",
+                Detalle = $"Se publicó la licitación {licitacion.IdLicitacion}",
+                UrlDestino = Url.Action("Details", "Licitacion", new { id = licitacion.IdLicitacion }),
+                Important = true,
+                Read = false,
+                Audit = AuditHelper.GetCreationData(IdentityHelper.GetUserLicitARId(User))
+            });
             await _auditManager.LogLicitacionChange(
                 licitacion.IdLicitacion,
                 IdentityHelper.GetUserLicitARId(User),

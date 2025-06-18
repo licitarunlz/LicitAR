@@ -45,6 +45,7 @@ namespace LicitAR.Core.Data
         public DbSet<LicitacionDocumentacion> LicitacionDocumentacion { get; set; }
         public DbSet<AuditTrail> AuditTrails { get; set; }
         public DbSet<AuditLicitacion> AuditLicitaciones { get; set; }
+        public DbSet<LicitacionNotificacion> LicitacionNotificaciones { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -69,7 +70,6 @@ namespace LicitAR.Core.Data
             modelBuilder.Entity<Evaluacion>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<EvaluacionOferta>().OwnsOne(p => p.Audit);
             modelBuilder.Entity<EvaluacionOfertaDetalle>().OwnsOne(p => p.Audit);
-
 
             modelBuilder.Entity<Evaluacion>()
                         .HasOne(p => p.Licitacion)
@@ -294,6 +294,8 @@ namespace LicitAR.Core.Data
                 .HasForeignKey(x => x.IdPersona);
 
             modelBuilder.Entity<LicitacionInvitacion>().OwnsOne(p => p.Audit);
+
+            modelBuilder.Entity<LicitacionNotificacion>().OwnsOne(p => p.Audit);
 
             // Ignorar escritura de IdUsuario después del insert
             modelBuilder.Entity<LicitArUser>()
