@@ -110,6 +110,15 @@
                                 </a>
                             </li>
                         }
+                        @if (user.HasClaim("permission", "Licitaciones.Ver"))
+                        {
+                            <!-- Nueva opción: Licitaciones Notificaciones -->
+                            <li class='menu-item@(currentPage.StartsWith("/LicitacionNotificacion") ? " active" : "")'>
+                                <a asp-action="Index" asp-controller="LicitacionNotificacion" class="menu-link">
+                                    <div>Notificaciones</div>
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </li>
             }
