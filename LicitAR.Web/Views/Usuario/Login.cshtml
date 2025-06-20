@@ -6,17 +6,15 @@
 }
 @model Login
 @section PageStyles {
-    @* <link rel="stylesheet" href="~/vendor/css/pages/page-auth.css"> *@
+    <link rel="stylesheet" href="~/vendor/css/pages/page-auth.css">
 }
-
-@* ************** Content ************** *@
 
 <div class="container-xxl">
   <div class="authentication-wrapper authentication-basic container-p-y">
-    <div class="authentication-inner"> 
-      <div class="card px-sm-6 px-0">
-        <div class="card-body"> 
-          <div class="app-brand justify-content-center">
+    <div class="authentication-inner d-flex justify-content-center">
+      <div class="card px-sm-4 px-0 w-100" style="max-width: 540px;">
+        <div class="card-body">
+          <div class="d-flex flex-column align-items-center mb-2">
             <a href="/" class="app-brand-link gap-2">
               <img src="/images/Logo_LicitAR_rectangle_small.png" alt="Logo LicitAR" class="app-brand-logo" style="height: 50px; width: 85px;" />
               <span class="app-brand-text demo text-heading fw-bold"></span>
@@ -24,22 +22,20 @@
           </div>
           <h4 class="mb-1">Bienvenido! 👋</h4>
           <p class="mb-6">Por favor inicie sesión</p>
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="alert alert-danger">
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <div>@error.ErrorMessage</div>
-                }
-            </div>
-        }
+          @if (!ViewData.ModelState.IsValid)
+          {
+              <div class="alert alert-danger">
+                  @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                  {
+                      <div>@error.ErrorMessage</div>
+                  }
+              </div>
+          }
 
           <form id="formAuthentication" class="mb-6" asp-action="Login" method="post">
-
-              
             <div class="mb-6">
               <label for="email" class="form-label">Email</label>
-              <input type="text" class="form-control" id="email" name="email"required placeholder="Email" autofocus>
+              <input type="text" class="form-control" id="email" name="email" required placeholder="Email" autofocus>
             </div>
             <div class="mb-6 form-password-toggle">
               <label class="form-label" for="password">Password</label>
@@ -50,13 +46,13 @@
             </div>
             <div class="mb-8">
               <div class="d-flex justify-content-between mt-8">
-                <div class="form-check mb-0 ms-2">
+                <div class="form-check mb-0 ms-2 d-none">
                   <input class="form-check-input" type="checkbox" id="remember-me">
                   <label class="form-check-label" for="remember-me">
                     Recordarme
                   </label>
                 </div>
-                <a  asp-controller="Usuario" asp-action="ForgotPasswordBasic">
+                <a asp-controller="Usuario" asp-action="ForgotPasswordBasic">
                   <span>Olvidaste tu contraseña?</span>
                 </a>
               </div>
@@ -73,7 +69,7 @@
             </a>
           </p>
         </div>
-      </div> 
+      </div>
     </div>
   </div>
 </div>
